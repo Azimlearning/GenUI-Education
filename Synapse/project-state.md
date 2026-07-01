@@ -8,9 +8,9 @@ Last updated: 2026-07-01
 
 ## TL;DR, where we are
 
-**P1 is green.** The osmosis vertical slice is genuinely live end to end. All four agents run,
-the first faithful interactive (the osmosis sim) is built, and the learner write persists to
-SQLite. Next up: P2 flagships (bonding-electrons, forces-motion).
+**P1 and P2 are green.** The pipeline is live end to end, and all 12 concepts now render as real
+interactives (3 flagships faithful: osmosis, forces-motion, bonding-electrons). Next up: P3
+(learner loop closes) and P4 (polish), then the hackAstone deliverables.
 
 Runs today with **no API key** (agents fall back to scripted behaviour). Add `ANTHROPIC_API_KEY`
 to `backend/.env` to switch the agents to live Claude.
@@ -34,18 +34,17 @@ to `backend/.env` to switch the agents to live Claude.
 - [x] **P1 verify** pytest 9/9, tsc clean, next build clean, live POST /api/ask streamed the
       full sequence (4 agents plus faithful block plus tutor write plus done).
 
-## Next (P2, remaining concepts, flagships first)
+## Done (P2, all concepts render as real interactives)
 
-- [ ] `electron-bonding-explorer` (Chem flagship): ionic transfer vs covalent share.
-- [ ] `force-motion-sim` (Phys flagship): ticker-tape trolley plus linked v-t graph.
-- [ ] Then Tier 2/3 concepts from `refdocs/concept-catalog.md`.
-- [ ] For each: registry entry, sourced misconceptions, faithful component, composer can emit it,
-      browser-verify the science.
+- [x] `electron-bonding-explorer` (Chem flagship): ionic transfer vs covalent share, contrasting cases.
+- [x] `force-motion-sim` (Phys flagship): trolley obeys F=ma plus a live v-t graph.
+- [x] The other 9 patterns built as lighter-but-correct interactives; quiz + digestive upgraded.
+- [x] Seam fully synced: all 14 patterns map to components in `lib/blocks.ts`.
 
-## Later
+## Next
 
-- P3, learner loop closes (interaction events update mastery plus spaced repetition).
-- P4, polish, latency, subject theming.
+- [ ] P3, learner loop closes (interaction events update mastery plus spaced repetition).
+- [ ] P4, polish, latency, subject theming.
 - hackAstone Part B (teacher view, grounded pedagogy, go-to-market, evaluation plan).
 - hackAstone Part C (video script, project description, README live URL).
 

@@ -46,6 +46,22 @@ def _scripted_props(pattern: str) -> dict[str, Any]:
             "correct_direction": "toward-higher-solute",
             "cell_mode": "beaker",
         }
+    if pattern == "force-motion-sim":
+        return {
+            "mass": 2,
+            "applied_force": 12,
+            "friction": 0.2,
+            "predict_prompt": "Release the trolley — will it speed up, hold steady, or stay still?",
+            "show_graph": "v-t",
+        }
+    if pattern == "electron-bonding-explorer":
+        return {
+            "pairs": [
+                {"left": "Na", "right": "Cl", "formula": "NaCl"},
+                {"left": "H", "right": "O", "formula": "H₂O"},
+            ],
+            "mode": "contrast",
+        }
     if pattern == "labelled-diagram-explorer":
         return {"diagram": "animal-cell", "parts": [], "mode": "explore"}
     if pattern == "quick-check-quiz":

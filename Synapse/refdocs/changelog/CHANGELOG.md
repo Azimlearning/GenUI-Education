@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-07-01 — P2: all 12 concepts render as real interactives, 3 flagships faithful
+
+- **Two more faithful flagships.** `force-motion-sim` (trolley obeys ΣF = ma with kinetic friction; live velocity–time graph derived from the sim; targets the newton-force-to-keep-moving misconception) and `electron-bonding-explorer` (contrasting cases: metal + non-metal transfers → ionic, non-metal + non-metal shares → covalent; classification encoded in the component). Both predict-observe-explain.
+- **Breadth: the remaining 9 patterns are now real, interactive components** (lighter-but-correct per the D-13 allowance): `process-timeline` (28-day cycle, ovulation ~day 14, hormone tracks), `stage-sequencer` (order mitosis stages), `matching-pairs` (enzyme↔substrate), `punnett-square-builder` (monohybrid 3:1), `signal-pathway-sim` (reflex arc), `atomic-structure-explorer` (Bohr shells 2,8,8), `circuit-builder-sandbox` (V=IR, series/parallel), `wave-optics-sandbox` (Snell's-law refraction + TIR), `reaction-lab-sandbox` (encoded reaction rules). Upgraded `quick-check-quiz` (mcq/numeric/coefficients with instant feedback) and `labelled-diagram-explorer` (digestive-tract journey).
+- **Seam fully synced (D-10).** `frontend/lib/blocks.ts` now maps all 14 registry patterns to components; removed the two stale placeholders (`ContrastingPairWalkthrough`, `TitrationSandbox`). Composer gained scripted presets for the new flagships. Landing page: added a Physics scenario chip; footnote reflects live/scripted reality.
+- **Verified:** `tsc` clean, `next build` clean (`/` 14 kB), `pytest` 9/9, and the three flagship routes confirmed end to end (osmosis → gradient-diffusion-sandbox, forces → force-motion-sim, bonding → electron-bonding-explorer).
+
 ## 2026-07-01 — P1: osmosis vertical slice is genuinely live end-to-end
 
 - **Agents flipped to LLM-driven, scripted fallback kept.** `diagnostician` / `pedagogy_strategist` / `component_composer` now call the provider router when a key is configured, and fall back to their P0 scripted logic otherwise (`router.any_live()` gate → try → `except` → scripted). Diagnosis is **grounded**: the Diagnostician is handed the KB's candidate misconceptions and its `misconception_id` is validated against the KB (rejected if unknown, D-04). The Strategist's `target_pattern` is validated against `REGISTRY`.

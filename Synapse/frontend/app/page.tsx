@@ -10,8 +10,8 @@ import type { AgentStep, ComponentBlock } from "@/lib/types";
 
 const CHIPS: { label: string; q: string }[] = [
   { label: `"osmosis is when water moves to where there's more water"`, q: "osmosis is when water moves to where there's more water" },
+  { label: `"a moving trolley needs a constant force to keep moving"`, q: "why does a moving object need a force to keep moving?" },
   { label: `"I don't understand ionic vs covalent bonding"`, q: "I don't understand ionic vs covalent bonding" },
-  { label: `"what are the parts of an animal cell?"`, q: "what are the parts of an animal cell?" },
   { label: `"how do I balance H2 + O2 → H2O?"`, q: "how do I balance this equation? H2 + O2 -> H2O" },
 ];
 
@@ -130,9 +130,9 @@ export default function Home() {
         )}
 
         <p style={footnote}>
-          P0 skeleton. The agent pipeline is scripted for now; P1 makes the osmosis slice
-          genuinely LLM-driven. The reasoning is streamed live from the FastAPI + LangGraph
-          backend over SSE.
+          The agent pipeline is streamed live from the FastAPI + LangGraph backend over SSE. It
+          runs on scripted logic with no API key, and on live Claude when one is set. Every
+          interactive is a pre-built, KSSM-faithful component the agents select and configure.
         </p>
       </main>
     </>
