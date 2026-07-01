@@ -11,6 +11,9 @@ import type { BlockMeta } from "@/lib/types";
 export interface LibraryComponentProps {
   props: Record<string, unknown>;
   meta: BlockMeta;
+  // Optional callback so a component can report how the learner did (P3 — closes the loop).
+  // The page combines this with the block's meta (topic, misconception_id) before posting.
+  onInteraction?: (ev: { correct: boolean }) => void;
 }
 
 const card: CSSProperties = {

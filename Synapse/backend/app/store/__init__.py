@@ -6,6 +6,7 @@ from app.store.learner_store import (
     LearnerStore,
     ObservedMisconception,
     SqliteLearnerStore,
+    due_for_review,
     get_store,
 )
 
@@ -15,5 +16,6 @@ __all__ = [
     "LearnerStore",
     "ObservedMisconception",
     "SqliteLearnerStore",
+    "due_for_review",
     "get_store",
 ]

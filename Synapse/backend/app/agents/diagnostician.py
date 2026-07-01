@@ -25,6 +25,7 @@ from app.models import (
     step,
 )
 from app.providers.router import get_router
+from app.store import get_store
 
 # Very light P0 subject/topic guesser for the scripted no-misconception path.
 _SUBJECT_HINTS: list[tuple[tuple[str, ...], str, str]] = [
@@ -137,6 +138,21 @@ def diagnose(state: PipelineState) -> dict[str, Any]:
             diagnosis = None
     if diagnosis is None:
         diagnosis = _scripted_diagnose(state.question)
+
+    # P3 — informed by history: if we've seen this misconception before, adapt the plan.
+    if state.student_id and diagnosis.misconception_id:
+        profile = get_store().get(state.student_id)
+        prior = profile.misconceptions.get(diagnosis.misconception_id)
+        if prior is not None:
+            if prior.resolved:
+                # They cleared it before — don't re-teach, check it stuck.
+                diagnosis = diagnosis.model_copy(update={
+                    "kind": DiagnosisKind.mastery_check,
+                    "summary": f"Revisiting {diagnosis.topic} — you handled this before, so this is a quick check.",
+                })
+            else:
+                steps.append(step(AgentName.diagnostician, AgentStatus.thinking,
+                                  f"You've hit “{diagnosis.misconception_id}” before — resurfacing it deliberately."))
 
     if diagnosis.kind == DiagnosisKind.misconception:
         detail = (

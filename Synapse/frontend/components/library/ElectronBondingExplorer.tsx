@@ -6,7 +6,7 @@
 // (constraint #6): metal + non-metal → ionic transfer; non-metal + non-metal → covalent share.
 // Targets the bonding-sharing-vs-transfer misconception.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 
 import { PatternCard, type LibraryComponentProps } from "./shared";
@@ -31,7 +31,7 @@ const DEFAULT_PAIRS: Pair[] = [
   { left: "H", right: "O", formula: "H₂O" },
 ];
 
-export default function ElectronBondingExplorer({ props, meta }: LibraryComponentProps) {
+export default function ElectronBondingExplorer({ props, meta, onInteraction }: LibraryComponentProps) {
   const pairs = parsePairs(props) ?? DEFAULT_PAIRS;
   const [idx, setIdx] = useState(0);
   const [guess, setGuess] = useState<Bond | null>(null);
@@ -40,6 +40,12 @@ export default function ElectronBondingExplorer({ props, meta }: LibraryComponen
   const pair = pairs[Math.min(idx, pairs.length - 1)];
   const answer = classify(pair.left, pair.right);
   const wasRight = guess === answer;
+
+  // Report the outcome once, when the electrons are revealed (P3).
+  useEffect(() => {
+    if (revealed) onInteraction?.({ correct: wasRight });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealed]);
 
   return (
     <PatternCard title="Bonding & electrons" meta={meta}>

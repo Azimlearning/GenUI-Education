@@ -46,6 +46,9 @@ class LearnerStore(Protocol):
     def record_misconception(
         self, student_id: str, misconception_id: str, topic: str, *, review_in_days: int = 3
     ) -> LearnerProfile: ...
+    def record_interaction(
+        self, student_id: str, topic: str, correct: bool, *, misconception_id: str | None = None
+    ) -> LearnerProfile: ...
 
 
 def _record_misconception(
@@ -70,6 +73,43 @@ def _record_misconception(
     return profile
 
 
+def _record_interaction(
+    store: LearnerStore, student_id: str, topic: str, correct: bool, misconception_id: str | None
+) -> LearnerProfile:
+    """Update mastery from a live interaction (P3) and re-schedule spaced repetition.
+
+    Mastery moves toward 1 on a correct interaction and decays on a wrong one. A correct
+    prediction against a diagnosed misconception marks it resolved and pushes the next review
+    out (spaced repetition); a wrong one resurfaces it sooner.
+    """
+    profile = store.get(student_id)
+    now = datetime.now(timezone.utc)
+    m = profile.mastery.get(topic, 0.0)
+    m = m + 0.34 * (1 - m) if correct else m * 0.6
+    profile.mastery[topic] = round(m, 3)
+
+    if misconception_id and misconception_id in profile.misconceptions:
+        obs = profile.misconceptions[misconception_id]
+        obs.last_seen = now
+        if correct:
+            obs.resolved = True
+            obs.review_due = now + timedelta(days=7)  # spaced out — they got it
+        else:
+            obs.resolved = False
+            obs.review_due = now + timedelta(days=1)  # bring it back soon
+    store.save(profile)
+    return profile
+
+
+def due_for_review(profile: LearnerProfile, *, now: datetime | None = None) -> list[ObservedMisconception]:
+    """Unresolved misconceptions whose review date has arrived."""
+    at = now or datetime.now(timezone.utc)
+    return [
+        obs for obs in profile.misconceptions.values()
+        if not obs.resolved and obs.review_due is not None and obs.review_due <= at
+    ]
+
+
 class InMemoryLearnerStore:
     """Dev-only store (D-11). Non-persistent — lost on restart."""
 
@@ -86,6 +126,11 @@ class InMemoryLearnerStore:
         self, student_id: str, misconception_id: str, topic: str, *, review_in_days: int = 3
     ) -> LearnerProfile:
         return _record_misconception(self, student_id, misconception_id, topic, review_in_days)
+
+    def record_interaction(
+        self, student_id: str, topic: str, correct: bool, *, misconception_id: str | None = None
+    ) -> LearnerProfile:
+        return _record_interaction(self, student_id, topic, correct, misconception_id)
 
 
 class SqliteLearnerStore:
@@ -124,6 +169,11 @@ class SqliteLearnerStore:
         self, student_id: str, misconception_id: str, topic: str, *, review_in_days: int = 3
     ) -> LearnerProfile:
         return _record_misconception(self, student_id, misconception_id, topic, review_in_days)
+
+    def record_interaction(
+        self, student_id: str, topic: str, correct: bool, *, misconception_id: str | None = None
+    ) -> LearnerProfile:
+        return _record_interaction(self, student_id, topic, correct, misconception_id)
 
 
 _store: LearnerStore | None = None

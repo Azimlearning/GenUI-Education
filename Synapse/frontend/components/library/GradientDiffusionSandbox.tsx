@@ -7,7 +7,7 @@
 // is more water") fails visibly. Science is encoded here, not faked (constraint #6):
 // net water flux is always from lower solute → higher solute.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 
 import { PatternCard, type LibraryComponentProps } from "./shared";
@@ -15,7 +15,7 @@ import { PatternCard, type LibraryComponentProps } from "./shared";
 type Guess = "toward-higher-solute" | "toward-lower-solute" | "none";
 type Phase = "predict" | "running" | "explain";
 
-export default function GradientDiffusionSandbox({ props, meta }: LibraryComponentProps) {
+export default function GradientDiffusionSandbox({ props, meta, onInteraction }: LibraryComponentProps) {
   const left = clamp(Number(props.left_concentration ?? 20));
   const right = clamp(Number(props.right_concentration ?? 70));
   const cellMode = String(props.cell_mode ?? "beaker") === "plant-cell";
@@ -33,6 +33,12 @@ export default function GradientDiffusionSandbox({ props, meta }: LibraryCompone
   const flow = phase === "explain" ? (higher === "right" ? 1 : higher === "left" ? -1 : 0) : 0;
 
   const wasRight = guess === correctGuess;
+
+  // Report the outcome once, when the student reaches the explanation (P3 — closes the loop).
+  useEffect(() => {
+    if (phase === "explain") onInteraction?.({ correct: wasRight });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   return (
     <PatternCard title={cellMode ? "Osmosis in a plant cell" : "Osmosis sandbox"} meta={meta}>

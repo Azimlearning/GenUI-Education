@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
 
 import AgentPipeline from "@/components/AgentPipeline";
 import BlockRenderer from "@/components/library/BlockRenderer";
-import { ask } from "@/lib/client";
+import { ask, fetchProfile, postInteraction, type LearnerProfile } from "@/lib/client";
 import type { AgentStep, ComponentBlock } from "@/lib/types";
 
 const CHIPS: { label: string; q: string }[] = [
@@ -24,7 +24,23 @@ export default function Home() {
   const [block, setBlock] = useState<ComponentBlock | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<LearnerProfile | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const blockRef = useRef<ComponentBlock | null>(null);
+
+  function handleInteraction(ev: { correct: boolean }) {
+    const b = blockRef.current;
+    if (!b) return;
+    void postInteraction({
+      student_id: STUDENT_ID,
+      topic: b.meta.topic,
+      correct: ev.correct,
+      misconception_id: b.meta.misconception_id,
+      pattern: b.pattern,
+    }).then((p) => {
+      if (p) setProfile(p);
+    });
+  }
 
   function run(q: string) {
     const text = q.trim();
@@ -46,14 +62,19 @@ export default function Home() {
       {
         onEvent: (ev) => {
           if (ev.type === "agent_step") setSteps((prev) => [...prev, ev]);
-          else if (ev.type === "component_block") setBlock(ev.block);
-          else if (ev.type === "error") setError(ev.message);
+          else if (ev.type === "component_block") {
+            setBlock(ev.block);
+            blockRef.current = ev.block;
+          } else if (ev.type === "error") setError(ev.message);
         },
         onError: (err) => {
           setError(err.message);
           setBusy(false);
         },
-        onClose: () => setBusy(false),
+        onClose: () => {
+          setBusy(false);
+          void fetchProfile(STUDENT_ID).then((p) => p && setProfile(p));
+        },
       },
       controller.signal,
     );
@@ -125,8 +146,12 @@ export default function Home() {
 
         {block && (
           <div style={{ marginTop: 20 }}>
-            <BlockRenderer block={block} />
+            <BlockRenderer block={block} onInteraction={handleInteraction} />
           </div>
+        )}
+
+        {profile && Object.keys(profile.mastery).length > 0 && (
+          <ProgressPanel profile={profile} />
         )}
 
         <p style={footnote}>
@@ -153,6 +178,42 @@ function LogoMark() {
       <line x1="20" y1="26" x2="8" y2="30" stroke="#94A3B8" strokeWidth="1.5" />
       <line x1="10" y1="13" x2="30" y2="10" stroke="#CBD5E1" strokeWidth="1.2" />
     </svg>
+  );
+}
+
+function ProgressPanel({ profile }: { profile: LearnerProfile }) {
+  const topics = Object.entries(profile.mastery);
+  return (
+    <div style={{ marginTop: 20, background: "var(--white)", border: "1px solid var(--line)", borderRadius: 16, boxShadow: "var(--shadow)", padding: 20 }}>
+      <div style={{ fontSize: 15, fontWeight: 800, color: "var(--indigo)", marginBottom: 4 }}>Your progress</div>
+      <div style={{ fontSize: 12.5, color: "var(--slate)", marginBottom: 12 }}>
+        The tutor loop updates this from how you did. It informs what Synapse composes next time.
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {topics.map(([topic, m]) => (
+          <div key={topic} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ width: 150, fontSize: 12.5, color: "var(--ink)", textTransform: "capitalize" }}>{topic}</span>
+            <div style={{ flex: 1, height: 10, background: "#f1f5f9", borderRadius: 6, overflow: "hidden" }}>
+              <div style={{ width: `${Math.round(m * 100)}%`, height: "100%", background: "var(--teal)", transition: "width .3s" }} />
+            </div>
+            <span style={{ width: 40, textAlign: "right", fontSize: 12, color: "var(--slate)" }}>{Math.round(m * 100)}%</span>
+          </div>
+        ))}
+      </div>
+      {profile.misconceptions.length > 0 && (
+        <div style={{ marginTop: 12, fontSize: 12.5, color: "var(--slate)" }}>
+          Tracking:{" "}
+          {profile.misconceptions.map((mc) => (
+            <span key={mc.misconception_id} style={{ display: "inline-block", margin: "2px 4px 2px 0", padding: "3px 9px", borderRadius: 20, background: mc.resolved ? "var(--teal-soft)" : "var(--indigo-soft)", color: mc.resolved ? "var(--teal)" : "var(--indigo)" }}>
+              {mc.topic} {mc.resolved ? "✓ cleared" : "· in review"}
+            </span>
+          ))}
+          {profile.due_now.length > 0 && (
+            <div style={{ marginTop: 6, color: "var(--amber)" }}>Due for review now: {profile.due_now.join(", ")}</div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

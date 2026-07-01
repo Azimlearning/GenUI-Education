@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-07-01 — P3: the learner loop closes
+
+- **Interaction events flow back.** The three flagship components report how the learner did via a new `onInteraction` callback (threaded page → BlockRenderer → component), which POSTs to `POST /api/interaction` with the topic + misconception from the block meta.
+- **Mastery + spaced repetition (Tutor Loop).** `record_interaction` moves mastery toward 1 on a correct attempt and decays it on a wrong one; a correct attempt on a diagnosed misconception marks it resolved and pushes the next review out (7 days), a wrong one resurfaces it (1 day). `due_for_review()` surfaces what's overdue.
+- **The next composition is informed by history.** The Diagnostician reads the learner profile: a previously-cleared misconception flips the diagnosis to a mastery check (so we don't re-teach); an unresolved repeat adds a "resurfacing" step.
+- **Profile surface.** `GET /api/profile/{id}` returns mastery + misconceptions + due-now; the landing page renders a "Your progress" panel (mastery bars, tracked misconceptions with cleared/in-review chips).
+- **Verified live:** a correct osmosis interaction raised mastery to 0.34, marked the misconception resolved, pushed review to 7 days out; re-asking flipped the diagnosis to a mastery check. `pytest` 12/12 (+3 P3), `tsc` + `next build` clean.
+
 ## 2026-07-01 — P2: all 12 concepts render as real interactives, 3 flagships faithful
 
 - **Two more faithful flagships.** `force-motion-sim` (trolley obeys ΣF = ma with kinetic friction; live velocity–time graph derived from the sim; targets the newton-force-to-keep-moving misconception) and `electron-bonding-explorer` (contrasting cases: metal + non-metal transfers → ionic, non-metal + non-metal shares → covalent; classification encoded in the component). Both predict-observe-explain.

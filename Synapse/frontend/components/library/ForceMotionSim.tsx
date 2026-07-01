@@ -16,7 +16,7 @@ const G = 9.8; // m/s^2
 type Guess = "accelerate" | "constant" | "still";
 type Phase = "predict" | "running" | "explain";
 
-export default function ForceMotionSim({ props, meta }: LibraryComponentProps) {
+export default function ForceMotionSim({ props, meta, onInteraction }: LibraryComponentProps) {
   const mass = clampPos(Number(props.mass ?? 2), 0.1, 50); // kg
   const applied = clampPos(Number(props.applied_force ?? 12), 0, 500); // N
   const friction = clamp01(Number(props.friction ?? 0.2)); // coefficient
@@ -61,6 +61,12 @@ export default function ForceMotionSim({ props, meta }: LibraryComponentProps) {
   const trolleyX = Math.min(distance * 12, 240); // px, scaled for the track
 
   const wasRight = guess === outcome;
+
+  // Report the outcome once, when the student reaches the explanation (P3).
+  useEffect(() => {
+    if (phase === "explain") onInteraction?.({ correct: wasRight });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   return (
     <PatternCard title="Forces & motion (ticker-tape trolley)" meta={meta}>

@@ -8,9 +8,11 @@ Last updated: 2026-07-01
 
 ## TL;DR, where we are
 
-**P1 and P2 are green.** The pipeline is live end to end, and all 12 concepts now render as real
-interactives (3 flagships faithful: osmosis, forces-motion, bonding-electrons). Next up: P3
-(learner loop closes) and P4 (polish), then the hackAstone deliverables.
+**P1, P2, P3 are green.** The pipeline is live end to end, all 12 concepts render as real
+interactives (3 flagships faithful), and the learner loop closes: interactions update mastery
+and spaced repetition, and a cleared misconception changes what Synapse composes next. Next up:
+P4 (polish) and the hackAstone deliverables (teacher view, go-to-market, evaluation, video,
+description).
 
 Runs today with **no API key** (agents fall back to scripted behaviour). Add `ANTHROPIC_API_KEY`
 to `backend/.env` to switch the agents to live Claude.
@@ -41,10 +43,17 @@ to `backend/.env` to switch the agents to live Claude.
 - [x] The other 9 patterns built as lighter-but-correct interactives; quiz + digestive upgraded.
 - [x] Seam fully synced: all 14 patterns map to components in `lib/blocks.ts`.
 
+## Done (P3, learner loop closes)
+
+- [x] Components post interaction events; Tutor Loop updates mastery plus spaced repetition.
+- [x] Diagnostician reads history: a cleared misconception flips the next visit to a mastery check.
+- [x] `GET /api/profile/{id}` plus an on-screen "Your progress" panel.
+
 ## Next
 
-- [ ] P3, learner loop closes (interaction events update mastery plus spaced repetition).
-- [ ] P4, polish, latency, subject theming.
+- [ ] P4, polish, subject theming, "how Synapse is different" explainer.
+- [ ] hackAstone Part B (teacher view, grounded pedagogy with citations, go-to-market, evaluation).
+- [ ] hackAstone Part C (video script, project description, README live URL).
 - hackAstone Part B (teacher view, grounded pedagogy, go-to-market, evaluation plan).
 - hackAstone Part C (video script, project description, README live URL).
 

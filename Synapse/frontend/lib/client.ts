@@ -9,6 +9,44 @@ import type { SSEEvent } from "./types";
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
 
+// ── Learner profile (P3) ──────────────────────────────────────────────────
+export interface LearnerProfile {
+  student_id: string;
+  mastery: Record<string, number>;
+  misconceptions: { misconception_id: string; topic: string; resolved: boolean; review_due: string | null }[];
+  due_now: string[];
+}
+
+export interface Interaction {
+  student_id: string;
+  topic: string;
+  correct: boolean;
+  misconception_id: string | null;
+  pattern: string | null;
+}
+
+export async function postInteraction(ev: Interaction): Promise<LearnerProfile | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/interaction`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(ev),
+    });
+    return res.ok ? ((await res.json()) as LearnerProfile) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchProfile(studentId: string): Promise<LearnerProfile | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/profile/${encodeURIComponent(studentId)}`);
+    return res.ok ? ((await res.json()) as LearnerProfile) : null;
+  } catch {
+    return null;
+  }
+}
+
 export interface AskCallbacks {
   onEvent: (event: SSEEvent) => void;
   onError?: (err: Error) => void;

@@ -5,7 +5,13 @@
 import type { ComponentBlock } from "@/lib/types";
 import { resolvePattern } from "@/lib/blocks";
 
-export default function BlockRenderer({ block }: { block: ComponentBlock }) {
+export default function BlockRenderer({
+  block,
+  onInteraction,
+}: {
+  block: ComponentBlock;
+  onInteraction?: (ev: { correct: boolean }) => void;
+}) {
   const Component = resolvePattern(block.pattern);
 
   if (!Component) {
@@ -26,5 +32,5 @@ export default function BlockRenderer({ block }: { block: ComponentBlock }) {
     );
   }
 
-  return <Component props={block.props} meta={block.meta} />;
+  return <Component props={block.props} meta={block.meta} onInteraction={onInteraction} />;
 }

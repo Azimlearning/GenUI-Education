@@ -30,6 +30,7 @@ from app.models import (
     PipelineState,
 )
 from app.providers.metrics import METRICS
+from app.store import due_for_review, get_store
 
 router = APIRouter(prefix="/api", tags=["pipeline"])
 
@@ -40,6 +41,16 @@ STEP_DELAY_S = 0.6
 class AskRequest(BaseModel):
     question: str
     student_id: str | None = None
+
+
+class InteractionRequest(BaseModel):
+    """An interaction event fed back from a rendered component (P3)."""
+
+    student_id: str
+    topic: str
+    correct: bool
+    misconception_id: str | None = None
+    pattern: str | None = None
 
 
 def _sse(event: BaseModel) -> dict[str, str]:
@@ -79,3 +90,36 @@ async def ask(req: AskRequest) -> EventSourceResponse:
 async def metrics() -> dict:
     """Per-LLM-call observability for the dev panel (provider, tokens, cost, latency)."""
     return {"summary": METRICS.summary(), "recent": METRICS.recent(limit=25)}
+
+
+def _profile_payload(student_id: str) -> dict:
+    profile = get_store().get(student_id)
+    return {
+        "student_id": student_id,
+        "mastery": profile.mastery,
+        "misconceptions": [
+            {
+                "misconception_id": o.misconception_id,
+                "topic": o.topic,
+                "resolved": o.resolved,
+                "review_due": o.review_due.isoformat() if o.review_due else None,
+            }
+            for o in profile.misconceptions.values()
+        ],
+        "due_now": [o.misconception_id for o in due_for_review(profile)],
+    }
+
+
+@router.post("/interaction")
+async def interaction(req: InteractionRequest) -> dict:
+    """Close the loop (P3): a component reports how the learner did; update mastery + review."""
+    get_store().record_interaction(
+        req.student_id, req.topic, req.correct, misconception_id=req.misconception_id
+    )
+    return _profile_payload(req.student_id)
+
+
+@router.get("/profile/{student_id}")
+async def profile(student_id: str) -> dict:
+    """The learner model: mastery per topic + misconceptions + what's due for review."""
+    return _profile_payload(student_id)
