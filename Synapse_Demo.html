@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synapse — Interactive Science Learning</title>
+<style>
+  :root {
+    --indigo: #3730A3;
+    --indigo-2: #4F46E5;
+    --indigo-soft: #EEF0FB;
+    --teal: #0D9488;
+    --teal-soft: #E6F5F3;
+    --ink: #1E293B;
+    --slate: #64748B;
+    --line: #E2E8F0;
+    --bg: #F7F8FC;
+    --white: #FFFFFF;
+    --amber: #D97706;
+    --rose: #BE123C;
+    --shadow: 0 4px 20px rgba(30,41,59,0.08);
+    --shadow-lg: 0 12px 40px rgba(55,48,163,0.14);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .logo-mark {
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 34px; height: 34px; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--indigo); }
+  .brand span { color: var(--teal); }
+  .topbar .tag {
+    margin-left: auto;
+    font-size: 12px; color: var(--slate);
+    background: var(--indigo-soft);
+    padding: 5px 12px; border-radius: 20px; font-weight: 600;
+  }
+
+  /* ── Layout ── */
+  .wrap { max-width: 920px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  /* ── Hero / prompt ── */
+  .hero { text-align: center; margin-bottom: 30px; }
+  .hero h1 {
+    font-size: 30px; font-weight: 800; letter-spacing: -0.6px;
+    margin-bottom: 8px;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(100deg, var(--indigo-2), var(--teal));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { color: var(--slate); font-size: 15px; max-width: 520px; margin: 0 auto; }
+
+  .prompt-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 10px 10px 10px 18px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+    transition: box-shadow .2s, border-color .2s;
+  }
+  .prompt-card:focus-within { border-color: var(--indigo-2); box-shadow: var(--shadow-lg); }
+  .prompt-card input {
+    flex: 1; border: none; outline: none; font-size: 16px;
+    color: var(--ink); background: transparent; font-family: inherit;
+  }
+  .prompt-card input::placeholder { color: #94A3B8; }
+  .ask-btn {
+    background: var(--indigo); color: #fff; border: none;
+    padding: 12px 22px; border-radius: 12px; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: background .15s, transform .1s; font-family: inherit;
+    white-space: nowrap;
+  }
+  .ask-btn:hover { background: var(--indigo-2); }
+  .ask-btn:active { transform: scale(0.97); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chip {
+    background: var(--white); border: 1px solid var(--line);
+    color: var(--slate); font-size: 13px; padding: 7px 14px;
+    border-radius: 20px; cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .chip:hover { border-color: var(--indigo-2); color: var(--indigo); background: var(--indigo-soft); }
+  .chips-label { text-align: center; font-size: 12px; color: #94A3B8; margin: 18px 0 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ── Thinking indicator ── */
+  .thinking {
+    display: none;
+    margin-top: 26px; text-align: center;
+  }
+  .thinking.show { display: block; animation: fade .3s; }
+  .thinking .dots { display: inline-flex; gap: 6px; margin-bottom: 10px; }
+  .thinking .dots i {
+    width: 9px; height: 9px; border-radius: 50%; background: var(--indigo-2);
+    display: inline-block; animation: bounce 1.2s infinite ease-in-out;
+  }
+  .thinking .dots i:nth-child(2){ animation-delay:.15s; background: var(--indigo); }
+  .thinking .dots i:nth-child(3){ animation-delay:.3s; background: var(--teal); }
+  @keyframes bounce { 0%,80%,100%{ transform: scale(0.6); opacity:.5 } 40%{ transform: scale(1); opacity:1 } }
+  .thinking .label { font-size: 14px; color: var(--slate); }
+  .thinking .label b { color: var(--indigo); }
+
+  /* ── Response area ── */
+  .response { margin-top: 28px; }
+  .response:empty { display: none; }
+  .exp-card {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 18px; box-shadow: var(--shadow); overflow: hidden;
+    animation: rise .45s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes rise { from { opacity:0; transform: translateY(18px) } to { opacity:1; transform: translateY(0) } }
+  @keyframes fade { from {opacity:0} to {opacity:1} }
+
+  .exp-head {
+    padding: 16px 22px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 12px;
+    background: linear-gradient(120deg, var(--indigo-soft), #fff 70%);
+  }
+  .exp-type {
+    font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+    padding: 5px 11px; border-radius: 7px; color: #fff; flex-shrink: 0;
+  }
+  .t-sim { background: var(--teal); }
+  .t-quiz { background: var(--indigo); }
+  .t-diagram { background: var(--amber); }
+  .t-worked { background: var(--indigo-2); }
+  .exp-head h2 { font-size: 17px; font-weight: 700; }
+  .exp-head .sub { font-size: 13px; color: var(--slate); margin-top: 1px; }
+  .exp-body { padding: 24px 22px; }
+
+  /* ── Osmosis sim ── */
+  .sim-stage {
+    background: #0F172A; border-radius: 14px; padding: 18px;
+    position: relative; overflow: hidden;
+  }
+  .beaker {
+    position: relative; height: 230px; border-radius: 10px;
+    background: #1E293B; display: flex; overflow: hidden;
+    border: 2px solid #334155;
+  }
+  .compartment { flex: 1; position: relative; overflow: hidden; transition: background .4s; }
+  .membrane {
+    width: 6px; background: repeating-linear-gradient(0deg, #94A3B8 0 6px, #475569 6px 12px);
+    position: relative; z-index: 5;
+  }
+  .water { position: absolute; left: 0; right: 0; bottom: 0; transition: height 1.6s cubic-bezier(.4,0,.2,1); }
+  .water.left { background: linear-gradient(180deg, rgba(56,189,248,.55), rgba(14,165,233,.75)); }
+  .water.right { background: linear-gradient(180deg, rgba(45,212,191,.5), rgba(13,148,136,.72)); }
+  .solute { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #FBBF24; box-shadow: 0 0 5px rgba(251,191,36,.7); }
+  .comp-label { position: absolute; top: 8px; left: 0; right: 0; text-align: center; color: #CBD5E1; font-size: 11px; font-weight: 600; z-index: 6; }
+  .comp-conc { position: absolute; bottom: 8px; left:0; right:0; text-align:center; color:#E2E8F0; font-size: 12px; font-weight: 700; z-index:6; }
+
+  .sim-controls { margin-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .slider-row label { font-size: 13px; color: var(--ink); font-weight: 600; display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .slider-row input[type=range] { width: 100%; accent-color: var(--teal); }
+
+  .predict-box {
+    background: var(--indigo-soft); border: 1px dashed var(--indigo-2);
+    border-radius: 12px; padding: 14px 16px;
+  }
+  .predict-box p { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .predict-opts { display: flex; gap: 10px; flex-wrap: wrap; }
+  .predict-opts button {
+    flex: 1; min-width: 130px; padding: 10px; border-radius: 9px; border: 1.5px solid var(--line);
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink);
+    transition: all .15s; font-family: inherit;
+  }
+  .predict-opts button:hover { border-color: var(--indigo-2); }
+  .predict-opts button.sel { border-color: var(--indigo-2); background: var(--indigo); color: #fff; }
+
+  .run-btn {
+    margin-top: 4px; width: 100%; padding: 12px; border-radius: 10px; border: none;
+    background: var(--teal); color: #fff; font-weight: 700; font-size: 14px; cursor: pointer;
+    transition: background .15s, opacity .15s; font-family: inherit;
+  }
+  .run-btn:hover { background: #0B7C72; }
+  .run-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .verdict { margin-top: 14px; border-radius: 12px; padding: 14px 16px; font-size: 14px; display: none; }
+  .verdict.show { display: block; animation: fade .4s; }
+  .verdict.correct { background: var(--teal-soft); border: 1px solid var(--teal); }
+  .verdict.wrong { background: #FFF1F2; border: 1px solid #FECDD3; }
+  .verdict b { display: block; margin-bottom: 4px; }
+  .verdict.correct b { color: var(--teal); }
+  .verdict.wrong b { color: var(--rose); }
+
+  /* ── Quiz ── */
+  .quiz-q { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    padding: 13px 16px; border: 1.5px solid var(--line); border-radius: 11px;
+    cursor: pointer; font-size: 14px; transition: all .15s; background: #fff;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .quiz-opt:hover { border-color: var(--indigo-2); background: var(--indigo-soft); }
+  .quiz-opt .key { width: 26px; height: 26px; border-radius: 7px; background: var(--indigo-soft); color: var(--indigo); font-weight: 700; display: grid; place-items: center; font-size: 13px; flex-shrink: 0; }
+  .quiz-opt.correct { border-color: var(--teal); background: var(--teal-soft); }
+  .quiz-opt.correct .key { background: var(--teal); color: #fff; }
+  .quiz-opt.wrong { border-color: var(--rose); background: #FFF1F2; }
+  .quiz-opt.wrong .key { background: var(--rose); color: #fff; }
+  .quiz-feedback { margin-top: 14px; font-size: 14px; color: var(--slate); display: none; }
+  .quiz-feedback.show { display: block; animation: fade .3s; }
+
+  /* ── Diagram ── */
+  .diagram-wrap { text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .dgm-hint { font-size: 13px; color: var(--slate); margin-top: 14px; }
+  .dgm-label-btn {
+    position: absolute; background: #fff; border: 1.5px solid var(--indigo-2);
+    color: var(--indigo); font-size: 11px; font-weight: 600; padding: 3px 8px;
+    border-radius: 14px; cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .dgm-label-btn:hover { background: var(--indigo); color: #fff; }
+  .dgm-label-btn.revealed { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+  /* ── Worked example ── */
+  .step { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); opacity: .35; transition: opacity .4s; }
+  .step.active, .step.done { opacity: 1; }
+  .step:last-child { border-bottom: none; }
+  .step .num { width: 30px; height: 30px; border-radius: 50%; background: var(--indigo-soft); color: var(--indigo); font-weight: 700; display: grid; place-items: center; flex-shrink: 0; font-size: 14px; transition: all .3s; }
+  .step.done .num { background: var(--teal); color: #fff; }
+  .step.active .num { background: var(--indigo); color: #fff; }
+  .step .content h4 { font-size: 14px; margin-bottom: 3px; }
+  .step .content p { font-size: 13.5px; color: var(--slate); }
+  .step .content code { background: var(--indigo-soft); padding: 2px 7px; border-radius: 5px; font-size: 13px; color: var(--indigo); font-weight: 600; }
+  .step-btn {
+    margin-top: 16px; padding: 11px 20px; border-radius: 10px; border: none;
+    background: var(--indigo); color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .step-btn:hover { background: var(--indigo-2); }
+  .step-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .footnote {
+    margin-top: 30px; text-align: center; font-size: 12px; color: #94A3B8;
+    max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.6;
+  }
+
+  @media (max-width: 560px) {
+    .ask-btn { padding: 12px 16px; }
+    .hero h1 { font-size: 24px; }
+    .predict-opts button { min-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo-mark">
+    <svg viewBox="0 0 40 40" fill="none">
+      <circle cx="10" cy="13" r="4" fill="#3730A3"/>
+      <circle cx="30" cy="10" r="4" fill="#4F46E5"/>
+      <circle cx="20" cy="26" r="4.5" fill="#0D9488"/>
+      <circle cx="32" cy="30" r="3.5" fill="#0D9488"/>
+      <circle cx="8" cy="30" r="3.5" fill="#4F46E5"/>
+      <line x1="10" y1="13" x2="20" y2="26" stroke="#94A3B8" stroke-width="1.5"/>
+      <line x1="30" y1="10" x2="20" y2="26" stroke="#94A3B8" stroke-width="1.5"/>
+      <line x1="20" y1="26" x2="32" y2="30" stroke="#94A3B8" stroke-width="1.5"/>
+      <line x1="20" y1="26" x2="8" y2="30" stroke="#94A3B8" stroke-width="1.5"/>
+      <line x1="10" y1="13" x2="30" y2="10" stroke="#CBD5E1" stroke-width="1.2"/>
+    </svg>
+  </div>
+  <div class="brand">Synap<span>se</span></div>
+  <div class="tag">KSSM · Form 4–5 Science</div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Ask anything in <span class="grad">Physics, Biology, or Chemistry</span></h1>
+    <p>Type a question in your own words. Synapse builds you the right interactive way to learn it — not just a wall of text.</p>
+  </div>
+
+  <div class="prompt-card">
+    <input id="qinput" type="text" placeholder="e.g. explain osmosis to me" autocomplete="off">
+    <button class="ask-btn" id="askBtn">Ask Synapse</button>
+  </div>
+
+  <div class="chips-label">Try one of these</div>
+  <div class="chips" id="chips">
+    <button class="chip" data-q="osmosis">"osmosis is when water moves to where there's more water"</button>
+    <button class="chip" data-q="bonding">"I don't understand ionic vs covalent bonding"</button>
+    <button class="chip" data-q="cell">"what are the parts of an animal cell?"</button>
+    <button class="chip" data-q="equation">"how do I balance this equation? H2 + O2 → H2O"</button>
+  </div>
+
+  <div class="thinking" id="thinking">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <div class="label" id="thinkingLabel">Understanding your question…</div>
+  </div>
+
+  <div class="response" id="response"></div>
+
+  <div class="footnote">
+    Demo build. Synapse interprets the question, decides the best way to teach it, and assembles a matching interactive experience — here showing four response types across the three subjects. In the full product these are driven live by the agent pipeline and the KSSM-grounded component library.
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// Demo routing: maps a question to the chosen experience.
+// In the real product this is the agent pipeline's job.
+// ──────────────────────────────────────────────
+const SCENARIOS = {
+  osmosis: {
+    type: "sim", typeClass: "t-sim", typeLabel: "Interactive Simulation",
+    title: "Osmosis: which way does water move?",
+    sub: "Biology · Form 4 · Movement of substances across the plasma membrane",
+    thinkingSteps: [
+      "Understanding your question…",
+      "Detected topic: <b>osmosis</b> (Biology)",
+      "Spotted a common misconception — building a predict-and-observe sim…"
+    ],
+    render: renderOsmosis
+  },
+  bonding: {
+    type: "worked", typeClass: "t-worked", typeLabel: "Guided Worked Example",
+    title: "Ionic vs covalent: what decides the bond?",
+    sub: "Chemistry · Form 4 · Chemical bonding",
+    thinkingSteps: [
+      "Understanding your question…",
+      "Detected topic: <b>chemical bonding</b> (Chemistry)",
+      "This is a contrast between two ideas — building a side-by-side walkthrough…"
+    ],
+    render: renderBonding
+  },
+  cell: {
+    type: "diagram", typeClass: "t-diagram", typeLabel: "Labelled Diagram",
+    title: "Parts of an animal cell",
+    sub: "Biology · Form 4 · Cell structure and organisation",
+    thinkingSteps: [
+      "Understanding your question…",
+      "Detected topic: <b>cell structure</b> (Biology)",
+      "This is a structure-and-label task — building an interactive diagram…"
+    ],
+    render: renderCell
+  },
+  equation: {
+    type: "quiz", typeClass: "t-quiz", typeLabel: "Quick Check",
+    title: "Balancing H₂ + O₂ → H₂O",
+    sub: "Chemistry · Form 4 · Chemical equations",
+    thinkingSteps: [
+      "Understanding your question…",
+      "Detected topic: <b>balancing equations</b> (Chemistry)",
+      "You're mid-problem — building a quick check to test the right coefficients…"
+    ],
+    render: renderEquationQuiz
+  }
+};
+
+function classify(text) {
+  const t = text.toLowerCase();
+  if (/osmos|diffus|water mov|tonic|turgid|plasmoly/.test(t)) return "osmosis";
+  if (/ionic|covalent|bond/.test(t)) return "bonding";
+  if (/cell|organelle|nucleus|mitochond|membrane part/.test(t)) return "cell";
+  if (/balanc|equation|h2|coefficient|stoichio/.test(t)) return "equation";
+  return "osmosis"; // default to the flagship
+}
+
+const qinput = document.getElementById("qinput");
+const askBtn = document.getElementById("askBtn");
+const thinking = document.getElementById("thinking");
+const thinkingLabel = document.getElementById("thinkingLabel");
+const response = document.getElementById("response");
+
+document.getElementById("chips").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  const map = {
+    osmosis: "osmosis is when water moves to where there's more water",
+    bonding: "I don't understand ionic vs covalent bonding",
+    cell: "what are the parts of an animal cell?",
+    equation: "how do I balance this equation? H2 + O2 → H2O"
+  };
+  qinput.value = map[chip.dataset.q];
+  ask();
+});
+
+askBtn.addEventListener("click", ask);
+qinput.addEventListener("keydown", e => { if (e.key === "Enter") ask(); });
+
+function ask() {
+  const text = qinput.value.trim();
+  if (!text) { qinput.focus(); return; }
+  response.innerHTML = "";
+  const key = classify(text);
+  const sc = SCENARIOS[key];
+
+  // show thinking sequence
+  thinking.classList.add("show");
+  askBtn.disabled = true;
+  let i = 0;
+  thinkingLabel.innerHTML = sc.thinkingSteps[0];
+  const iv = setInterval(() => {
+    i++;
+    if (i < sc.thinkingSteps.length) {
+      thinkingLabel.innerHTML = sc.thinkingSteps[i];
+    } else {
+      clearInterval(iv);
+      thinking.classList.remove("show");
+      askBtn.disabled = false;
+      showExperience(sc);
+    }
+  }, 850);
+}
+
+function showExperience(sc) {
+  const card = document.createElement("div");
+  card.className = "exp-card";
+  card.innerHTML = `
+    <div class="exp-head">
+      <span class="exp-type ${sc.typeClass}">${sc.typeLabel}</span>
+      <div>
+        <h2>${sc.title}</h2>
+        <div class="sub">${sc.sub}</div>
+      </div>
+    </div>
+    <div class="exp-body" id="expBody"></div>`;
+  response.appendChild(card);
+  sc.render(card.querySelector("#expBody"));
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// ──────────────────────────────────────────────
+// 1) OSMOSIS SIMULATION (the flagship)
+// ──────────────────────────────────────────────
+function renderOsmosis(el) {
+  el.innerHTML = `
+    <div class="sim-stage">
+      <div class="beaker">
+        <div class="compartment" id="leftComp">
+          <div class="comp-label">Left side</div>
+          <div class="comp-conc" id="leftConc">Low solute</div>
+          <div class="water left" id="leftWater" style="height:55%"></div>
+        </div>
+        <div class="membrane" title="Selectively permeable membrane"></div>
+        <div class="compartment" id="rightComp">
+          <div class="comp-label">Right side</div>
+          <div class="comp-conc" id="rightConc">High solute</div>
+          <div class="water right" id="rightWater" style="height:55%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sim-controls">
+      <div class="slider-row">
+        <label>Solute concentration — Right side <span id="concVal" style="color:var(--teal)">High</span></label>
+        <input type="range" min="1" max="5" value="4" id="concSlider">
+      </div>
+      <div class="predict-box">
+        <p>Before you run it — which way will the water move?</p>
+        <div class="predict-opts">
+          <button data-p="toLow">→ Toward the side with less solute</button>
+          <button data-p="toHigh">→ Toward the side with more solute</button>
+        </div>
+      </div>
+      <button class="run-btn" id="runSim" disabled>Run the experiment</button>
+      <div class="verdict" id="verdict"></div>
+    </div>`;
+
+  let prediction = null;
+  let solute = 4;
+  const leftWater = el.querySelector("#leftWater");
+  const rightWater = el.querySelector("#rightWater");
+  const verdict = el.querySelector("#verdict");
+  const runBtn = el.querySelector("#runSim");
+
+  // seed solute dots on right side
+  const rightComp = el.querySelector("#rightComp");
+  function drawDots(n) {
+    rightComp.querySelectorAll(".solute").forEach(d => d.remove());
+    for (let k = 0; k < n * 4; k++) {
+      const d = document.createElement("div");
+      d.className = "solute";
+      d.style.left = (10 + Math.random() * 80) + "%";
+      d.style.bottom = (5 + Math.random() * 45) + "%";
+      rightComp.appendChild(d);
+    }
+  }
+  drawDots(solute);
+
+  el.querySelector("#concSlider").addEventListener("input", e => {
+    solute = +e.target.value;
+    const labels = ["Very low","Low","Equal","High","Very high"];
+    el.querySelector("#concVal").textContent = labels[solute-1];
+    el.querySelector("#rightConc").textContent = solute >= 3 ? "High solute" : "Low solute";
+    drawDots(solute);
+  });
+
+  el.querySelectorAll(".predict-opts button").forEach(b => {
+    b.addEventListener("click", () => {
+      el.querySelectorAll(".predict-opts button").forEach(x => x.classList.remove("sel"));
+      b.classList.add("sel");
+      prediction = b.dataset.p;
+      runBtn.disabled = false;
+    });
+  });
+
+  runBtn.addEventListener("click", () => {
+    // water moves toward higher solute (right, when solute>3)
+    const movesToHigh = solute > 3;
+    if (movesToHigh) { leftWater.style.height = "30%"; rightWater.style.height = "78%"; }
+    else if (solute < 3) { leftWater.style.height = "78%"; rightWater.style.height = "30%"; }
+    else { leftWater.style.height = "55%"; rightWater.style.height = "55%"; }
+
+    const correctAnswer = movesToHigh ? "toHigh" : (solute < 3 ? "toLow" : "equal");
+    const gotIt = prediction === correctAnswer;
+
+    verdict.className = "verdict show " + (gotIt ? "correct" : "wrong");
+    if (gotIt) {
+      verdict.innerHTML = "<b>Correct! ✓</b>Water moved toward the side with <b>more solute</b> — that's the side with <i>less free water</i>. Water always moves down its own concentration gradient, from high water potential to low.";
+    } else {
+      verdict.innerHTML = "<b>Not quite — look again 👀</b>The water moved the <i>opposite</i> way to a common guess. Water doesn't chase \"more water\" — it moves <b>toward higher solute</b> (lower water potential). That's the heart of osmosis, and it's the thing most students get backwards.";
+    }
+    verdict.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+}
+
+// ──────────────────────────────────────────────
+// 2) IONIC VS COVALENT — WORKED EXAMPLE
+// ──────────────────────────────────────────────
+function renderBonding(el) {
+  el.innerHTML = `
+    <div id="steps">
+      <div class="step active" data-s="0">
+        <div class="num">1</div>
+        <div class="content">
+          <h4>Start with the question: who gives, who shares?</h4>
+          <p>A bond forms so atoms can fill their outer shell. The <i>only</i> question is whether electrons are <b>transferred</b> or <b>shared</b>.</p>
+        </div>
+      </div>
+      <div class="step" data-s="1">
+        <div class="num">2</div>
+        <div class="content">
+          <h4>Metal + non-metal → ionic (transfer)</h4>
+          <p>Example: <code>Na + Cl</code>. Sodium gives away 1 electron, chlorine takes it. They become <code>Na⁺</code> and <code>Cl⁻</code> — opposite charges that attract. That attraction <i>is</i> the ionic bond.</p>
+        </div>
+      </div>
+      <div class="step" data-s="2">
+        <div class="num">3</div>
+        <div class="content">
+          <h4>Non-metal + non-metal → covalent (share)</h4>
+          <p>Example: <code>H₂O</code>. No atom is willing to give up electrons, so they <b>share</b> pairs instead. Each shared pair is one covalent bond.</p>
+        </div>
+      </div>
+      <div class="step" data-s="3">
+        <div class="num">4</div>
+        <div class="content">
+          <h4>The shortcut you can always use</h4>
+          <p>Look at the elements: a <b>metal with a non-metal</b> is almost always ionic; <b>two non-metals</b> is almost always covalent. That single check answers most SPM questions.</p>
+        </div>
+      </div>
+    </div>
+    <button class="step-btn" id="nextStep">Next step</button>`;
+
+  const steps = [...el.querySelectorAll(".step")];
+  const btn = el.querySelector("#nextStep");
+  let cur = 0;
+  btn.addEventListener("click", () => {
+    steps[cur].classList.remove("active");
+    steps[cur].classList.add("done");
+    cur++;
+    if (cur < steps.length) {
+      steps[cur].classList.add("active");
+      steps[cur].scrollIntoView({ behavior: "smooth", block: "center" });
+      if (cur === steps.length - 1) btn.textContent = "Finish";
+    } else {
+      btn.disabled = true;
+      btn.textContent = "Done ✓";
+    }
+  });
+}
+
+// ──────────────────────────────────────────────
+// 3) ANIMAL CELL — LABELLED DIAGRAM
+// ──────────────────────────────────────────────
+function renderCell(el) {
+  el.innerHTML = `
+    <div class="diagram-wrap" style="position:relative; display:inline-block; width:100%;">
+      <svg viewBox="0 0 460 300" id="cellSvg">
+        <ellipse cx="230" cy="150" rx="200" ry="125" fill="#FEF3C7" stroke="#D97706" stroke-width="3"/>
+        <ellipse cx="180" cy="140" rx="55" ry="48" fill="#C4B5FD" stroke="#7C3AED" stroke-width="2.5"/>
+        <circle cx="180" cy="140" r="20" fill="#7C3AED"/>
+        <ellipse cx="300" cy="110" rx="38" ry="20" fill="#FCA5A5" stroke="#DC2626" stroke-width="2" transform="rotate(-20 300 110)"/>
+        <ellipse cx="310" cy="200" rx="34" ry="18" fill="#FCA5A5" stroke="#DC2626" stroke-width="2" transform="rotate(25 310 200)"/>
+        <circle cx="120" cy="210" r="9" fill="#34D399" stroke="#059669" stroke-width="2"/>
+        <circle cx="250" cy="235" r="9" fill="#34D399" stroke="#059669" stroke-width="2"/>
+        <path d="M340 150 q20 -15 35 0 q-15 20 -35 0" fill="#93C5FD" stroke="#2563EB" stroke-width="2"/>
+      </svg>
+      <button class="dgm-label-btn" style="top:42%; left:32%" data-name="Nucleus">?</button>
+      <button class="dgm-label-btn" style="top:28%; left:62%" data-name="Mitochondrion">?</button>
+      <button class="dgm-label-btn" style="top:5%; left:42%" data-name="Cell membrane">?</button>
+      <button class="dgm-label-btn" style="top:70%; left:23%" data-name="Ribosome">?</button>
+      <button class="dgm-label-btn" style="top:50%; left:76%" data-name="Vacuole">?</button>
+    </div>
+    <p class="dgm-hint">Tap each marker to reveal the organelle. <span id="revealCount">0</span>/5 found.</p>`;
+
+  let found = 0;
+  el.querySelectorAll(".dgm-label-btn").forEach(b => {
+    b.addEventListener("click", () => {
+      if (b.classList.contains("revealed")) return;
+      b.classList.add("revealed");
+      b.textContent = b.dataset.name;
+      found++;
+      el.querySelector("#revealCount").textContent = found;
+    });
+  });
+}
+
+// ──────────────────────────────────────────────
+// 4) BALANCING EQUATION — QUICK CHECK QUIZ
+// ──────────────────────────────────────────────
+function renderEquationQuiz(el) {
+  el.innerHTML = `
+    <p class="quiz-q">Which set of coefficients correctly balances<br><code style="font-size:15px">__ H₂ + __ O₂ → __ H₂O</code> ?</p>
+    <div class="quiz-opts" id="quizOpts">
+      <div class="quiz-opt" data-correct="false"><span class="key">A</span> 1, 1, 1</div>
+      <div class="quiz-opt" data-correct="true"><span class="key">B</span> 2, 1, 2</div>
+      <div class="quiz-opt" data-correct="false"><span class="key">C</span> 1, 2, 2</div>
+      <div class="quiz-opt" data-correct="false"><span class="key">D</span> 2, 2, 1</div>
+    </div>
+    <div class="quiz-feedback" id="quizFb"></div>`;
+
+  const fb = el.querySelector("#quizFb");
+  let answered = false;
+  el.querySelectorAll(".quiz-opt").forEach(opt => {
+    opt.addEventListener("click", () => {
+      if (answered) return;
+      answered = true;
+      const correct = opt.dataset.correct === "true";
+      if (correct) {
+        opt.classList.add("correct");
+        fb.innerHTML = "✓ <b style='color:var(--teal)'>Right!</b> With 2 H₂ you have 4 H atoms, and 2 H₂O also has 4 H. One O₂ gives 2 O atoms, matching the 2 O in 2 H₂O. Both sides balance.";
+      } else {
+        opt.classList.add("wrong");
+        el.querySelector('[data-correct="true"]').classList.add("correct");
+        fb.innerHTML = "Not balanced. Count the atoms on each side — the correct answer is <b>B (2, 1, 2)</b>: 4 H and 2 O on both sides. Your pick left one element uneven.";
+      }
+      fb.classList.add("show");
+    });
+  });
+}
+</script>
+</body>
+</html>
