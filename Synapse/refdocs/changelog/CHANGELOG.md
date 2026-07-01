@@ -5,6 +5,15 @@
 
 ---
 
+## 2026-07-01 — P4 polish + hackAstone deliverables (teacher view, grounded pedagogy, docs)
+
+- **P4 polish.** Per-subject accent theming (Bio green, Chem sand, Physics blue) keyed off the composed block's subject (D-15), applied as a subtle header tint in `PatternCard`. Added the "How Synapse is different" explainer to the landing page (Innovation dimension). Refreshed the footnote/chips.
+- **Teacher view (commercial wedge).** New `/teacher` Next.js page + `GET /api/teacher` showing every learner's mastery, misconceptions, and what's due for review. Added `student_ids()` to the store interface (both impls).
+- **Grounded pedagogy (Educational Significance).** Expanded the misconception KB with real sourced citations (Odom & Barrow, Taber, Clement + Halloun-Hestenes) and two new entries (photosynthesis-food-from-soil with Driver; current-used-up with Shipstone). Added `electricity` alias to the circuit pattern so the new entry routes.
+- **Deploy config (TRL), not deployed.** Backend `Dockerfile` + `.dockerignore` (uv, Python 3.13, SQLite store), frontend `vercel.json`. Host selection parked for the owner (decisions.md P-a).
+- **Submission deliverables written:** `refdocs/GO-TO-MARKET.md`, `refdocs/EVALUATION-PLAN.md`, `refdocs/VIDEO-SCRIPT.md` (≤8-min shot-by-shot, osmosis "aha" marked as the hook), `refdocs/PROJECT-DESCRIPTION.md` (explicitly answers all four judging dimensions + Responsible AI). Updated `README.md` (30-second what-it-is, live-URL placeholder, teacher view, run instructions).
+- **Verified:** `pytest` 12/12, `tsc` clean, `next build` clean (5 routes incl. `/teacher`), flagship + new-misconception routes confirmed.
+
 ## 2026-07-01 — P3: the learner loop closes
 
 - **Interaction events flow back.** The three flagship components report how the learner did via a new `onInteraction` callback (threaded page → BlockRenderer → component), which POSTs to `POST /api/interaction` with the topic + misconception from the block meta.

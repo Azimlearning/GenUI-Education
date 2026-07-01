@@ -123,3 +123,10 @@ async def interaction(req: InteractionRequest) -> dict:
 async def profile(student_id: str) -> dict:
     """The learner model: mastery per topic + misconceptions + what's due for review."""
     return _profile_payload(student_id)
+
+
+@router.get("/teacher")
+async def teacher() -> dict:
+    """Teacher dashboard feed (B2B2C wedge): every learner's mastery + misconceptions + reviews."""
+    students = [_profile_payload(sid) for sid in get_store().student_ids()]
+    return {"students": students}

@@ -43,6 +43,7 @@ class LearnerProfile(BaseModel):
 class LearnerStore(Protocol):
     def get(self, student_id: str) -> LearnerProfile: ...
     def save(self, profile: LearnerProfile) -> None: ...
+    def student_ids(self) -> list[str]: ...
     def record_misconception(
         self, student_id: str, misconception_id: str, topic: str, *, review_in_days: int = 3
     ) -> LearnerProfile: ...
@@ -122,6 +123,9 @@ class InMemoryLearnerStore:
     def save(self, profile: LearnerProfile) -> None:
         self._data[profile.student_id] = profile
 
+    def student_ids(self) -> list[str]:
+        return list(self._data.keys())
+
     def record_misconception(
         self, student_id: str, misconception_id: str, topic: str, *, review_in_days: int = 3
     ) -> LearnerProfile:
@@ -164,6 +168,11 @@ class SqliteLearnerStore:
                 (profile.student_id, blob),
             )
             self._conn.commit()
+
+    def student_ids(self) -> list[str]:
+        with self._lock:
+            rows = self._conn.execute("SELECT student_id FROM learners").fetchall()
+        return [r[0] for r in rows]
 
     def record_misconception(
         self, student_id: str, misconception_id: str, topic: str, *, review_in_days: int = 3

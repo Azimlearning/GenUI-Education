@@ -8,11 +8,12 @@ Last updated: 2026-07-01
 
 ## TL;DR, where we are
 
-**P1, P2, P3 are green.** The pipeline is live end to end, all 12 concepts render as real
-interactives (3 flagships faithful), and the learner loop closes: interactions update mastery
-and spaced repetition, and a cleared misconception changes what Synapse composes next. Next up:
-P4 (polish) and the hackAstone deliverables (teacher view, go-to-market, evaluation, video,
-description).
+**P1 through P4 are green, and the hackAstone deliverables are largely done.** The pipeline is
+live end to end, all 12 concepts render as real interactives (3 flagships faithful), the learner
+loop closes, there is a teacher dashboard, the misconception KB has real citations, deploy config
+is built (not deployed), and the written submission docs are drafted (go-to-market, evaluation,
+video script, project description, README). What's left is mostly on you: add an API key, pick a
+deploy host, record the video, and have a subject teacher pressure-test the sims.
 
 Runs today with **no API key** (agents fall back to scripted behaviour). Add `ANTHROPIC_API_KEY`
 to `backend/.env` to switch the agents to live Claude.
@@ -49,11 +50,26 @@ to `backend/.env` to switch the agents to live Claude.
 - [x] Diagnostician reads history: a cleared misconception flips the next visit to a mastery check.
 - [x] `GET /api/profile/{id}` plus an on-screen "Your progress" panel.
 
-## Next
+## Done (P4 + hackAstone deliverables)
 
-- [ ] P4, polish, subject theming, "how Synapse is different" explainer.
-- [ ] hackAstone Part B (teacher view, grounded pedagogy with citations, go-to-market, evaluation).
-- [ ] hackAstone Part C (video script, project description, README live URL).
+- [x] Subject accent theming; "How Synapse is different" explainer.
+- [x] Teacher dashboard (`/teacher` + `GET /api/teacher`).
+- [x] Misconception KB expanded with real sourced citations (+2 new entries).
+- [x] Deploy config built (backend Dockerfile, frontend vercel.json), not deployed.
+- [x] Written deliverables: GO-TO-MARKET, EVALUATION-PLAN, VIDEO-SCRIPT, PROJECT-DESCRIPTION; README refreshed.
+
+## Left for you (not code)
+
+- [ ] Add `ANTHROPIC_API_KEY` to `backend/.env` for a live demo and the video.
+- [ ] Pick a backend deploy host (Render/Railway/Fly/Vercel functions); frontend to Vercel.
+- [ ] Record the 8-minute video (script in `refdocs/VIDEO-SCRIPT.md`).
+- [ ] Have a bio/physics/chem teacher pressure-test each flagship sim's science.
+
+## Possible next code work (optional)
+
+- [ ] Bahasa Malaysia interface toggle for the flagship flows.
+- [ ] Accessibility pass (aria labels, focus states) and an offline-capable build.
+- [ ] Firebase learner store for a hosted multi-device demo (D-11).
 - hackAstone Part B (teacher view, grounded pedagogy, go-to-market, evaluation plan).
 - hackAstone Part C (video script, project description, README live URL).
 

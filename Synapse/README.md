@@ -42,9 +42,23 @@ Full detail: [`refdocs/synapse-prd.md`](refdocs/synapse-prd.md). Current build s
 
 ---
 
+## 30-second what-it-is
+
+Type a real SPM misconception (the demo suggests a few). Four agents diagnose you and reason on
+screen, then compose a science-faithful interactive: you predict, you run it, the wrong idea fails
+visibly, and the tutor loop logs it and schedules a review. It runs with no API key on scripted
+logic, and on live Claude when you set one.
+
+**Live demo:** to be added once deployed (see `decisions.md`). **Teacher dashboard:** `/teacher`.
+
 ## Status
 
-**P0 — Foundation skeleton (scaffolded 2026-07-01).** Both runtimes are scaffolded and internally consistent; the LangGraph pipeline runs with **scripted stub nodes** and streams the visible reasoning + one placeholder component. Not yet dependency-installed or booted; no LLM wired yet. The next phase (P1) makes the osmosis slice genuinely live. See [`refdocs/STATUS.md`](refdocs/STATUS.md).
+**P1 through P4 complete, hackAstone deliverables in progress (2026-07-01).** The pipeline is live
+end to end (LLM-driven agents with a scripted fallback), all 12 concepts render as real
+interactives with three fully faithful flagships (osmosis, forces-motion, bonding-electrons), the
+learner loop closes (mastery + spaced repetition, history-informed), and a teacher dashboard is
+live. 12 backend tests pass; frontend typecheck and build are clean. See
+[`refdocs/STATUS.md`](refdocs/STATUS.md).
 
 ---
 
@@ -53,10 +67,10 @@ Full detail: [`refdocs/synapse-prd.md`](refdocs/synapse-prd.md). Current build s
 ### Backend
 ```bash
 cd backend
-uv sync                       # Python 3.13 (or: pip install -e .)
-cp .env.example .env          # provider keys optional until P1
+uv sync                       # provisions Python 3.13 automatically
+cp .env.example .env          # optional: set ANTHROPIC_API_KEY to go live
 uv run uvicorn app.main:app --reload --port 8000
-# health: http://localhost:8000/health
+# health: http://localhost:8000/health   tests: uv run pytest
 ```
 
 ### Frontend
@@ -64,10 +78,12 @@ uv run uvicorn app.main:app --reload --port 8000
 cd frontend
 bun install
 cp .env.local.example .env.local   # NEXT_PUBLIC_API_BASE=http://localhost:8000
-bun dev                            # http://localhost:3000
+bun dev                            # http://localhost:3000  (teacher view: /teacher)
 ```
 
-Ask a question (or click a scenario chip) → watch the pipeline reason → a component renders from the library.
+Ask a question (or click a scenario chip), watch the pipeline reason, then a faithful interactive
+renders from the library. With no key the agents fall back to scripted logic, so the demo always
+runs; set `ANTHROPIC_API_KEY` in `backend/.env` to switch to live Claude.
 
 ---
 

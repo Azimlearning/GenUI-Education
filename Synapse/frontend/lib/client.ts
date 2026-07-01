@@ -47,6 +47,17 @@ export async function fetchProfile(studentId: string): Promise<LearnerProfile | 
   }
 }
 
+export async function fetchTeacher(): Promise<LearnerProfile[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/teacher`);
+    if (!res.ok) return [];
+    const data = (await res.json()) as { students: LearnerProfile[] };
+    return data.students ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export interface AskCallbacks {
   onEvent: (event: SSEEvent) => void;
   onError?: (err: Error) => void;

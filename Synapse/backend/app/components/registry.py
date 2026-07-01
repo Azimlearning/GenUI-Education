@@ -184,7 +184,7 @@ REGISTRY: dict[str, ComponentPattern] = {
         pattern="circuit-builder-sandbox",
         title="Circuit builder sandbox",
         subjects=["Physics"],
-        serves_topics=["Ohm's law", "series circuit", "parallel circuit", "power",
+        serves_topics=["electricity", "Ohm's law", "series circuit", "parallel circuit", "power",
                        "voltage", "current", "resistance", "safety features"],
         techniques=[Technique.predict_observe_explain, Technique.worked_example_fading],
         prop_schema={

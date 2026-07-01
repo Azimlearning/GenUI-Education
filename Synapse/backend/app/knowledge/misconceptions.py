@@ -40,7 +40,11 @@ MISCONCEPTIONS: dict[str, Misconception] = {
             "water potential gradient) — i.e. toward more solute, not more water."
         ),
         triggers=["osmos", "water mov", "more water", "toward water", "less salt"],
-        source="TODO: cite KSSM/ESL osmosis-misconception study (P1)",
+        source=(
+            "Odom, A.L. & Barrow, L.H. (1995), 'Development and application of a two-tier "
+            "diagnostic test measuring college biology students' understanding of diffusion and "
+            "osmosis', Journal of Research in Science Teaching 32(1)."
+        ),
     ),
     "bonding-sharing-vs-transfer": Misconception(
         id="bonding-sharing-vs-transfer",
@@ -54,7 +58,11 @@ MISCONCEPTIONS: dict[str, Misconception] = {
             "non-metals. The electronegativity difference decides which occurs."
         ),
         triggers=["ionic", "covalent", "bond"],
-        source="TODO: cite bonding-misconception literature (P1)",
+        source=(
+            "Taber, K.S. (1998), 'An alternative conceptual framework from chemistry education', "
+            "International Journal of Science Education 20(5); and Taber & Coll (2002) on chemical "
+            "bonding alternative conceptions."
+        ),
     ),
     "newton-force-needed-to-keep-moving": Misconception(
         id="newton-force-needed-to-keep-moving",
@@ -68,7 +76,43 @@ MISCONCEPTIONS: dict[str, Misconception] = {
             "not the absence of a driving force."
         ),
         triggers=["keep moving", "force to move", "stops moving", "need force"],
-        source="TODO: cite force-motion misconception literature (P1)",
+        source=(
+            "Clement, J. (1982), 'Students' preconceptions in introductory mechanics', American "
+            "Journal of Physics 50(1); and Halloun & Hestenes (1985), 'Common sense concepts about "
+            "motion', American Journal of Physics 53(11)."
+        ),
+    ),
+    "photosynthesis-food-from-soil": Misconception(
+        id="photosynthesis-food-from-soil",
+        subject="Biology",
+        form=4,
+        topic="photosynthesis",
+        statement="Plants take in their food from the soil through their roots.",
+        correct=(
+            "Plants make their own food (glucose) by photosynthesis in the leaves, using carbon "
+            "dioxide, water and light energy. The soil supplies water and mineral ions, not food."
+        ),
+        triggers=["from the soil", "food from", "plants eat", "roots for food", "photosynth"],
+        source=(
+            "Driver, R. et al. (1994), 'Making Sense of Secondary Science: Research into "
+            "Children's Ideas', Routledge."
+        ),
+    ),
+    "current-used-up": Misconception(
+        id="current-used-up",
+        subject="Physics",
+        form=5,
+        topic="electricity",
+        statement="Current is used up as it goes around a circuit, so less comes back to the cell.",
+        correct=(
+            "Charge is conserved: the current is the same at every point in a simple series "
+            "circuit. What is transferred to the components is energy, not current."
+        ),
+        triggers=["current used up", "used up", "less current back", "runs out of current"],
+        source=(
+            "Shipstone, D. (1984), 'A study of children's understanding of electricity in simple "
+            "DC circuits', European Journal of Science Education 6(2)."
+        ),
     ),
 }
 

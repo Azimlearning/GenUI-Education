@@ -25,6 +25,14 @@ const card: CSSProperties = {
   animation: "fade .3s",
 };
 
+// Salvaged from the UI/UX team: a subtle per-subject accent (Bio green, Chem sand, Physics blue)
+// keyed off the composed block's subject (D-15). Kept as a thin header tint, not a redesign.
+const SUBJECT_ACCENT: Record<string, { bar: string; soft: string }> = {
+  Biology: { bar: "#16a34a", soft: "#e9f9ee" },
+  Chemistry: { bar: "#d97706", soft: "#fdf3e7" },
+  Physics: { bar: "#4f46e5", soft: "#eef0fb" },
+};
+
 const head: CSSProperties = {
   display: "flex",
   alignItems: "center",
@@ -53,9 +61,10 @@ export function PatternCard({
   meta: BlockMeta;
   children?: React.ReactNode;
 }) {
+  const accent = SUBJECT_ACCENT[meta.subject];
   return (
-    <div style={card}>
-      <div style={head}>
+    <div style={{ ...card, borderTop: accent ? `3px solid ${accent.bar}` : card.border }}>
+      <div style={{ ...head, background: accent ? accent.soft : head.background }}>
         <div>
           <div style={{ fontSize: 17, fontWeight: 800, color: "var(--indigo)" }}>{title}</div>
           <div style={{ fontSize: 13, color: "var(--slate)" }}>

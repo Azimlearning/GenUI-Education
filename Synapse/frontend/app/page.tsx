@@ -88,6 +88,7 @@ export default function Home() {
         <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px", color: "var(--indigo)" }}>
           Synap<span style={{ color: "var(--teal)" }}>se</span>
         </div>
+        <a href="/teacher" style={teacherLink}>Teacher view</a>
         <div style={tag}>KSSM · Form 4–5 Science</div>
       </header>
 
@@ -131,6 +132,21 @@ export default function Home() {
             </button>
           ))}
         </div>
+
+        <details style={explainer}>
+          <summary style={{ cursor: "pointer", fontWeight: 700, color: "var(--indigo)", fontSize: 14 }}>
+            How Synapse is different from generic AI tutors
+          </summary>
+          <div style={{ marginTop: 10, fontSize: 13.5, color: "var(--slate)", lineHeight: 1.6 }}>
+            A general GenUI (like a one-shot "dynamic view") hides its reasoning and generates UI on the
+            fly, which risks wrong science. Synapse does the opposite:
+            <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>
+              <li><strong>Pedagogy first, not topic-matching.</strong> Agents diagnose the specific misconception, then pick the learning-science move (contrasting cases, predict-observe-explain).</li>
+              <li><strong>It selects, it never generates.</strong> Every interactive is a pre-built, KSSM-faithful component; the science is pinned in code, so a wrong model answer can't ship a wrong sim.</li>
+              <li><strong>The reasoning is the product.</strong> You watch Diagnostician → Strategist → Composer decide, live. That is exactly what a generic dynamic view structurally cannot show.</li>
+            </ul>
+          </div>
+        </details>
 
         {/* ── Streamed reasoning + composed component ── */}
         {error && (
@@ -230,13 +246,26 @@ const topbar: CSSProperties = {
   zIndex: 50,
 };
 const tag: CSSProperties = {
-  marginLeft: "auto",
   fontSize: 12,
   color: "var(--slate)",
   background: "var(--indigo-soft)",
   padding: "5px 12px",
   borderRadius: 20,
   fontWeight: 600,
+};
+const teacherLink: CSSProperties = {
+  marginLeft: "auto",
+  fontSize: 13,
+  color: "var(--indigo)",
+  textDecoration: "none",
+  fontWeight: 700,
+};
+const explainer: CSSProperties = {
+  marginTop: 18,
+  background: "var(--white)",
+  border: "1px solid var(--line)",
+  borderRadius: 12,
+  padding: "12px 16px",
 };
 const wrap: CSSProperties = { maxWidth: 920, margin: "0 auto", padding: "36px 24px 80px" };
 const grad: CSSProperties = {
