@@ -1,0 +1,102 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - img [ref=e3]
+    - generic [ref=e14]: Synapse
+    - generic [ref=e15]: KSSM · Form 4–5 Science
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e18]: Physics · Chemistry · Biology
+      - heading "Ask a question. Watch the agents reason it out." [level=1] [ref=e19]:
+        - text: Ask a question.
+        - text: Watch the agents reason it out.
+      - paragraph [ref=e20]: Type a question in your own words. Synapse diagnoses what you actually need, then composes the right interactive to learn it — and shows you every step of its thinking.
+    - generic [ref=e21]:
+      - textbox "Ask a science question" [ref=e22]:
+        - /placeholder: e.g. explain osmosis to me
+        - text: osmosis is when water moves to where there's more water
+      - button "Ask Synapse" [ref=e53] [cursor=pointer]
+    - generic [ref=e24]: Or start with one of these
+    - generic [ref=e25]:
+      - button "\"osmosis is when water moves to where there's more water\"" [ref=e26] [cursor=pointer]
+      - button "\"a moving trolley needs a constant force to keep moving\"" [ref=e27] [cursor=pointer]
+      - button "\"I don't understand ionic vs covalent bonding\"" [ref=e28] [cursor=pointer]
+      - button "\"how do I balance H2 + O2 → H2O?\"" [ref=e29] [cursor=pointer]
+    - generic [ref=e42]:
+      - generic [ref=e43]: Reasoning trace
+      - list [ref=e44]:
+        - listitem [ref=e45]:
+          - generic [ref=e46]: "1"
+          - generic [ref=e47]:
+            - generic [ref=e48]:
+              - generic [ref=e49]: Diagnostician
+              - generic [ref=e50]: done
+            - generic [ref=e51]:
+              - paragraph [ref=e52]: Understanding the question…
+              - paragraph [ref=e55]: Mastery Check in osmosis (Biology).
+        - listitem [ref=e56]:
+          - generic [ref=e58]: "2"
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - generic [ref=e61]: Pedagogy Strategist
+              - generic [ref=e62]: done
+            - generic [ref=e63]:
+              - paragraph [ref=e64]: Choosing the pedagogically-correct move…
+              - paragraph [ref=e65]: predict-observe-explain → compose a “gradient-diffusion-sandbox”. Letting learners predict water movement direction and observe the actual concentration gradient outcome creates cognitive conflict that directly refutes the inverted-gradient misconception.
+        - listitem [ref=e66]:
+          - generic [ref=e68]: "3"
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - generic [ref=e71]: Component Composer
+              - generic [ref=e72]: done
+            - generic [ref=e73]:
+              - paragraph [ref=e74]: Selecting and configuring a “gradient-diffusion-sandbox”…
+              - paragraph [ref=e75]: Composed a “gradient-diffusion-sandbox” configured for osmosis.
+        - listitem [ref=e76]:
+          - generic [ref=e77]: "4"
+          - generic [ref=e78]:
+            - generic [ref=e79]:
+              - generic [ref=e80]: Tutor Loop
+              - generic [ref=e81]: done
+            - generic [ref=e82]:
+              - paragraph [ref=e83]: Updating the learner profile…
+              - paragraph [ref=e84]: Noted engagement with osmosis on the profile.
+    - generic [ref=e86]:
+      - generic [ref=e87]:
+        - generic [ref=e88]:
+          - generic [ref=e89]: Osmosis in a plant cell
+          - generic [ref=e90]: Biology · Form 4 · osmosis
+        - generic [ref=e91]: predict-observe-explain
+      - generic [ref=e92]:
+        - generic [ref=e94]:
+          - generic "cytoplasm" [ref=e95]
+          - generic [ref=e96]: "outer solution: 90"
+        - generic [ref=e97]:
+          - paragraph [ref=e98]:
+            - strong [ref=e99]: Predict.
+            - text: "A selectively-permeable membrane separates two solutions: the left side has low solute concentration (10%), the right side has high solute concentration (90%). Predict the direction water molecules will move and explain why."
+          - generic [ref=e100]:
+            - button "Water leaves the cell (toward more solute)" [ref=e101] [cursor=pointer]
+            - button "Water enters the cell (toward more water)" [ref=e102] [cursor=pointer]
+            - button "No net movement" [ref=e103] [cursor=pointer]
+        - button "Run the experiment →" [disabled] [ref=e104]
+    - generic [ref=e105]:
+      - generic [ref=e106]: Your progress
+      - generic [ref=e107]: The tutor loop updates this from how you did. It informs what Synapse composes next time.
+      - generic [ref=e108]:
+        - generic [ref=e109]:
+          - generic [ref=e110]: osmosis
+          - generic [ref=e113]: 56%
+        - generic [ref=e114]:
+          - generic [ref=e115]: ionic vs covalent bonding
+          - generic [ref=e118]: 29%
+        - generic [ref=e119]:
+          - generic [ref=e120]: equation balancing
+          - generic [ref=e122]: 0%
+      - generic [ref=e123]:
+        - text: "Tracking:"
+        - generic [ref=e124]: osmosis ✓ cleared
+        - generic [ref=e125]: Newton's first law · in review
+    - paragraph [ref=e30]: The agent pipeline is streamed live from the FastAPI + LangGraph backend over SSE. It runs on scripted logic with no API key, and on live Claude when one is set. Every interactive is a pre-built, KSSM-faithful component the agents select and configure.
+  - button "Open Next.js Dev Tools" [ref=e36] [cursor=pointer]:
+    - img [ref=e37]
+  - alert [ref=e40]

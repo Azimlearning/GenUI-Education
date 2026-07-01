@@ -16,13 +16,16 @@ export interface LibraryComponentProps {
   onInteraction?: (ev: { correct: boolean }) => void;
 }
 
+// The composed interactive is the PAYLOAD — the most visually weighted element on the page.
+// It gets the strong elevation; the reasoning trace and progress panel stay flat with borders.
 const card: CSSProperties = {
   background: "var(--white)",
   border: "1px solid var(--line)",
   borderRadius: 16,
-  boxShadow: "var(--shadow)",
+  boxShadow: "var(--shadow-lg)",
   overflow: "hidden",
   animation: "fade .3s",
+  marginTop: 24,
 };
 
 // Salvaged from the UI/UX team: a subtle per-subject accent (Bio green, Chem sand, Physics blue)
@@ -42,13 +45,13 @@ const head: CSSProperties = {
   background: "var(--indigo-soft)",
 };
 
+// Demoted from a filled pill to a plain label — metadata, not a call to action.
 const badge: CSSProperties = {
-  fontSize: 12,
-  fontWeight: 700,
+  fontSize: 11,
+  fontWeight: 600,
+  textTransform: "uppercase",
+  letterSpacing: 0.8,
   color: "var(--teal)",
-  background: "var(--teal-soft)",
-  padding: "4px 10px",
-  borderRadius: 20,
   whiteSpace: "nowrap",
 };
 
@@ -66,8 +69,8 @@ export function PatternCard({
     <div style={{ ...card, borderTop: accent ? `3px solid ${accent.bar}` : card.border }}>
       <div style={{ ...head, background: accent ? accent.soft : head.background }}>
         <div>
-          <div style={{ fontSize: 17, fontWeight: 800, color: "var(--indigo)" }}>{title}</div>
-          <div style={{ fontSize: 13, color: "var(--slate)" }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 600, color: "var(--ink)" }}>{title}</div>
+          <div style={{ fontSize: 13, color: "var(--slate)", marginTop: 2 }}>
             {meta.subject} · Form {meta.form} · {meta.topic}
           </div>
         </div>

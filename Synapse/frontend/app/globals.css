@@ -19,6 +19,9 @@
   --rose: #be123c;
   --shadow: 0 4px 20px rgba(30, 41, 59, 0.08);
   --shadow-lg: 0 12px 40px rgba(55, 48, 163, 0.14);
+  /* Editorial type: serif display for headings, clean sans for body/UI. */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -27,11 +30,19 @@
 
 body {
   margin: 0;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
   background: var(--bg);
   color: var(--ink);
   line-height: 1.5;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
 }
 
 @keyframes bounce {
@@ -55,5 +66,26 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Keyboard focus ring — visible focus states for interactive elements (a11y:
+   focus-states). Only shows for keyboard nav (:focus-visible), not mouse clicks. */
+:focus-visible {
+  outline: 2px solid var(--indigo-2);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Respect reduced-motion preferences (a11y: reduced-motion). Users who opt out of
+   motion get near-instant transitions instead of animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

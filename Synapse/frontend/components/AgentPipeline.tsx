@@ -1,6 +1,7 @@
 // The visible agent pipeline (D-03 — the differentiator, and the demo wow).
-// Renders the streamed `agent_step` events grouped by agent, showing each agent thinking then
-// concluding, live, as the SSE events arrive.
+// Rendered as a single connected reasoning trace: numbered steps down a vertical rail, each
+// agent thinking then concluding, live, as the SSE events arrive. This is deliberately NOT four
+// identical floating cards — it should read as one continuous chain of reasoning.
 
 import type { CSSProperties } from "react";
 import { AGENT_LABEL, type AgentName, type AgentStep } from "@/lib/types";
@@ -12,12 +13,7 @@ const ORDER: AgentName[] = [
   "tutor_loop",
 ];
 
-const ACCENT: Record<AgentName, string> = {
-  diagnostician: "var(--indigo)",
-  pedagogy_strategist: "var(--indigo-2)",
-  component_composer: "var(--teal)",
-  tutor_loop: "var(--amber)",
-};
+type StepState = "thinking" | "done" | "skipped";
 
 export default function AgentPipeline({ steps }: { steps: AgentStep[] }) {
   if (steps.length === 0) return null;
@@ -31,74 +27,152 @@ export default function AgentPipeline({ steps }: { steps: AgentStep[] }) {
   const active = ORDER.filter((a) => byAgent.has(a));
 
   return (
-    <div style={{ display: "grid", gap: 12, marginTop: 24 }}>
-      <div style={labelRow}>The agents, reasoning</div>
-      {active.map((agent) => (
-        <AgentCard key={agent} agent={agent} steps={byAgent.get(agent)!} />
-      ))}
-    </div>
+    <section style={panel}>
+      <div style={panelLabel}>Reasoning trace</div>
+      <ol style={list}>
+        {active.map((agent, i) => (
+          <TraceStep
+            key={agent}
+            index={i + 1}
+            agent={agent}
+            steps={byAgent.get(agent)!}
+            isLast={i === active.length - 1}
+          />
+        ))}
+      </ol>
+    </section>
   );
 }
 
-function AgentCard({ agent, steps }: { agent: AgentName; steps: AgentStep[] }) {
-  const accent = ACCENT[agent];
-  const isDone = steps.some((s) => s.status === "done");
-  const isSkipped = steps.every((s) => s.status === "skipped");
+function TraceStep({
+  index,
+  agent,
+  steps,
+  isLast,
+}: {
+  index: number;
+  agent: AgentName;
+  steps: AgentStep[];
+  isLast: boolean;
+}) {
+  const state: StepState = steps.every((s) => s.status === "skipped")
+    ? "skipped"
+    : steps.some((s) => s.status === "done")
+      ? "done"
+      : "thinking";
 
   return (
-    <div style={{ ...card, borderLeft: `4px solid ${accent}` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-        <span style={{ fontWeight: 800, color: accent, fontSize: 14 }}>{AGENT_LABEL[agent]}</span>
-        <span style={statusPill(isSkipped ? "skipped" : isDone ? "done" : "thinking")}>
-          {isSkipped ? "skipped" : isDone ? "done" : "thinking…"}
-        </span>
+    <li style={{ ...row, paddingBottom: isLast ? 0 : 22 }}>
+      {!isLast && <span style={connector} aria-hidden />}
+      <span style={dot(state)}>{index}</span>
+      <div style={content}>
+        <div style={stepHead}>
+          <span style={agentName}>{AGENT_LABEL[agent]}</span>
+          <span style={statusText(state)}>
+            {state === "skipped" ? "skipped" : state === "done" ? "done" : "thinking…"}
+          </span>
+        </div>
+        <div style={{ display: "grid", gap: 3 }}>
+          {steps.map((s, i) => (
+            <p
+              key={i}
+              style={{
+                margin: 0,
+                fontSize: 14,
+                lineHeight: 1.55,
+                color: s.status === "thinking" ? "var(--slate)" : "var(--ink)",
+              }}
+            >
+              {s.detail}
+            </p>
+          ))}
+        </div>
       </div>
-      <ul style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 4 }}>
-        {steps.map((s, i) => (
-          <li
-            key={i}
-            style={{
-              fontSize: 13.5,
-              color: s.status === "thinking" ? "var(--slate)" : "var(--ink)",
-            }}
-          >
-            {s.detail}
-          </li>
-        ))}
-      </ul>
-    </div>
+    </li>
   );
 }
 
-const labelRow: CSSProperties = {
-  textAlign: "center",
-  fontSize: 12,
-  color: "#94a3b8",
-  textTransform: "uppercase",
-  letterSpacing: 1,
-};
-
-const card: CSSProperties = {
+// ── styles ──
+const panel: CSSProperties = {
+  marginTop: 28,
   background: "var(--white)",
   border: "1px solid var(--line)",
-  borderRadius: 12,
-  boxShadow: "var(--shadow)",
-  padding: "12px 16px",
+  borderRadius: 14,
+  padding: "20px 22px",
   animation: "fade .3s",
 };
-
-function statusPill(status: "thinking" | "done" | "skipped"): CSSProperties {
-  const map = {
-    thinking: { color: "var(--indigo-2)", bg: "var(--indigo-soft)" },
-    done: { color: "var(--teal)", bg: "var(--teal-soft)" },
-    skipped: { color: "var(--slate)", bg: "#f1f5f9" },
-  }[status];
+const panelLabel: CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  textTransform: "uppercase",
+  letterSpacing: 1.2,
+  color: "var(--slate)",
+  marginBottom: 18,
+};
+const list: CSSProperties = {
+  listStyle: "none",
+  margin: 0,
+  padding: 0,
+};
+const row: CSSProperties = {
+  position: "relative",
+  paddingLeft: 40,
+};
+const DOT = 26;
+const connector: CSSProperties = {
+  position: "absolute",
+  left: (DOT - 2) / 2, // center on the dot
+  top: DOT + 2,
+  bottom: 0,
+  width: 2,
+  background: "var(--line)",
+};
+function dot(state: StepState): CSSProperties {
+  const palette = {
+    done: { bg: "var(--indigo)", color: "#fff", border: "var(--indigo)" },
+    thinking: { bg: "var(--white)", color: "var(--indigo)", border: "var(--indigo-2)" },
+    skipped: { bg: "#f1f5f9", color: "var(--slate)", border: "var(--line)" },
+  }[state];
+  return {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: DOT,
+    height: DOT,
+    borderRadius: 999,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 12,
+    fontWeight: 700,
+    fontVariantNumeric: "tabular-nums",
+    background: palette.bg,
+    color: palette.color,
+    border: `1.5px solid ${palette.border}`,
+    zIndex: 1,
+  };
+}
+const content: CSSProperties = { paddingTop: 1 };
+const stepHead: CSSProperties = {
+  display: "flex",
+  alignItems: "baseline",
+  gap: 10,
+  marginBottom: 5,
+};
+const agentName: CSSProperties = {
+  fontFamily: "var(--font-display)",
+  fontSize: 16,
+  fontWeight: 600,
+  color: "var(--ink)",
+};
+function statusText(state: StepState): CSSProperties {
+  const color =
+    state === "done" ? "var(--teal)" : state === "skipped" ? "var(--slate)" : "var(--indigo-2)";
   return {
     fontSize: 11,
-    fontWeight: 700,
-    color: map.color,
-    background: map.bg,
-    padding: "2px 8px",
-    borderRadius: 12,
+    fontWeight: 600,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+    color,
   };
 }

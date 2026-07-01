@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: synapse-backend
+    runtime: docker
+    rootDir: Synapse/backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FRONTEND_ORIGIN
+        value: https://your-frontend.vercel.app
+      - key: LEARNER_STORE
+        value: sqlite
+      - key: LEARNER_STORE_PATH
+        value: /data/synapse.sqlite3

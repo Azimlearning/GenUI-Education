@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - img [ref=e3]
+    - generic [ref=e14]: Synapse
+    - link "Teacher view" [ref=e15] [cursor=pointer]:
+      - /url: /teacher
+    - generic [ref=e16]: KSSM · Form 4–5 Science
+  - main [ref=e17]:
+    - generic [ref=e18]:
+      - heading "Ask anything in Physics, Biology, or Chemistry" [level=1] [ref=e19]
+      - paragraph [ref=e20]: Type a question in your own words. Synapse diagnoses what you need and builds the right interactive way to learn it — and you can watch its agents decide.
+    - generic [ref=e21]:
+      - textbox "e.g. explain osmosis to me" [ref=e22]: why does a moving object need a force to keep moving?
+      - button "Thinking…" [disabled] [ref=e45] [cursor=pointer]
+    - generic [ref=e24]: Try one of these
+    - generic [ref=e25]:
+      - button "\"osmosis is when water moves to where there's more water\"" [disabled] [ref=e26] [cursor=pointer]
+      - button "\"a moving trolley needs a constant force to keep moving\"" [disabled] [ref=e27] [cursor=pointer]
+      - button "\"I don't understand ionic vs covalent bonding\"" [disabled] [ref=e28] [cursor=pointer]
+      - button "\"how do I balance H2 + O2 → H2O?\"" [disabled] [ref=e29] [cursor=pointer]
+    - group [ref=e30]:
+      - generic "How Synapse is different from generic AI tutors" [ref=e31] [cursor=pointer]
+    - paragraph [ref=e32]: The agent pipeline is streamed live from the FastAPI + LangGraph backend over SSE. It runs on scripted logic with no API key, and on live Claude when one is set. Every interactive is a pre-built, KSSM-faithful component the agents select and configure.
+  - button "Open Next.js Dev Tools" [ref=e39] [cursor=pointer]:
+    - img [ref=e40]
+  - alert [ref=e43]

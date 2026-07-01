@@ -97,6 +97,11 @@ export async function ask(
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
+      // Normalize CRLF → LF: sse-starlette emits frames with \r\n line endings, so frames are
+      // separated by \r\n\r\n. Splitting on \n\n alone never matches (the \n's are split by \r),
+      // which silently swallows the whole stream. Normalize the whole buffer so both CRLF and LF
+      // work, and so a \r\n split across chunk boundaries is still handled.
+      buffer = buffer.replace(/\r\n/g, "\n");
 
       // SSE frames are separated by a blank line.
       let sep: number;

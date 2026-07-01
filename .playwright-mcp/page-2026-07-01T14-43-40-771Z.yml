@@ -1,0 +1,96 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - img [ref=e3]
+    - generic [ref=e14]: Synapse
+    - generic [ref=e15]: KSSM · Form 4–5 Science
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - heading "Ask anything in Physics, Biology, or Chemistry" [level=1] [ref=e18]
+      - paragraph [ref=e19]: Type a question in your own words. Synapse diagnoses what you need and builds the right interactive way to learn it — and you can watch its agents decide.
+    - generic [ref=e20]:
+      - textbox "Ask a science question" [ref=e21]:
+        - /placeholder: e.g. explain osmosis to me
+        - text: I don't understand ionic vs covalent bonding
+      - button "Ask Synapse" [ref=e57] [cursor=pointer]
+    - generic [ref=e23]: Try one of these
+    - generic [ref=e24]:
+      - button "\"osmosis is when water moves to where there's more water\"" [ref=e25] [cursor=pointer]
+      - button "\"a moving trolley needs a constant force to keep moving\"" [ref=e26] [cursor=pointer]
+      - button "\"I don't understand ionic vs covalent bonding\"" [ref=e27] [cursor=pointer]
+      - button "\"how do I balance H2 + O2 → H2O?\"" [ref=e28] [cursor=pointer]
+    - generic [ref=e31]:
+      - generic [ref=e32]: The agents, reasoning
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]: Diagnostician
+          - generic [ref=e36]: done
+        - list [ref=e37]:
+          - listitem [ref=e38]: Understanding the question…
+          - listitem [ref=e39]: Knowledge Gap in ionic vs covalent bonding (Chemistry).
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: Pedagogy Strategist
+          - generic [ref=e43]: done
+        - list [ref=e44]:
+          - listitem [ref=e45]: Choosing the pedagogically-correct move…
+          - listitem [ref=e46]: labelled-exploration → compose a “electron-bonding-explorer”. Since this is a knowledge gap rather than a misconception, guided labelled exploration of electron transfer versus sharing builds correct foundational understanding before any prediction-testing is needed.
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - generic [ref=e60]: Component Composer
+          - generic [ref=e61]: done
+        - list [ref=e62]:
+          - listitem [ref=e63]: Selecting and configuring a “electron-bonding-explorer”…
+          - listitem [ref=e64]: Composed a “electron-bonding-explorer” configured for ionic vs covalent bonding.
+      - generic [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]: Tutor Loop
+          - generic [ref=e68]: done
+        - list [ref=e69]:
+          - listitem [ref=e70]: Updating the learner profile…
+          - listitem [ref=e71]: Noted engagement with ionic vs covalent bonding on the profile.
+    - generic [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]: Bonding & electrons
+          - generic [ref=e77]: Chemistry · Form 4 · ionic vs covalent bonding
+        - generic [ref=e78]: labelled-exploration
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]: Na
+            - generic [ref=e83]: metal
+          - generic [ref=e84]: "?"
+          - generic [ref=e85]:
+            - generic [ref=e86]: Cl
+            - generic [ref=e87]: non-metal
+        - generic [ref=e88]:
+          - text: "example:"
+          - strong [ref=e89]: NaCl
+        - paragraph [ref=e90]:
+          - strong [ref=e91]: Which bond forms?
+          - text: Look at whether each atom is a metal or a non-metal.
+        - generic [ref=e92]:
+          - button "Ionic — electrons transfer" [ref=e93] [cursor=pointer]
+          - button "Covalent — electrons shared" [ref=e94] [cursor=pointer]
+        - button "Reveal the electrons →" [disabled] [ref=e95]
+    - generic [ref=e96]:
+      - generic [ref=e97]: Your progress
+      - generic [ref=e98]: The tutor loop updates this from how you did. It informs what Synapse composes next time.
+      - generic [ref=e99]:
+        - generic [ref=e100]:
+          - generic [ref=e101]: osmosis
+          - generic [ref=e104]: 34%
+        - generic [ref=e105]:
+          - generic [ref=e106]: ionic vs covalent bonding
+          - generic [ref=e109]: 56%
+        - generic [ref=e110]:
+          - generic [ref=e111]: equation balancing
+          - generic [ref=e113]: 0%
+      - generic [ref=e114]:
+        - text: "Tracking:"
+        - generic [ref=e115]: osmosis ✓ cleared
+        - generic [ref=e116]: Newton's first law · in review
+    - paragraph [ref=e29]: The agent pipeline is streamed live from the FastAPI + LangGraph backend over SSE. It runs on scripted logic with no API key, and on live Claude when one is set. Every interactive is a pre-built, KSSM-faithful component the agents select and configure.
+  - button "Open Next.js Dev Tools" [ref=e52] [cursor=pointer]:
+    - img [ref=e53]
+  - alert [ref=e56]

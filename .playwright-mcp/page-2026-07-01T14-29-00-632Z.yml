@@ -1,0 +1,76 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - img [ref=e3]
+    - generic [ref=e14]: Synapse
+    - link "Teacher view" [ref=e15] [cursor=pointer]:
+      - /url: /teacher
+    - generic [ref=e16]: KSSM · Form 4–5 Science
+  - main [ref=e17]:
+    - generic [ref=e18]:
+      - heading "Ask anything in Physics, Biology, or Chemistry" [level=1] [ref=e19]
+      - paragraph [ref=e20]: Type a question in your own words. Synapse diagnoses what you need and builds the right interactive way to learn it — and you can watch its agents decide.
+    - generic [ref=e21]:
+      - textbox "e.g. explain osmosis to me" [ref=e22]: osmosis is when water moves to where there's more water
+      - button "Ask Synapse" [ref=e61] [cursor=pointer]
+    - generic [ref=e24]: Try one of these
+    - generic [ref=e25]:
+      - button "\"osmosis is when water moves to where there's more water\"" [ref=e26] [cursor=pointer]
+      - button "\"a moving trolley needs a constant force to keep moving\"" [ref=e27] [cursor=pointer]
+      - button "\"I don't understand ionic vs covalent bonding\"" [ref=e28] [cursor=pointer]
+      - button "\"how do I balance H2 + O2 → H2O?\"" [ref=e29] [cursor=pointer]
+    - group [ref=e30]:
+      - generic "How Synapse is different from generic AI tutors" [ref=e31] [cursor=pointer]
+    - generic [ref=e34]:
+      - generic [ref=e35]: The agents, reasoning
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]: Diagnostician
+          - generic [ref=e39]: done
+        - list [ref=e40]:
+          - listitem [ref=e41]: Understanding the question…
+          - listitem [ref=e42]: You've hit “osmosis-inverted-gradient” before — resurfacing it deliberately.
+          - listitem [ref=e43]: Misconception detected — osmosis-inverted-gradient (Biology, Form 4).
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: Pedagogy Strategist
+          - generic [ref=e47]: done
+        - list [ref=e48]:
+          - listitem [ref=e49]: Choosing the pedagogically-correct move…
+          - listitem [ref=e50]: predict-observe-explain → compose a “gradient-diffusion-sandbox”. Letting students predict water movement direction and then observe the actual osmotic gradient in the sandbox creates a visible contradiction that confronts and corrects the inverted-gradient misconception.
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - generic [ref=e64]: Component Composer
+          - generic [ref=e65]: done
+        - list [ref=e66]:
+          - listitem [ref=e67]: Selecting and configuring a “gradient-diffusion-sandbox”…
+          - listitem [ref=e68]: Composed a “gradient-diffusion-sandbox” configured for osmosis.
+      - generic [ref=e69]:
+        - generic [ref=e70]:
+          - generic [ref=e71]: Tutor Loop
+          - generic [ref=e72]: done
+        - list [ref=e73]:
+          - listitem [ref=e74]: Updating the learner profile…
+          - listitem [ref=e75]: Logged “osmosis-inverted-gradient” to the profile · resurface for review in 3 days.
+    - generic [ref=e77]:
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]: Osmosis in a plant cell
+          - generic [ref=e81]: Biology · Form 4 · osmosis
+        - generic [ref=e82]: predict-observe-explain
+      - generic [ref=e83]:
+        - generic [ref=e85]:
+          - generic "cytoplasm" [ref=e86]
+          - generic [ref=e87]: "outer solution: 90"
+        - generic [ref=e88]:
+          - paragraph [ref=e89]:
+            - strong [ref=e90]: Predict.
+            - text: "A selectively-permeable membrane separates two solutions. The right side has high solute concentration. Predict: will water molecules move toward the left or right compartment, and why?"
+          - generic [ref=e91]:
+            - button "Water leaves the cell (toward more solute)" [disabled] [ref=e92]
+            - button "Water enters the cell (toward more water)" [disabled] [ref=e93]
+            - button "No net movement" [disabled] [ref=e94]
+        - paragraph [ref=e96]: Water is moving…
+    - paragraph [ref=e32]: The agent pipeline is streamed live from the FastAPI + LangGraph backend over SSE. It runs on scripted logic with no API key, and on live Claude when one is set. Every interactive is a pre-built, KSSM-faithful component the agents select and configure.
+  - button "Open Next.js Dev Tools" [ref=e56] [cursor=pointer]:
+    - img [ref=e57]
+  - alert [ref=e60]

@@ -1,0 +1,37 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - img [ref=e3]
+    - generic [ref=e14]: Synapse
+    - generic [ref=e15]: KSSM · Form 4–5 Science
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e18]: Physics · Chemistry · Biology
+      - heading "Ask a question. Watch the agents reason it out." [level=1] [ref=e19]:
+        - text: Ask a question.
+        - text: Watch the agents reason it out.
+      - paragraph [ref=e20]: Type a question in your own words. Synapse diagnoses what you actually need, then composes the right interactive to learn it — and shows you every step of its thinking.
+    - generic [ref=e21]:
+      - textbox "Ask a science question" [ref=e22]:
+        - /placeholder: e.g. explain osmosis to me
+        - text: osmosis is when water moves to where there's more water
+      - button "Thinking…" [disabled] [ref=e41]
+    - generic [ref=e24]: Or start with one of these
+    - generic [ref=e25]:
+      - button "\"osmosis is when water moves to where there's more water\"" [disabled] [ref=e26]
+      - button "\"a moving trolley needs a constant force to keep moving\"" [disabled] [ref=e27]
+      - button "\"I don't understand ionic vs covalent bonding\"" [disabled] [ref=e28]
+      - button "\"how do I balance H2 + O2 → H2O?\"" [disabled] [ref=e29]
+    - generic [ref=e42]:
+      - generic [ref=e43]: Reasoning trace
+      - list [ref=e44]:
+        - listitem [ref=e45]:
+          - generic [ref=e46]: "1"
+          - generic [ref=e47]:
+            - generic [ref=e48]:
+              - generic [ref=e49]: Diagnostician
+              - generic [ref=e50]: thinking…
+            - paragraph [ref=e52]: Understanding the question…
+    - paragraph [ref=e30]: The agent pipeline is streamed live from the FastAPI + LangGraph backend over SSE. It runs on scripted logic with no API key, and on live Claude when one is set. Every interactive is a pre-built, KSSM-faithful component the agents select and configure.
+  - button "Open Next.js Dev Tools" [ref=e36] [cursor=pointer]:
+    - img [ref=e37]
+  - alert [ref=e40]

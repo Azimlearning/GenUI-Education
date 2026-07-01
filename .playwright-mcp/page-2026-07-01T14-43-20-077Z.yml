@@ -1,0 +1,40 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - img [ref=e3]
+    - generic [ref=e14]: Synapse
+    - generic [ref=e15]: KSSM · Form 4–5 Science
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - heading "Ask anything in Physics, Biology, or Chemistry" [level=1] [ref=e18]
+      - paragraph [ref=e19]: Type a question in your own words. Synapse diagnoses what you need and builds the right interactive way to learn it — and you can watch its agents decide.
+    - generic [ref=e20]:
+      - textbox "Ask a science question" [ref=e21]:
+        - /placeholder: e.g. explain osmosis to me
+        - text: I don't understand ionic vs covalent bonding
+      - button "Thinking…" [disabled] [ref=e30]
+    - generic [ref=e23]: Try one of these
+    - generic [ref=e24]:
+      - button "\"osmosis is when water moves to where there's more water\"" [disabled] [ref=e25]
+      - button "\"a moving trolley needs a constant force to keep moving\"" [disabled] [ref=e26]
+      - button "\"I don't understand ionic vs covalent bonding\"" [disabled] [ref=e27]
+      - button "\"how do I balance H2 + O2 → H2O?\"" [disabled] [ref=e28]
+    - generic [ref=e31]:
+      - generic [ref=e32]: The agents, reasoning
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]: Diagnostician
+          - generic [ref=e36]: done
+        - list [ref=e37]:
+          - listitem [ref=e38]: Understanding the question…
+          - listitem [ref=e39]: Knowledge Gap in ionic vs covalent bonding (Chemistry).
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: Pedagogy Strategist
+          - generic [ref=e43]: done
+        - list [ref=e44]:
+          - listitem [ref=e45]: Choosing the pedagogically-correct move…
+          - listitem [ref=e46]: labelled-exploration → compose a “electron-bonding-explorer”. Since this is a knowledge gap rather than a misconception, guided labelled exploration of electron transfer versus sharing builds correct foundational understanding before any prediction-testing is needed.
+    - paragraph [ref=e29]: The agent pipeline is streamed live from the FastAPI + LangGraph backend over SSE. It runs on scripted logic with no API key, and on live Claude when one is set. Every interactive is a pre-built, KSSM-faithful component the agents select and configure.
+  - button "Open Next.js Dev Tools" [ref=e52] [cursor=pointer]:
+    - img [ref=e53]
+  - alert [ref=e56]

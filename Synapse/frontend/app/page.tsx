@@ -85,22 +85,23 @@ export default function Home() {
       {/* ── Top bar ── */}
       <header style={topbar}>
         <LogoMark />
-        <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px", color: "var(--indigo)" }}>
-          Synap<span style={{ color: "var(--teal)" }}>se</span>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, letterSpacing: "-0.3px", color: "var(--indigo)" }}>
+          Synapse
         </div>
-        <a href="/teacher" style={teacherLink}>Teacher view</a>
-        <div style={tag}>KSSM · Form 4–5 Science</div>
+        <div style={{ ...tag, marginLeft: "auto" }}>KSSM · Form 4–5 Science</div>
       </header>
 
       <main style={wrap}>
         {/* ── Hero ── */}
-        <div style={{ textAlign: "center", marginBottom: 30 }}>
-          <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-0.6px", margin: "0 0 8px" }}>
-            Ask anything in <span style={grad}>Physics, Biology, or Chemistry</span>
+        <div style={{ marginBottom: 28, maxWidth: 640 }}>
+          <div style={eyebrow}>Physics · Chemistry · Biology</div>
+          <h1 style={heroTitle}>
+            Ask a question.<br />
+            Watch the agents reason it out.
           </h1>
-          <p style={{ color: "var(--slate)", fontSize: 15, maxWidth: 520, margin: "0 auto" }}>
-            Type a question in your own words. Synapse diagnoses what you need and builds the right
-            interactive way to learn it — and you can watch its agents decide.
+          <p style={heroSub}>
+            Type a question in your own words. Synapse diagnoses what you actually need, then composes
+            the right interactive to learn it — and shows you every step of its thinking.
           </p>
         </div>
 
@@ -118,35 +119,30 @@ export default function Home() {
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="e.g. explain osmosis to me"
             autoComplete="off"
+            aria-label="Ask a science question"
           />
-          <button type="submit" style={askBtn} disabled={busy}>
+          <button
+            type="submit"
+            style={{ ...askBtn, cursor: busy ? "not-allowed" : "pointer", opacity: busy ? 0.7 : 1 }}
+            disabled={busy}
+          >
             {busy ? "Thinking…" : "Ask Synapse"}
           </button>
         </form>
 
-        <div style={chipsLabel}>Try one of these</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+        <div style={chipsLabel}>Or start with one of these</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {CHIPS.map((c) => (
-            <button key={c.q} style={chip} onClick={() => run(c.q)} disabled={busy}>
+            <button
+              key={c.q}
+              style={{ ...chip, cursor: busy ? "not-allowed" : "pointer", opacity: busy ? 0.6 : 1 }}
+              onClick={() => run(c.q)}
+              disabled={busy}
+            >
               {c.label}
             </button>
           ))}
         </div>
-
-        <details style={explainer}>
-          <summary style={{ cursor: "pointer", fontWeight: 700, color: "var(--indigo)", fontSize: 14 }}>
-            How Synapse is different from generic AI tutors
-          </summary>
-          <div style={{ marginTop: 10, fontSize: 13.5, color: "var(--slate)", lineHeight: 1.6 }}>
-            A general GenUI (like a one-shot "dynamic view") hides its reasoning and generates UI on the
-            fly, which risks wrong science. Synapse does the opposite:
-            <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>
-              <li><strong>Pedagogy first, not topic-matching.</strong> Agents diagnose the specific misconception, then pick the learning-science move (contrasting cases, predict-observe-explain).</li>
-              <li><strong>It selects, it never generates.</strong> Every interactive is a pre-built, KSSM-faithful component; the science is pinned in code, so a wrong model answer can't ship a wrong sim.</li>
-              <li><strong>The reasoning is the product.</strong> You watch Diagnostician → Strategist → Composer decide, live. That is exactly what a generic dynamic view structurally cannot show.</li>
-            </ul>
-          </div>
-        </details>
 
         {/* ── Streamed reasoning + composed component ── */}
         {error && (
@@ -200,8 +196,8 @@ function LogoMark() {
 function ProgressPanel({ profile }: { profile: LearnerProfile }) {
   const topics = Object.entries(profile.mastery);
   return (
-    <div style={{ marginTop: 20, background: "var(--white)", border: "1px solid var(--line)", borderRadius: 16, boxShadow: "var(--shadow)", padding: 20 }}>
-      <div style={{ fontSize: 15, fontWeight: 800, color: "var(--indigo)", marginBottom: 4 }}>Your progress</div>
+    <div style={{ marginTop: 20, background: "var(--white)", border: "1px solid var(--line)", borderRadius: 14, padding: 20 }}>
+      <div style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 600, color: "var(--ink)", marginBottom: 4 }}>Your progress</div>
       <div style={{ fontSize: 12.5, color: "var(--slate)", marginBottom: 12 }}>
         The tutor loop updates this from how you did. It informs what Synapse composes next time.
       </div>
@@ -253,33 +249,37 @@ const tag: CSSProperties = {
   borderRadius: 20,
   fontWeight: 600,
 };
-const teacherLink: CSSProperties = {
-  marginLeft: "auto",
-  fontSize: 13,
-  color: "var(--indigo)",
-  textDecoration: "none",
-  fontWeight: 700,
+const wrap: CSSProperties = { maxWidth: 780, margin: "0 auto", padding: "48px 24px 80px" };
+const eyebrow: CSSProperties = {
+  fontSize: 12.5,
+  fontWeight: 600,
+  letterSpacing: 1.5,
+  textTransform: "uppercase",
+  color: "var(--teal)",
+  marginBottom: 14,
 };
-const explainer: CSSProperties = {
-  marginTop: 18,
-  background: "var(--white)",
-  border: "1px solid var(--line)",
-  borderRadius: 12,
-  padding: "12px 16px",
+const heroTitle: CSSProperties = {
+  fontFamily: "var(--font-display)",
+  fontSize: "clamp(28px, 6vw, 40px)", // responsive: smaller on mobile, no media query needed
+  fontWeight: 600,
+  lineHeight: 1.1,
+  letterSpacing: "-0.5px",
+  color: "var(--ink)",
+  margin: "0 0 16px",
 };
-const wrap: CSSProperties = { maxWidth: 920, margin: "0 auto", padding: "36px 24px 80px" };
-const grad: CSSProperties = {
-  background: "linear-gradient(100deg, var(--indigo-2), var(--teal))",
-  WebkitBackgroundClip: "text",
-  backgroundClip: "text",
-  WebkitTextFillColor: "transparent",
+const heroSub: CSSProperties = {
+  color: "var(--slate)",
+  fontSize: 16.5,
+  lineHeight: 1.6,
+  margin: 0,
+  maxWidth: 560,
 };
 const promptCard: CSSProperties = {
   background: "var(--white)",
   border: "1px solid var(--line)",
-  borderRadius: 18,
+  borderRadius: 14,
   boxShadow: "var(--shadow)",
-  padding: "10px 10px 10px 18px",
+  padding: "8px 8px 8px 18px",
   display: "flex",
   alignItems: "center",
   gap: 10,
@@ -287,6 +287,7 @@ const promptCard: CSSProperties = {
 };
 const input: CSSProperties = {
   flex: 1,
+  minWidth: 0, // allow the input to shrink below its content width so the button never clips
   border: "none",
   outline: "none",
   fontSize: 16,
@@ -299,17 +300,16 @@ const askBtn: CSSProperties = {
   color: "#fff",
   border: "none",
   padding: "12px 22px",
-  borderRadius: 12,
+  borderRadius: 10,
   fontSize: 15,
-  fontWeight: 700,
+  fontWeight: 600,
   cursor: "pointer",
   fontFamily: "inherit",
   whiteSpace: "nowrap",
 };
 const chipsLabel: CSSProperties = {
-  textAlign: "center",
   fontSize: 12,
-  color: "#94a3b8",
+  color: "var(--slate)",
   margin: "18px 0 10px",
   textTransform: "uppercase",
   letterSpacing: 1,
@@ -317,10 +317,10 @@ const chipsLabel: CSSProperties = {
 const chip: CSSProperties = {
   background: "var(--white)",
   border: "1px solid var(--line)",
-  color: "var(--slate)",
+  color: "var(--ink)",
   fontSize: 13,
-  padding: "7px 14px",
-  borderRadius: 20,
+  padding: "8px 13px",
+  borderRadius: 8,
   cursor: "pointer",
   fontFamily: "inherit",
 };
@@ -330,7 +330,7 @@ const footnote: CSSProperties = {
   borderTop: "1px solid var(--line)",
   fontSize: 12.5,
   color: "var(--slate)",
-  textAlign: "center",
+  lineHeight: 1.6,
 };
 const errorBox: CSSProperties = {
   marginTop: 20,
