@@ -1,0 +1,216 @@
+:root {
+    /* Base variables that will be overridden by themes */
+    --bg-color: #cfe4cc; 
+    --accent-color: #ddf4da;
+    --accent-light: #ddf4da;
+    --text-main: #000000;
+    --text-muted: #6b6b6b;
+    --panel-bg: #f4f4f4;
+    --white: #ffffff;
+    --border-color: #e5e5e5;
+}
+
+/* --- Your 3 Figma Themes --- */
+.theme-biology {
+    --bg-color: #cfe4cc;
+    --accent-color: #ddf4da;
+    --accent-light: #ddf4da;
+}
+
+.theme-chemistry {
+    --bg-color: #e4e4cc;
+    --accent-color: #f0f0d0;
+    --accent-light: #f0f0d0;
+}
+
+.theme-physics {
+    --bg-color: #ccd9e4;
+    --accent-color: #dce6ef;
+    --accent-light: #dce6ef;
+}
+
+/* --- Global Reset --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* --- Layout Containers --- */
+.app-wrapper {
+    background-color: var(--bg-color);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    transition: background-color 0.3s ease;
+}
+
+.app-container {
+    display: flex;
+    width: 100%;
+    max-width: 1600px;
+    height: 100%;
+    background: var(--panel-bg);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+/* --- Sidebar (Left Panel) --- */
+.sidebar {
+    width: 320px;
+    min-width: 320px;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar-header {
+    padding: 24px 24px 16px 24px;
+    text-align: center;
+}
+
+.sidebar-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.sidebar-header p {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* --- Subject Tabs --- */
+.subject-tabs {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 24px 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab {
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab.active {
+    background-color: var(--accent-color);
+    color: var(--text-main);
+}
+
+/* --- Chat Area --- */
+.chat-history {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.message.ai-message {
+    background-color: var(--panel-bg);
+    padding: 14px 16px;
+    border-radius: 12px;
+    border-top-left-radius: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-main);
+    width: 90%;
+}
+
+/* --- Input Area --- */
+.input-area {
+    padding: 16px 24px;
+}
+
+.input-wrapper {
+    display: flex;
+    background-color: var(--accent-light);
+    border-radius: 24px;
+    padding: 6px 6px 6px 16px;
+    align-items: center;
+}
+
+.input-wrapper input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+    color: var(--text-main);
+}
+
+.input-wrapper input::placeholder {
+    color: #999;
+}
+
+.send-btn {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-main);
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* --- User Profile Footer --- */
+.user-profile {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    background-color: #b0b0b0;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info .name {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.user-info .spmyear {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* --- Right Visualizer Panel --- */
+.visualizer-panel {
+    flex: 1;
+    background-color: var(--panel-bg);
+}

@@ -1,0 +1,34 @@
+# ─── Python / backend ───
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.db
+*.sqlite3
+
+# ─── Node / frontend ───
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+.env.local
+.env*.local
+
+# ─── Editors / OS ───
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# ─── Secrets (never commit) ───
+.env
+.env.*
+!.env.example
+!.env.local.example
