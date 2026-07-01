@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import Any
 
 from app.models import AgentName, AgentStatus, DiagnosisKind, PipelineState, step
-from app.store import InMemoryLearnerStore, get_store
+from app.store import get_store
 
 
 def close_loop(state: PipelineState) -> dict[str, Any]:
@@ -33,10 +33,9 @@ def close_loop(state: PipelineState) -> dict[str, Any]:
 
     store = get_store()
     if diagnosis.kind == DiagnosisKind.misconception and diagnosis.misconception_id:
-        if isinstance(store, InMemoryLearnerStore):
-            store.record_misconception(
-                state.student_id, diagnosis.misconception_id, diagnosis.topic, review_in_days=3
-            )
+        store.record_misconception(
+            state.student_id, diagnosis.misconception_id, diagnosis.topic, review_in_days=3
+        )
         steps.append(
             step(
                 AgentName.tutor_loop,

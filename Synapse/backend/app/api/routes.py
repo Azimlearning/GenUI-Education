@@ -29,6 +29,7 @@ from app.models import (
     ErrorEvent,
     PipelineState,
 )
+from app.providers.metrics import METRICS
 
 router = APIRouter(prefix="/api", tags=["pipeline"])
 
@@ -72,3 +73,9 @@ async def _event_stream(req: AskRequest) -> AsyncIterator[dict[str, str]]:
 @router.post("/ask")
 async def ask(req: AskRequest) -> EventSourceResponse:
     return EventSourceResponse(_event_stream(req))
+
+
+@router.get("/metrics")
+async def metrics() -> dict:
+    """Per-LLM-call observability for the dev panel (provider, tokens, cost, latency)."""
+    return {"summary": METRICS.summary(), "recent": METRICS.recent(limit=25)}

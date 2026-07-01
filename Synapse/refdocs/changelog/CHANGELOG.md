@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-07-01 — P1: osmosis vertical slice is genuinely live end-to-end
+
+- **Agents flipped to LLM-driven, scripted fallback kept.** `diagnostician` / `pedagogy_strategist` / `component_composer` now call the provider router when a key is configured, and fall back to their P0 scripted logic otherwise (`router.any_live()` gate → try → `except` → scripted). Diagnosis is **grounded**: the Diagnostician is handed the KB's candidate misconceptions and its `misconception_id` is validated against the KB (rejected if unknown, D-04). The Strategist's `target_pattern` is validated against `REGISTRY`.
+- **Structured output via the router.** Added `ProviderRouter.run_structured()` — asks the model for a single JSON object, extracts it (fences/prose tolerant `_extract_json`), and **repairs once** on malformed output before giving up. Chosen over the SDK's native `output_config` to stay robust across `anthropic` SDK versions and to share one code path with the OpenAI fallback (see DECISIONS ADR-016).
+- **OpenAI fallback adapter implemented** (`_call_openai`, lazy import) — activates only if `OPENAI_API_KEY` is set. Anthropic stays primary (D-14).
+- **Faithfulness gate in code (constraint #6).** The Composer merges `_FAITHFUL_PINS` over the model's props, so `gradient-diffusion-sandbox` always ships `correct_direction: toward-higher-solute` / `particle: water` / `membrane: selectively-permeable` — a wrong model answer can't ship wrong science.
+- **Observability (TRL signal).** New `providers/metrics.py` records provider/model/tokens/cost/latency per LLM call; exposed at `GET /api/metrics` for the dev panel.
+- **Faithful flagship component.** Rewrote `frontend/components/library/GradientDiffusionSandbox.tsx` into a real predict-observe-explain sim: student commits a prediction → water animates across the membrane toward the higher-solute side → the misconception fails visibly → grounded explanation. Beaker + plant-cell (turgor/plasmolysis) modes; science encoded, not faked.
+- **SQLite learner store (P1e).** Added `SqliteLearnerStore` behind the same `LearnerStore` interface; selected via `LEARNER_STORE=sqlite` (path `LEARNER_STORE_PATH`). `record_misconception` promoted to the interface; Tutor Loop no longer type-checks the concrete store.
+- **Verified end-to-end this session (on abdul's machine):** backend `pytest` **9/9** (2 P0 + 7 new P1 covering JSON extraction/repair, the faithfulness gate, SSE serialisation, SQLite persistence + spaced-repetition scheduling, cost estimation); frontend `bunx tsc --noEmit` clean + `bun run build` clean (`/` 6.21 kB); a live `POST /api/ask` on uvicorn streamed all 4 agents + the faithful osmosis block + tutor-loop write + `done`. Runs with **no API key** (scripted); add `ANTHROPIC_API_KEY` to `backend/.env` for live Claude.
+- New tracking files at `Synapse/`: `project-state.md` (running feature log) and `decisions.md` (pushed-back/minor decisions), per the build owner's request.
+
 ## 2026-07-01 — Demo scope locked (12 concepts), Anthropic primary, name/layout settled
 
 - **Scope (D-13 / ADR-013):** locked the **12 demo concepts** the team chose (3 Chemistry, 3 Physics, 6 Biology) and mapped them to **14 interaction patterns**. This supersedes the "1-subject-deep" cap (D-06/ADR-005); the depth discipline is preserved as a **flagships-first build order** (osmosis · bonding-electrons · forces-motion). New authoritative build manifest: `refdocs/concept-catalog.md`.

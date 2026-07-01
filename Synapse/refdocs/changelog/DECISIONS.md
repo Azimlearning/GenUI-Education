@@ -82,6 +82,16 @@
 **Why:** Don't pay Firebase setup/latency cost during early dev; keep the option open for a hosted demo without touching agent code.
 **Rejected:** Firebase from day one — premature. In-memory forever — loses persistence, the whole point of the tutor loop.
 
+### ADR-016 — Structured agent output via prompt-and-parse, not the SDK's native `output_config` (P1)
+**Decision:** `ProviderRouter.run_structured()` instructs the model to reply with a single JSON object, extracts it with a fence/prose-tolerant parser, and repairs once on malformed output. The calling agent validates the dict into its Pydantic model and falls back to scripted P0 behaviour on any failure.
+**Why:** One code path serves both the Anthropic primary and the OpenAI fallback, and it doesn't depend on a specific `anthropic` SDK version exposing `output_config` — the app must run on whatever SDK `uv` resolves. The repair pass + validation + scripted fallback is a stronger reliability story (never pass raw model text through as props, D-01) than trusting a single native call.
+**Rejected:** SDK-native structured outputs (`output_config.format`) — cleaner when available, but couples us to a newer SDK and to Anthropic-only semantics. Revisit if we pin the SDK version. **Trade-off:** prompt-and-parse can occasionally need the repair pass; that's logged in `providers/metrics`.
+
+### ADR-017 — Faithfulness pinned in code, not left to the model (P1, constraint #6)
+**Decision:** The Composer merges a per-pattern `_FAITHFUL_PINS` table over the model-generated props, so science-critical fields (e.g. osmosis `correct_direction: toward-higher-solute`) are always correct regardless of what the model returns.
+**Why:** Constraint #6 is non-negotiable and a science-literate judge will probe the sim. The model configures presentation; the physics is authored by us.
+**Rejected:** Trusting the model to set the correct answer — one hallucinated field ships a wrong sim.
+
 ---
 
 ## Assumptions (surface at the next checkpoint)

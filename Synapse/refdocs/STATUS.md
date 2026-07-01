@@ -11,7 +11,7 @@
 | Phase | Scope | Status |
 |---|---|---|
 | **P0** | Foundation — monorepo skeleton, SSE contract, LangGraph stub graph, Next.js shell + landing, provider-router / registry / misconception stubs | ✅ **Scaffolded AND verified end-to-end (2026-07-01).** Backend: `pytest` 2/2 pass; live `POST /api/ask` streamed all 4 agents' `agent_step`s + the osmosis `component_block` + tutor-loop write over SSE. Frontend: `bunx tsc --noEmit` clean + `bun run build` clean (4 routes). See "P0 detail" below. |
-| **P1** | One live vertical slice (osmosis) over Anthropic Claude | ⬜ Not started |
+| **P1** | One live vertical slice (osmosis) over Anthropic Claude | ✅ **Done + verified (2026-07-01).** Agents LLM-driven (grounded) with scripted fallback; router `run_structured()` + OpenAI fallback + `providers/metrics`; faithful `gradient-diffusion-sandbox` (predict-observe-explain); faithfulness pinned in code; SQLite store. `pytest` 9/9, `tsc` + `next build` clean, live `POST /api/ask` streamed the full sequence. Runs scripted with no key. See CHANGELOG 2026-07-01 P1. |
 | **P2** | All 12 demo concepts as real interactives, flagships-first (D-13) | ⬜ Not started — scope + registry + `concept-catalog.md` now locked; 14 patterns enumerated |
 | **P3** | Learner model + spaced repetition | ⬜ Not started |
 | **P4** | Polish + demo script | ⬜ Not started |
