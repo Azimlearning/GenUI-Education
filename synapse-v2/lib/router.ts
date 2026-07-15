@@ -22,6 +22,14 @@ interface ProviderConfig {
   vendor: "anthropic" | "openai";
   model: string;
   max_tokens: number;
+  /**
+   * Anthropic only. MUST be set explicitly on Sonnet 5: omitting it runs
+   * adaptive thinking, and max_tokens caps thinking + output together — so a
+   * long generation can burn the entire budget reasoning and emit nothing.
+   * (This is exactly what happened to Tier C on the first live run: three
+   * minutes of thinking, zero HTML, straight into the fallback chain.)
+   */
+  thinking?: { type: "adaptive" } | { type: "disabled" };
 }
 
 /**
@@ -30,13 +38,25 @@ interface ProviderConfig {
  */
 const CHAINS: Record<Role, ProviderConfig[]> = {
   // Planner/Checker/Brief run as one call and must feel instant.
+  // Haiku 4.5 does not do adaptive thinking, so omitting it means no thinking.
   fast: [
     { vendor: "anthropic", model: "claude-haiku-4-5-20251001", max_tokens: 2000 },
     { vendor: "openai", model: "gpt-4o-mini", max_tokens: 2000 },
   ],
-  // Generation. Worth the strongest model available.
+  /**
+   * Generation. Worth the strongest model available.
+   *
+   * Thinking is off and the budget is large: the student is waiting, the system
+   * prompts already carry the pedagogy, and every token spent reasoning is a
+   * token not spent on the lab. 32k leaves room for a big Tier C document.
+   */
   strong: [
-    { vendor: "anthropic", model: "claude-sonnet-5", max_tokens: 16000 },
+    {
+      vendor: "anthropic",
+      model: "claude-sonnet-5",
+      max_tokens: 32000,
+      thinking: { type: "disabled" },
+    },
     { vendor: "openai", model: "gpt-4o", max_tokens: 8000 },
   ],
 };
@@ -94,7 +114,10 @@ export async function runStructured<T extends z.ZodType>(
   args: StructuredArgs<T>,
 ): Promise<z.infer<T>> {
   const chain = CHAINS[args.role];
-  let lastError = "no providers configured";
+  // Every provider's error, not just the last. Reporting only the last one
+  // hid a real Anthropic failure behind "OPENAI_API_KEY not set" and sent the
+  // first live run chasing the wrong provider.
+  const failures: string[] = [];
 
   for (const cfg of chain) {
     const started = Date.now();
@@ -122,20 +145,23 @@ export async function runStructured<T extends z.ZodType>(
       });
       return parsed.data;
     } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err);
+      const message = err instanceof Error ? err.message : String(err);
+      failures.push(`${cfg.vendor}/${cfg.model}: ${message}`);
       callLog.push({
         role: args.role,
         vendor: cfg.vendor,
         model: cfg.model,
         ms: Date.now() - started,
         ok: false,
-        error: lastError,
+        error: message,
       });
       // Fall through to the next provider in the chain.
     }
   }
 
-  throw new Error(`All providers failed for role "${args.role}": ${lastError}`);
+  throw new Error(
+    `All providers failed for role "${args.role}" — ${failures.join(" | ")}`,
+  );
 }
 
 async function callAnthropicTool<T extends z.ZodType>(
@@ -145,10 +171,15 @@ async function callAnthropicTool<T extends z.ZodType>(
   const client = anthropic();
   if (!client) throw new Error("ANTHROPIC_API_KEY not set");
 
-  const res = await client.messages.create({
+  // Streamed, then collected. A non-streaming create() with a max_tokens this
+  // large is refused by the SDK before it ever hits the network ("Streaming is
+  // required for operations that may take longer than 10 minutes") — which is
+  // what broke Tier B the moment the budget went past 16k.
+  const stream = client.messages.stream({
     model: cfg.model,
     max_tokens: cfg.max_tokens,
     system: args.system,
+    ...(cfg.thinking ? { thinking: cfg.thinking } : {}),
     tools: [
       {
         name: args.tool.name,
@@ -160,8 +191,16 @@ async function callAnthropicTool<T extends z.ZodType>(
     messages: args.messages,
   });
 
+  const res = await stream.finalMessage();
+
   const block = res.content.find((b) => b.type === "tool_use");
-  if (!block || block.type !== "tool_use") throw new Error("model returned no tool call");
+  if (!block || block.type !== "tool_use") {
+    throw new Error(
+      res.stop_reason === "max_tokens"
+        ? "ran out of tokens before finishing the tool call"
+        : `model returned no tool call (stop_reason: ${res.stop_reason})`,
+    );
+  }
   return block.input;
 }
 
@@ -206,7 +245,7 @@ export async function* runStreaming(args: {
   messages: Message[];
 }): AsyncGenerator<string> {
   const chain = CHAINS[args.role];
-  let lastError = "no providers configured";
+  const failures: string[] = [];
 
   for (const cfg of chain) {
     const started = Date.now();
@@ -218,6 +257,7 @@ export async function* runStreaming(args: {
           model: cfg.model,
           max_tokens: cfg.max_tokens,
           system: args.system,
+          ...(cfg.thinking ? { thinking: cfg.thinking } : {}),
           messages: args.messages,
         });
         for await (const chunk of stream) {
@@ -252,19 +292,22 @@ export async function* runStreaming(args: {
       });
       return;
     } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err);
+      const message = err instanceof Error ? err.message : String(err);
+      failures.push(`${cfg.vendor}/${cfg.model}: ${message}`);
       callLog.push({
         role: args.role,
         vendor: cfg.vendor,
         model: cfg.model,
         ms: Date.now() - started,
         ok: false,
-        error: lastError,
+        error: message,
       });
       // Next provider. Note: if the first provider already yielded tokens the
       // consumer has seen a partial answer; Tier C discards partials on error.
     }
   }
 
-  throw new Error(`All providers failed for role "${args.role}": ${lastError}`);
+  throw new Error(
+    `All providers failed for role "${args.role}" — ${failures.join(" | ")}`,
+  );
 }

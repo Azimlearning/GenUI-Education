@@ -349,6 +349,20 @@ async function generateTierC(
     emit({ type: "generated_code", chunk, done: false });
   }
 
+  // An empty stream is its own failure, distinct from a bad document. Reporting
+  // it as "too short" sent the first live run looking at the wrong thing: the
+  // real cause was the model spending its whole token budget on thinking.
+  if (raw.trim().length === 0) {
+    emit({
+      type: "pipeline_step",
+      step: "generator",
+      status: "failed",
+      detail: "The model returned no text at all",
+      evidence: ["check the router's thinking config and max_tokens for the strong role"],
+    });
+    return false;
+  }
+
   const html = extractHtml(raw);
   const check = validateGenerated(html);
   if (!check.ok) {

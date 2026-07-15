@@ -112,6 +112,32 @@ components/Sandbox.tsx   Tier C host
 app/api/pipeline/route.ts  the one endpoint
 ```
 
+## Verified
+
+Live against the API on 2026-07-15, plus `bun test` (72 tests), `tsc --noEmit`, and
+`bun run build` — all clean.
+
+| Flow | Measured | Result |
+|---|---|---|
+| Fast pass → gate | ~5s | Checker names the osmosis misconception before anything is built |
+| Tier A | ~3s | Pins held against the model's own fill; picked 0 M vs 1.5 M for maximum contrast |
+| Tier B | ~17s | 22-node composed screen |
+| Tier C | 75–95s | 22–28k char lab, real `Math.asin(n2/n1)`, no network refs |
+| Guide | ~2–3s | Responds to the actual values the student used |
+
+Two bugs the live run caught, both now fixed:
+
+- **Tier C emitted nothing.** Sonnet 5 runs adaptive thinking when `thinking` is omitted (a silent
+  change from Sonnet 4.6), and `max_tokens` caps thinking *plus* output — so it reasoned for three
+  minutes and produced zero HTML. The router now sets `thinking` explicitly per role.
+- **Tier B broke at 32k `max_tokens`.** The SDK refuses a non-streaming request that large before
+  it hits the network. `runStructured` now streams and collects via `finalMessage()`.
+
+The fallback chain caught the first one on its own — Tier C failed, degraded to Tier B, and the
+student still got a lab. That is the design working, but it was masking a real bug, which is why
+the pipeline panel now reports an empty generation as its own failure rather than "document too
+short".
+
 ## Notes on the build
 
 - **Single Next.js app, not FastAPI + Next.** The spec called for a Python backend; with four days

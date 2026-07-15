@@ -43,7 +43,26 @@ Two settings that already matter, both in [`vercel.json`](vercel.json):
 
 ---
 
-## 2. The script
+## 2. Measured latency (not the spec's estimates)
+
+Timed on 2026-07-15 against the live API, localhost, Malaysian broadband. The spec's §10 budget was
+written before anything ran; these are what the thing actually does.
+
+| Step | Spec budget | **Measured** | |
+|---|---|---|---|
+| Fast pass (plan + check + brief) | < 3s | **~5s** | Slightly over. It's one Haiku call; acceptable. |
+| Tier A generation | < 5s | **~3s** | Comfortably inside. |
+| Tier B generation | 10–20s | **~17s** | Inside. |
+| Tier C generation | 30–60s | **75–95s** | **Well over.** See below. |
+| Guide round-trip | — | **~2–3s** | Feels instant. |
+
+**Tier C takes 75–95 seconds, not 40.** Plan the demo around that number, not the spec's. It varies
+with how big a lab the model decides to write (22k chars → 75s; 28k chars → 95s), so assume the
+worse one. It still fits Vercel's 300s function ceiling with room to spare, and the streaming
+preview means the screen is never blank — but you are talking for a minute and a half, so have
+something to say. The script below is written for the real number.
+
+## 3. The script
 
 Roughly 5 minutes. The order is deliberate: it opens on the strongest moment rather than building
 to it, because a judge's attention is never higher than in the first thirty seconds.
@@ -78,12 +97,16 @@ student brings the specifics; the science stays ours."
 Then interact once and let the **Guide** respond to what was actually done. That's the "guidance,
 not a toy" claim, demonstrated instead of asserted.
 
-### Beat 3 — the bet (Tier C, ~40s) — **the ambitious moment**
+### Beat 3 — the bet (Tier C, **75–95s**) — **the ambitious moment**
 
 > Type: **"Build me a lab for total internal reflection in a fibre optic cable"**
 
-The 40 seconds are the risk and also the show. Do not fill them with silence, and do not apologise
-for them. Talk over the streaming preview:
+This prompt is verified: it produced a working lab twice, with a real `Math.asin(n2/n1)` critical
+angle, a prediction gate, our design tokens, and no network calls.
+
+A minute and a half is the risk and also the show. Do not fill it with silence, and do not
+apologise for it. **Start talking the moment you hit enter** — the preview starts painting the
+lab's structure within a few seconds, so point at it while it builds:
 
 > "It's writing this from scratch right now. No component in our library does fibre optics. It's
 > deciding what the apparatus is, writing the geometry, writing the interaction. It runs in a
@@ -113,7 +136,8 @@ one and a worse one if you look surprised.
 |---|---|---|
 | Yellow "Tier C didn't land, so this is the tier B version" | The generated lab failed its safety check or the model errored. It degraded automatically. | "That's the safety net doing its job. It tried to write one from scratch, the output didn't pass, so it dropped to a composed screen. The student still gets a lab. On stage that's a good look, not a save." |
 | Pipeline step goes red, then continues | A validation failure and its repair round-trip. | "It just caught its own bad output and fixed it. That step is visible on purpose." |
-| Nothing for >20s on Tier A/B | Provider slow, or falling through the router chain. | Keep talking. If >45s, refresh and use Beat 2's prompt — Tier A is the fast path. |
+| Nothing for >20s on Tier A/B | Provider slow, or falling through the router chain. | Keep talking. If >45s, refresh and use Beat 2's prompt — Tier A is the fast path (measured ~3s). |
+| Tier C still building past ~2 min | Beyond both measured runs (75s, 95s). Something is wrong. | Don't wait it out on stage. Cut to Beat 4 and mention the recorded run. |
 | Red "Component drift" box | Pipeline asked for a component this build doesn't have. Should not happen; the registry is checked at load. | Move on to the next beat. Don't debug live. |
 | Page errors out entirely | Network or a dead API key. | Switch to the recorded video. Don't troubleshoot on stage. |
 
