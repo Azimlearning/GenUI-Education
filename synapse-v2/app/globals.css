@@ -276,28 +276,38 @@ code, .working code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
 }
 .working code { font-size: 12.5px; color: var(--muted); }
 
-/* Osmosis */
-.beaker { display: flex; gap: 0; height: 160px; position: relative; flex-wrap: wrap; }
-.beaker-half { position: relative; border: 1px solid var(--border); overflow: hidden; transition: flex 0.1s linear; min-width: 0; }
-.beaker-fill { width: 100%; height: 100%; }
-.beaker-fill .water { fill: color-mix(in srgb, var(--bio) 14%, transparent); }
-.solute-dot { fill: var(--bio); }
+/* Osmosis.
+   The halves carry the height; .beaker is auto. Anything inside a half that
+   overflows is clipped, so the sim can never paint over the controls below it
+   (it did, once, and swallowed every prediction click). */
+.beaker { display: flex; flex-direction: column; gap: 6px; }
+.beaker-row { display: flex; gap: 0; height: 170px; }
+.beaker-half {
+  position: relative; height: 100%; min-width: 0; overflow: hidden;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bio) 14%, transparent);
+  transition: flex 0.1s linear;
+}
+.solute-dot {
+  position: absolute; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--bio); transform: translate(-50%, -50%);
+}
 .beaker-tag {
   position: absolute; top: 6px; left: 6px; font-size: 11px; z-index: 1;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 4px; padding: 1px 5px; font-variant-numeric: tabular-nums;
 }
 .membrane {
-  width: 8px; background: repeating-linear-gradient(
+  width: 8px; height: 100%; flex-shrink: 0; position: relative;
+  background: repeating-linear-gradient(
     to bottom, var(--muted) 0 3px, transparent 3px 7px
   );
-  position: relative; flex-shrink: 0;
 }
 .membrane span {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg);
   font-size: 9px; color: var(--muted); white-space: nowrap; background: var(--surface); padding: 0 4px;
 }
-.beaker-cap { flex-basis: 100%; margin: 6px 0 0; font-size: 11.5px; color: var(--muted); }
+.beaker-cap { margin: 0; font-size: 11.5px; color: var(--muted); }
 
 .cellview { display: flex; flex-direction: column; gap: 8px; align-items: center; }
 .cell-outer {

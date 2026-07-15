@@ -192,6 +192,14 @@ export default function OsmosisSandbox({ slots, onInteraction }: ScienceProps) {
 
 /* ------------------------------------------------------------- visuals */
 
+/**
+ * Drawn with positioned divs rather than a scaled SVG.
+ *
+ * The SVG version had height:100% against a parent with no resolved height, so
+ * it fell back to its 1:1 intrinsic ratio — roughly 390px tall inside a 160px
+ * box — and painted straight over the prediction buttons, swallowing the
+ * clicks. Percentage-positioned divs have no intrinsic size to fall back to.
+ */
 function Beaker({
   left,
   right,
@@ -210,28 +218,30 @@ function Beaker({
       const seed = (i * 2654435761) % 1000;
       const x = 8 + ((seed % 100) / 100) * 84;
       const y = 10 + (((seed >> 3) % 100) / 100) * 76;
-      return <circle key={`${side}${i}`} cx={`${x}%`} cy={`${y}%`} r="3.5" className="solute-dot" />;
+      return (
+        <span
+          key={`${side}${i}`}
+          className="solute-dot"
+          style={{ left: `${x}%`, top: `${y}%` }}
+        />
+      );
     });
   };
 
   return (
     <div className="beaker">
-      <div className="beaker-half" style={{ flex: 1 + shift / 100 }}>
-        <span className="beaker-tag">{left.toFixed(2)} M</span>
-        <svg className="beaker-fill" preserveAspectRatio="none" viewBox="0 0 100 100">
-          <rect x="0" y="0" width="100" height="100" className="water" />
+      <div className="beaker-row">
+        <div className="beaker-half" style={{ flex: 1 + shift / 100 }}>
+          <span className="beaker-tag">{left.toFixed(2)} M</span>
           {dots(left, "l")}
-        </svg>
-      </div>
-      <div className="membrane" title="Selectively permeable: water passes, solute does not">
-        <span>membrane</span>
-      </div>
-      <div className="beaker-half" style={{ flex: 1 - shift / 100 }}>
-        <span className="beaker-tag">{right.toFixed(2)} M</span>
-        <svg className="beaker-fill" preserveAspectRatio="none" viewBox="0 0 100 100">
-          <rect x="0" y="0" width="100" height="100" className="water" />
+        </div>
+        <div className="membrane" title="Selectively permeable: water passes, solute does not">
+          <span>membrane</span>
+        </div>
+        <div className="beaker-half" style={{ flex: 1 - shift / 100 }}>
+          <span className="beaker-tag">{right.toFixed(2)} M</span>
           {dots(right, "r")}
-        </svg>
+        </div>
       </div>
       <p className="beaker-cap">
         Dots are {solute} molecules — too large for the membrane. Only water crosses.
