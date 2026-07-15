@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #101214;
+  --bg-raised: #16191c;
+  --ink: #d7dbdf;
+  --ink-dim: #8a9096;
+  --accent: #7fb4a2;
+  --rule: #24282c;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* Streaming caret; suppressed for reduced-motion users. */
+.caret::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--ink-dim);
+  animation: caret-blink 1s steps(2) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret::after {
+    animation: none;
+  }
+}

@@ -1,0 +1,10 @@
+# Pinned per docs/TECHNICAL.md section 1 (pin minor; langgraph pinned exact).
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+langgraph==0.2.60
+anthropic==0.42.0
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+pydantic==2.10.3
+pydantic-settings==2.7.0

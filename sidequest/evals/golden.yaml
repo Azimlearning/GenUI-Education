@@ -1,0 +1,113 @@
+# Golden set. Mirrors docs/EVALS.md section 2.
+# The runner (evals/run.py) arrives in Phase 1; this file is the data contract.
+# smoke: true marks the 4-item subset run by `make evals-smoke`.
+
+- id: G1
+  query: Why does ice float?
+  smoke: true
+  expect:
+    artifact_type: simulation
+    domain: [chemistry, physics]
+  assertions:
+    - density comparison manipulable
+    - ice stays above water at defaults
+
+- id: G2
+  query: Show me projectile motion
+  expect:
+    artifact_type: simulation
+    domain: [physics]
+  assertions:
+    - range increases to 45 degrees then decreases
+    - g = 9.81 present in code
+  ground_truth: closed_form  # harness recomputes and drives the artifact (EVALS.md section 5)
+
+- id: G3
+  query: How does natural selection work?
+  expect:
+    artifact_type: simulation
+    domain: [biology]
+  assertions:
+    - trait distribution shifts over generations under a selection pressure control
+
+- id: G4
+  query: What happens when you mix an acid and a base?
+  smoke: true
+  expect:
+    artifact_type: virtual_experiment
+    domain: [chemistry]
+  assertions:
+    - pH moves toward 7 as volumes approach equivalence
+
+- id: G5
+  query: Explain wave interference
+  expect:
+    artifact_type: simulation
+    domain: [physics]
+  assertions:
+    - constructive and destructive bands visible
+    - source separation control works
+
+- id: G6
+  query: How do planets stay in orbit?
+  expect:
+    artifact_type: simulation
+    domain: [physics]
+  assertions:
+    - stable orbit at defaults
+    - higher velocity escapes, lower decays
+
+- id: G7
+  query: What is the greenhouse effect?
+  expect:
+    artifact_type: explorable_diagram
+    domain: [earth_space]
+  assertions:
+    - equilibrium temperature rises with the greenhouse gas slider
+
+- id: G8
+  query: How does a pendulum's length affect its period?
+  expect:
+    artifact_type: virtual_experiment
+    domain: [physics]
+  assertions:
+    - period proportional to sqrt(length) within 5 percent across 3 spot lengths
+  ground_truth: closed_form
+
+- id: G9
+  query: Show me exponential growth vs logistic growth
+  expect:
+    artifact_type: data_visualization
+    domain: [math_adjacent, biology]
+  assertions:
+    - curves diverge
+    - carrying capacity slider bends the logistic curve only
+
+- id: G10
+  query: What is the boiling point of gold?
+  smoke: true
+  expect:
+    artifact_type: text_only
+  assertions:
+    - no artifact branch entered
+    - value within 2856 to 2970 C, assumption cited
+
+- id: G11
+  query: Explain how RNA polymerase works
+  expect:
+    artifact_type: explorable_diagram
+    domain: [biology]
+  assertions:
+    - stepwise transcription stages navigable
+  # Hardest case: tracked separately, allowed to fail through Phase 3,
+  # must pass by Phase 5 (EVALS.md section 6).
+  allow_fail_until_phase: 5
+
+- id: G12
+  query: Write me a poem about clouds
+  smoke: true
+  expect:
+    artifact_type: text_only
+  assertions:
+    - polite non-science handling
+    - no artifact

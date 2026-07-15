@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: axiom
+      POSTGRES_PASSWORD: axiom
+      POSTGRES_DB: axiom
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U axiom -d axiom"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATABASE_URL: postgresql+asyncpg://axiom:axiom@db:5432/axiom
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      MODEL_STRONG: ${MODEL_STRONG:-claude-sonnet-5}
+      MODEL_FAST: ${MODEL_FAST:-claude-haiku-4-5-20251001}
+      MAX_RUN_COST_USD: ${MAX_RUN_COST_USD:-0.75}
+      ARTIFACT_TIMEOUT_S: ${ARTIFACT_TIMEOUT_S:-30}
+      GEN_RATE_LIMIT_PER_HOUR: ${GEN_RATE_LIMIT_PER_HOUR:-10}
+      VENDOR_DIR: /vendor
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./vendor:/vendor:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    environment:
+      # Browser-visible (SSE fetch from the user's machine).
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+      # Server-side rewrite target for /vendor/* (container network).
+      API_BASE_INTERNAL: http://backend:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
