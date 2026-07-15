@@ -12,7 +12,8 @@
  */
 
 import { z } from "zod";
-import { EXPR_DOCS } from "./expr";
+import { EXPR_DOCS, evaluate } from "./expr";
+import { SIM_DOCS, SimSpec, validateSim } from "./sim";
 import { CATALOG, catalogForPrompt } from "./science/catalog";
 
 export interface UINode {
@@ -49,10 +50,12 @@ export function inspectSpec(spec: UISpec): {
   errors: string[];
   inputIds: string[];
   nodeCount: number;
+  simCount: number;
 } {
   const errors: string[] = [];
   const inputIds: string[] = [];
   let nodeCount = 0;
+  let simCount = 0;
 
   const walk = (node: UINode, depth: number): void => {
     if (!node || typeof node !== "object" || typeof node.type !== "string") {
@@ -81,13 +84,62 @@ export function inspectSpec(spec: UISpec): {
       }
     }
 
+    // A generated experiment is checked here, before it can reach the screen:
+    // shape, then every formula probed for syntax and unknown names. A typo
+    // becomes one repair round-trip instead of a lab that renders blank.
+    if (node.type === "sim") {
+      simCount++;
+      const parsed = SimSpec.safeParse(node.spec);
+      if (!parsed.success) {
+        for (const issue of parsed.error.issues) {
+          errors.push(`sim.${issue.path.join(".") || "(root)"}: ${issue.message}`);
+        }
+      } else {
+        const report = validateSim(parsed.data);
+        for (const e of report.errors) errors.push(`sim "${parsed.data.title}" — ${e}`);
+        // The sim shares its sliders with the screen, so they are valid names
+        // for a sibling chart or computed readout.
+        for (const p of parsed.data.params) inputIds.push(p.id);
+      }
+    }
+
     if (Array.isArray(node.children)) {
       for (const child of node.children) walk(child, depth + 1);
     }
   };
 
   walk(spec.root, 1);
-  return { ok: errors.length === 0, errors, inputIds, nodeCount };
+
+  /**
+   * Second pass: every model-written formula on the screen must resolve.
+   *
+   * It has to run after the walk, because a "computed" node may legitimately
+   * reference a slider declared later in the tree, or a sim's param — sims
+   * publish their sliders to the screen, so a chart beside the pendulum can
+   * track its length. Probing catches the typo the first live run shipped:
+   * a chart reading `length` when nothing had published it.
+   */
+  const known = new Set(inputIds);
+  const probeFormulas = (node: UINode): void => {
+    if (!node || typeof node !== "object") return;
+    for (const key of ["formula"] as const) {
+      const src = node[key];
+      if (typeof src !== "string") continue;
+      const scope: Record<string, number> = {};
+      for (const id of known) scope[id] = 1;
+      if (typeof node.variable === "string") scope[node.variable] = 1;
+      const result = evaluate(src, scope);
+      if (!result.ok) {
+        errors.push(
+          `${node.type} formula "${src}" — ${result.error}. Available: ${[...known].join(", ") || "no inputs declared"}`,
+        );
+      }
+    }
+    if (Array.isArray(node.children)) node.children.forEach(probeFormulas);
+  };
+  probeFormulas(spec.root);
+
+  return { ok: errors.length === 0, errors, inputIds, nodeCount, simCount };
 }
 
 export const RENDER_UI_TOOL = {
@@ -109,10 +161,19 @@ export const RENDER_UI_TOOL = {
 };
 
 export function tierBSystemPrompt(): string {
-  return `You are the Generator for Synapse, a science lab builder for Malaysian Form 4-5 KSSM SPM students (Physics, Chemistry, Biology). You never write prose answers. You DESIGN an interactive screen for the student's question and return it by calling the render_ui tool.
+  return `You are the Generator for Synapse, a science lab builder for Malaysian Form 4-5 KSSM SPM students (Physics, Chemistry, Biology). You never write prose answers. You DESIGN an interactive lab for the student's question and return it by calling the render_ui tool.
 
 # Your job
-Build the screen the student needs to UNDERSTAND something by manipulating it — not to read about it. Every screen should let them predict, change something, and see the consequence. Prefer interaction over exposition.
+**Design the experiment.** Not a page about the experiment — the experiment. The "sim" node (below)
+lets you build one from scratch: state variables, formulas that step them, and shapes whose
+positions are formulas. A beaker, a pendulum, a ray crossing a boundary, charges in a field, a
+titration — all of it is shapes plus physics, and you write both.
+
+Almost every screen you build should contain a sim. Text, callouts and tables are the framing
+around the experiment, not a substitute for it. If you find yourself composing only cards and
+stats, stop: the student asked to see something happen.
+
+Every lab should let them predict, change something, and watch the consequence.
 
 # Node vocabulary (the renderer knows ONLY these types)
 Layout (may have "children"):
@@ -152,14 +213,17 @@ ${EXPR_DOCS}
 Formulas reference input ids directly. Example: a slider with id "mass" and one with
 id "force" -> {"type":"computed","label":"Acceleration","formula":"force / mass","suffix":" m/s^2","precision":2}
 
-Pre-built science sims — embed one when it fits, INSIDE your screen:
+${SIM_DOCS}
+
+# The three pre-built sims
 - {"type":"science","pattern":string,"slots":{...}}
 
-Available patterns and their slots:
 ${catalogForPrompt()}
 
-The sims are faithful and interactive. If a real sim covers the physics, embed it and spend your
-own effort on the explanation, the prediction prompt, and the surrounding controls.
+These three exist because each targets a documented SPM misconception where the science is
+guaranteed in code. Embed one ONLY when the question is squarely about that misconception. For
+everything else, design the experiment yourself with a "sim" node — a fixed library can only answer
+questions someone already anticipated, and this student asked their own.
 
 # Interaction round-trip
 Buttons carry an "action" string. When the student presses one you receive the action and ALL

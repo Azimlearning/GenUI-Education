@@ -17,15 +17,11 @@ import type { ScienceProps } from "./shared";
 import OsmosisSandbox from "./OsmosisSandbox";
 import MotionSandbox from "./MotionSandbox";
 import BondingExplorer from "./BondingExplorer";
-import CircuitSandbox from "./CircuitSandbox";
-import RefractionSandbox from "./RefractionSandbox";
 
 const REGISTRY: Record<string, React.ComponentType<ScienceProps>> = {
   "concentration-gradient-sandbox": OsmosisSandbox,
   "motion-sandbox": MotionSandbox,
   "bonding-explorer": BondingExplorer,
-  "circuit-sandbox": CircuitSandbox,
-  "refraction-sandbox": RefractionSandbox,
 };
 
 // Catch drift at load, in dev, rather than on stage.

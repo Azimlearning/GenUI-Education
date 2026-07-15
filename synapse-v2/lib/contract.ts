@@ -173,8 +173,22 @@ export const PipelineRequest = z.object({
     .default(null),
   /** Set on a Guide round-trip. */
   interaction: InteractionEvent.nullable().default(null),
+  /**
+   * What is actually on the student's screen, for the Guide.
+   *
+   * The Guide is a separate call and cannot see the lab. Without this it gets
+   * bare values and has to guess — the first live run produced a Guide asking
+   * "what did you change?" about a slider it had no way to know existed.
+   */
+  context: z.string().nullable().default(null),
 });
 export type PipelineRequest = z.infer<typeof PipelineRequest>;
+/**
+ * What a caller writes, before Zod fills the defaults in. The server sees the
+ * parsed shape (every field present); the client should not have to spell out
+ * `context: null` just to ask a question.
+ */
+export type PipelineRequestInput = z.input<typeof PipelineRequest>;
 
 /* ----------------------------------------------------------- SSE encoding */
 

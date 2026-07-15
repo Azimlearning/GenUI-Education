@@ -5,10 +5,10 @@
  * and the pipeline takes a POST body.
  */
 
-import { decodeFrames, type PipelineRequest, type SynapseEvent } from "./contract";
+import { decodeFrames, type PipelineRequestInput, type SynapseEvent } from "./contract";
 
 export async function streamPipeline(
-  body: PipelineRequest,
+  body: PipelineRequestInput,
   onEvent: (event: SynapseEvent) => void,
   signal?: AbortSignal,
 ): Promise<void> {

@@ -21,16 +21,20 @@ import {
 } from "@/lib/contract";
 import type { UISpec } from "@/lib/uispec";
 import { streamPipeline } from "@/lib/client";
+import { describeComponent, describeGenerated, describeSpec } from "@/lib/describe";
 import PipelinePanel from "@/components/PipelinePanel";
 import { SpecRenderer, type InputValues } from "@/components/Renderer";
 import { ScienceComponent } from "@/components/science";
 import Sandbox from "@/components/Sandbox";
 
 const EXAMPLES = [
+  // First one is pinned (the misconception demo); the rest are all designed
+  // from scratch, which is the point — nothing in this codebase knows what a
+  // pendulum or a gas cylinder is.
   "Osmosis is when water moves to where there is more water, right?",
-  "Why doesn't a heavy box move when I push it?",
-  "Is HCl ionic or covalent?",
-  "Build me a lab for total internal reflection in a fibre optic cable",
+  "Show me a simple pendulum and what changes its period",
+  "Why does a gas exert more pressure when you heat it in a sealed can?",
+  "How does a kidney use osmosis to reabsorb water?",
 ];
 
 type Stage = "idle" | "briefing" | "gated" | "building" | "ready";
@@ -181,6 +185,16 @@ export default function Home() {
       ];
       history.current = turns.slice(-6);
 
+      // Tell the Guide what it built. It runs as a separate call and cannot
+      // see the lab; without this it guesses at controls it designed itself.
+      const context = built?.spec
+        ? describeSpec(built.spec)
+        : built?.component
+          ? describeComponent(built.component.pattern, built.component.slots)
+          : built?.html
+            ? describeGenerated(built.html)
+            : null;
+
       await run(
         {
           prompt: asked,
@@ -188,6 +202,7 @@ export default function Home() {
           confirmed: false,
           plan: null,
           interaction: { source: built?.tier === "C" ? "sandbox" : "component", action, values: vals },
+          context,
         },
         { building: false },
       );
@@ -318,6 +333,7 @@ export default function Home() {
                 ctx={{
                   values,
                   setValue: (id, value) => setValues((prev) => ({ ...prev, [id]: value })),
+                  publishValues: (vals) => setValues((prev) => ({ ...prev, ...vals })),
                   onAction: onSpecAction,
                   onScienceInteraction: onInteraction,
                 }}

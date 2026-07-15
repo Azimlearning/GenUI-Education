@@ -51,16 +51,21 @@ written before anything ran; these are what the thing actually does.
 | Step | Spec budget | **Measured** | |
 |---|---|---|---|
 | Fast pass (plan + check + brief) | < 3s | **~5s** | Slightly over. It's one Haiku call; acceptable. |
-| Tier A generation | < 5s | **~3s** | Comfortably inside. |
-| Tier B generation | 10–20s | **~17s** | Inside. |
-| Tier C generation | 30–60s | **75–95s** | **Well over.** See below. |
+| Tier A generation (pinned sim) | < 5s | **~3s** | Comfortably inside. |
+| Tier B, screen only | 10–20s | **~17s** | Inside. |
+| **Tier B, designing a sim** | — | **~40s** | The showpiece. Not in the spec's budget — the primitive didn't exist when it was written. |
+| Tier C generation | 30–60s | **75–95s** | **Well over.** Now the rare escape hatch, not the headline. |
 | Guide round-trip | — | **~2–3s** | Feels instant. |
 
-**Tier C takes 75–95 seconds, not 40.** Plan the demo around that number, not the spec's. It varies
-with how big a lab the model decides to write (22k chars → 75s; 28k chars → 95s), so assume the
-worse one. It still fits Vercel's 300s function ceiling with room to spare, and the streaming
-preview means the screen is never blank — but you are talking for a minute and a half, so have
-something to say. The script below is written for the real number.
+**The showpiece moved, and it got faster.** The spec assumed "the AI designs your lab" meant Tier C
+writing raw HTML for 90 seconds. It doesn't any more: Tier B now has a simulation primitive, so the
+model designs a bespoke experiment — state variables, physics formulas, a scene of shapes — in
+about 40 seconds, and the result is a first-class part of the page rather than an iframe. Demo Tier
+B. Tier C is the honest answer to "what if it needs something you didn't anticipate", not the act.
+
+**Tier C still takes 75–95 seconds** when it fires (22k chars → 75s; 28k chars → 95s). It fits
+Vercel's 300s ceiling and the streaming preview keeps the screen alive, but don't plan a beat
+around it.
 
 ## 3. The script
 
@@ -97,24 +102,47 @@ student brings the specifics; the science stays ours."
 Then interact once and let the **Guide** respond to what was actually done. That's the "guidance,
 not a toy" claim, demonstrated instead of asserted.
 
-### Beat 3 — the bet (Tier C, **75–95s**) — **the ambitious moment**
+### Beat 3 — the bet (Tier B, **~40s**) — **the ambitious moment**
+
+> Type: **"Show me a simple pendulum and what changes its period"**
+
+**Verified.** Nothing in the codebase knows what a pendulum is. Twice in a row the model designed
+one: the full nonlinear equation `omega = omega - (g/length) * sin(theta) * dt`, a correct period
+readout (2.01s for a 1m string — check it), a bob that visibly grows with mass, a **"g (planet)"
+slider** so you can run it on the Moon, and a verdict explaining that extra weight and extra inertia
+cancel exactly.
+
+This is the beat the whole submission rests on, so make the claim precisely:
+
+> "There is no pendulum in our code. Not a component, not a template, not a special case. The model
+> was given variables, formulas and shapes — and it designed this: the equation of motion, the
+> geometry, the sliders, the prediction. Look at the pipeline panel: that's the physics it wrote,
+> and that's what it's actually running."
+
+Point at the **pipeline panel's evidence** while it builds — the step formulas are printed there.
+That's the moment: a judge can read the physics the AI wrote and check it themselves.
+
+Then the kicker, which is the answer to the obvious objection:
+
+> "The model doesn't get to tell you the answer. Each option carries a condition — `mass >= 0.05`,
+> `length > 1.0` — and the runtime evaluates it against whatever *you* set the sliders to. It writes
+> the physics; the physics decides who's right. If it tries to just assert the answer, we reject it
+> and make it write again. That's not a policy, it's a validator."
+
+That last part is true and worth saying plainly: on the first live run the model **did** try to
+cheat — `when: "true"` for the right answer — and the validator bounced it.
+
+### Beat 3b — only if you have time (Tier C, 75–95s)
 
 > Type: **"Build me a lab for total internal reflection in a fibre optic cable"**
 
-This prompt is verified: it produced a working lab twice, with a real `Math.asin(n2/n1)` critical
-angle, a prediction gate, our design tokens, and no network calls.
+The escape hatch. Verified: real `Math.asin(n2/n1)`, sandboxed, no network. Worth showing only if
+the room is engaged and you have ninety seconds to spare — **Beat 3 is the stronger moment and
+half the wait**. Frame this one as the honest backstop:
 
-A minute and a half is the risk and also the show. Do not fill it with silence, and do not
-apologise for it. **Start talking the moment you hit enter** — the preview starts painting the
-lab's structure within a few seconds, so point at it while it builds:
-
-> "It's writing this from scratch right now. No component in our library does fibre optics. It's
-> deciding what the apparatus is, writing the geometry, writing the interaction. It runs in a
-> sandbox with no network and no access to the page — because we're not going to promise you a
-> model never writes something stupid. We're going to make sure it can't matter."
-
-If it lands: interact with it, and point out that a fully generated lab still reports back to the
-Guide.
+> "And when a question needs something even that can't express, it writes the whole thing as code,
+> in a sandbox with no network and no access to the page. We're not going to promise you a model
+> never writes something stupid. We're going to make sure it can't matter."
 
 ### Beat 4 — close (30s)
 
@@ -149,12 +177,31 @@ in front of judges.
 
 ## 4. Answers to the questions you'll actually get
 
-**"How do you know the AI isn't teaching them wrong science?"**
-Three layers, and say all three. Science-critical values are pinned — the model fills the scenario,
-but `correct_direction: "toward-higher-solute"` is merged over whatever it proposed, so a model
-asserting the misconception still ships the correct sim (there's a test for exactly that). Every
-slot value is schema-validated before render. And the filled values are on screen in the pipeline
-panel, so a teacher can catch a bad fill rather than trust us.
+**"How do you know the AI isn't teaching them wrong science?"** — *the question that decides the
+Responsible AI criterion. Know this answer cold.*
+
+Be honest that it's two different answers, because we make two different promises.
+
+*For the three misconceptions we pre-built* (osmosis, forces, bonding): the science is **pinned**.
+The model picks the scenario, but `correct_direction: "toward-higher-solute"` is merged over
+whatever it proposed. A model that asserts the misconception still ships the correct sim. There's a
+test that feeds it the wrong value and proves the pin wins.
+
+*For everything it designs itself* — where nothing is pre-built, so nothing can be pinned — the
+guarantee is different and it's the more interesting one: **the model never states the answer.** It
+writes the condition under which each outcome is true (`cRight > cLeft`), and the runtime evaluates
+that against the student's own sliders. Truth is computed at run time, from their values, not
+baked in at generation time. A `when` that references none of the experiment's variables is
+rejected as an assertion and sent back for a rewrite — which has already happened in testing.
+
+Then the layer over both: **every formula is on screen in the pipeline panel.** We are not asking
+anyone to trust the model. We're printing the physics it wrote where a teacher can read it. That's
+a claim Google's Dynamic View structurally cannot make.
+
+And say the limit out loud, because someone will find it: **none of this catches wrong-but-
+well-formed physics.** A validator can prove a formula parses and depends on the right variables.
+It cannot prove it's the right formula. That's why the flagships stay pinned, and why the panel
+exists.
 
 **"Isn't this just ChatGPT with extra steps?"**
 Ask a chatbot about osmosis and you get a wall of text you can nod along to while still holding the

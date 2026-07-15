@@ -1,7 +1,7 @@
 # Synapse v2 — the Codex build
 
-Turns a Malaysian Form 4–5 KSSM SPM science question into an **interactive lab experiment**, not a
-wall of text. Built for [Codex Community Hackathon KL 2026](https://codexhackathon.my), Education
+Turns a Malaysian Form 4–5 KSSM SPM science question into an **interactive lab experiment** the AI
+designs on the spot — not a wall of text, and not a component picked off a shelf. Built for [Codex Community Hackathon KL 2026](https://codexhackathon.my), Education
 Access track, Team Dang Wangi.
 
 Implements [`../Codex hackathon/codex-technical-spec.md`](../Codex%20hackathon/codex-technical-spec.md).
@@ -12,7 +12,7 @@ Implements [`../Codex hackathon/codex-technical-spec.md`](../Codex%20hackathon/c
 bun install
 cp .env.local.example .env.local   # add ANTHROPIC_API_KEY
 bun run dev                        # http://localhost:3200
-bun test                           # 72 tests
+bun test                           # 118 tests
 ```
 
 Only `ANTHROPIC_API_KEY` is required. `OPENAI_API_KEY` is optional and enables the fallback leg of
@@ -40,28 +40,60 @@ all on screen, so a wrong fill is catchable by a teacher rather than silent.
 
 ## The generation ladder
 
-The Planner picks the **lowest tier that can faithfully express the experiment**. Lower is faster
-and more trustworthy; higher is unbounded.
+**The model designs the experiment. Tier B is the default**, and the pre-built sims are the
+exception — three of them, kept only where being right matters more than being bespoke.
 
 | Tier | What the model does | When |
 |---|---|---|
-| **A** | Fills the typed slots of a pre-built science sim | A catalog component genuinely covers it |
-| **B** | Composes a novel screen as UI-as-data, and may write the **formulas** that drive it | Nothing in the catalog fits |
-| **C** | Writes a complete self-contained HTML/JS interactive | Neither tier can express it |
+| **B** | **Designs the lab**: state variables, physics formulas, a scene of shapes | The default. Almost everything. |
+| **A** | Fills the typed slots of a pinned sim | Only the 3 documented misconceptions |
+| **C** | Writes a complete self-contained HTML/JS interactive | Rare. Nothing else can express it. |
 
-**Fallback chain: C → B → A → plain explanation.** Every failure lands on something that works, so
-the demo never shows a dead end. When it degrades, the UI says so out loud.
+**Fallback chain: C → B → (A only if a pinned component was chosen) → plain explanation.** When it
+degrades, the UI says so out loud. It will *not* degrade a generated pendulum into a trolley sim:
+answering a question nobody asked is worse than an honest explanation.
 
-### Tier A — pre-built, but adjustable
+### Tier B — the model designs the experiment
 
-Five sims ([`lib/science/catalog.ts`](lib/science/catalog.ts)): concentration gradient, forces and
-motion, bonding, circuits, refraction. Each declares a Zod slot schema. "Show me diffusion" and
-"0.5 M NaCl vs 0.1 M across a partially permeable membrane at 37°C" hit the **same component** with
-different slot values — the specificity comes from the student, the machinery is pre-built and
-correct.
+The headline. There is no "pendulum component" — there is a simulation primitive
+([`lib/sim.ts`](lib/sim.ts)), and the model composes a pendulum out of it:
 
-**Faithful pins are the reason to trust this.** Science-critical values are merged *over* whatever
-the model proposed:
+```jsonc
+{"type": "sim", "spec": {
+  "params": [{"id": "length", "label": "String length", "min": 0.2, "max": 2, "value": 1}],
+  "state":  {"theta": "rad(amplitude)", "omega": "0"},
+  "step":   {"omega": "omega - (g/length) * sin(theta) * dt",   // the real nonlinear pendulum
+             "theta": "theta + omega * dt"},
+  "derived":{"bobX": "pivotX + scale*length*sin(theta)"},
+  "scene":  [{"shape": "circle", "cx": "bobX", "cy": "bobY", "r": "6 + mass*4", "fill": "phys"}],
+  "predict": {"prompt": "Double the mass. What happens to the period?",
+              "options": [{"label": "Stays the same", "when": "mass >= 0.05", "explain": "..."}]}
+}}
+```
+
+That is a real generated output, not an illustration. Every numeric attribute is a formula run
+through [`lib/expr.ts`](lib/expr.ts) — a recursive-descent parser over whitelisted maths. No `eval`,
+no `new Function`, no property access, no globals, no loops in the grammar. `window`, `alert(1)` and
+`x.y` are parse errors. So it is generated **behaviour** without generated **code**, and it renders
+as a first-class part of the page rather than an iframe.
+
+**`when` is the pin principle, generalised.** The model does not say which answer is correct — it
+writes the *condition* under which each is true, and the runtime evaluates that against the
+student's own sliders. Truth is computed at run time from their values, never baked in at
+generation time. A `when` that references none of the experiment's variables is rejected as an
+assertion: on the first live run the model wrote `when: "true"` for the right answer and
+`when: "false"` for the rest, and the validator bounced it into a repair.
+
+Every formula is probed at generation time against a scope of the declared names, so a typo costs
+one repair round-trip instead of a lab that renders blank on stage. The screen's other nodes
+(`computed`, `formulaChart`) can read the sim's sliders by id, so a chart beside the pendulum
+tracks the student's hand.
+
+### Tier A — the three we don't let it design
+
+[`lib/science/catalog.ts`](lib/science/catalog.ts): osmosis, forces-and-motion, bonding. Each targets
+a misconception documented in the SPM cohort, and each carries **pins** — science-critical values
+merged *over* whatever the model proposed:
 
 ```ts
 pins: {
@@ -75,16 +107,8 @@ The model chooses the scenario. It does not get a vote on which way water moves.
 `correct_direction: "toward-lower-solute"` — the exact misconception the component exists to break —
 still ships the correct sim. There's a test for precisely that.
 
-### Tier B — generated behaviour, without generated code
-
-The model returns a JSON tree from a bounded vocabulary, via a forced tool call. Two things push it
-past plain UI-as-data:
-
-- **`science` nodes** embed a real Tier A sim inside a generated screen.
-- **`computed` / `formulaChart` nodes** carry model-written formulas, evaluated by
-  [`lib/expr.ts`](lib/expr.ts) — a recursive-descent parser over whitelisted maths. No `eval`, no
-  `new Function`, no property access, no globals, no loops in the grammar. `window`, `alert(1)` and
-  `x.y` are all parse errors.
+If a component here doesn't have a pin, it shouldn't be here. Circuits and refraction used to be in
+this list; the model builds better versions of both on demand.
 
 ### Tier C — the escape hatch
 
@@ -93,8 +117,8 @@ The model writes a whole interactive, rendered in `<iframe sandbox="allow-script
 `default-src 'none'` and no `connect-src`. Our design tokens are injected so generated labs look
 like the app; an injected `reportEvent()` bridge sends interactions back to the Guide.
 
-While it streams, a provisional preview shows the lab's shape appearing, so a 40 second build reads
-as the AI working rather than a hang.
+While it streams, a provisional preview shows the lab's shape appearing, so the 75-95 second build
+reads as the AI working rather than a hang.
 
 ## Layout
 
@@ -102,11 +126,14 @@ as the AI working rather than a hang.
 lib/contract.ts        the SSE event contract — the load-bearing seam
 lib/router.ts          provider chain (Claude primary → OpenAI fallback), config-driven
 lib/pipeline.ts        the five steps + the fallback ladder
-lib/expr.ts            the restricted formula evaluator
+lib/expr.ts            the restricted formula evaluator (no eval, ever)
+lib/sim.ts             THE GENERATIVE SANDBOX — how the model designs an experiment
 lib/uispec.ts          Tier B vocabulary + validation
+lib/describe.ts        tells the Guide what's on screen (it can't see the lab)
 lib/sandbox.ts         Tier C prompt, safety checks, srcdoc assembly
-lib/science/catalog.ts slot schemas + faithful pins
-components/science/    the five sims
+lib/science/catalog.ts the 3 pinned sims
+components/science/GenerativeSim.tsx  runs whatever the model designed
+components/science/*Sandbox.tsx       the 3 pinned sims
 components/Renderer.tsx  Tier B runtime
 components/Sandbox.tsx   Tier C host
 app/api/pipeline/route.ts  the one endpoint
@@ -114,14 +141,15 @@ app/api/pipeline/route.ts  the one endpoint
 
 ## Verified
 
-Live against the API on 2026-07-15, plus `bun test` (72 tests), `tsc --noEmit`, and
+Live against the API on 2026-07-15, plus `bun test` (118 tests), `tsc --noEmit`, and
 `bun run build` — all clean.
 
 | Flow | Measured | Result |
 |---|---|---|
 | Fast pass → gate | ~5s | Checker names the osmosis misconception before anything is built |
-| Tier A | ~3s | Pins held against the model's own fill; picked 0 M vs 1.5 M for maximum contrast |
-| Tier B | ~17s | 22-node composed screen |
+| Tier A (pinned) | ~3s | Pins held against the model's own fill; picked 0 M vs 1.5 M for maximum contrast |
+| Tier B, screen only | ~17s | 22-node composed screen |
+| **Tier B, designing a sim** | **~40s** | A pendulum, twice: full nonlinear equation of motion, correct 2.01s period, a "g (planet)" slider |
 | Tier C | 75–95s | 22–28k char lab, real `Math.asin(n2/n1)`, no network refs |
 | Guide | ~2–3s | Responds to the actual values the student used |
 

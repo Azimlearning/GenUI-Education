@@ -15,13 +15,17 @@
 import { useMemo } from "react";
 import type { UINode } from "@/lib/uispec";
 import { evaluate } from "@/lib/expr";
+import { SimSpec } from "@/lib/sim";
 import { ScienceComponent } from "./science";
+import GenerativeSim from "./science/GenerativeSim";
 
 export type InputValues = Record<string, string | number>;
 
 interface RenderCtx {
   values: InputValues;
   setValue: (id: string, value: string | number) => void;
+  /** Bulk-set, for a sim sharing its sliders with the rest of the screen. */
+  publishValues: (values: Record<string, number>) => void;
   onAction: (action: string, label: string) => void;
   onScienceInteraction: (action: string, values: Record<string, string | number | boolean>) => void;
 }
@@ -280,10 +284,39 @@ export function RenderNode({ node, ctx }: { node: UINode; ctx: RenderCtx }) {
         />
       );
 
+    case "sim":
+      return <SimNode node={node} ctx={ctx} />;
+
     default:
       // Degrade visibly. A screen with one unknown node is still a useful screen.
       return <div className="g-unknown">Unsupported node: {node.type}</div>;
   }
+}
+
+/**
+ * A model-designed experiment.
+ *
+ * Re-parsed here rather than trusted: the spec was validated server-side, but
+ * this node arrives inside a free-form tree and a malformed one should cost a
+ * placeholder, not the screen.
+ */
+function SimNode({ node, ctx }: { node: UINode; ctx: RenderCtx }) {
+  const parsed = useMemo(() => SimSpec.safeParse(node.spec), [node.spec]);
+  if (!parsed.success) {
+    return (
+      <div className="g-unknown">
+        Generated simulation was malformed:{" "}
+        {parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}
+      </div>
+    );
+  }
+  return (
+    <GenerativeSim
+      spec={parsed.data}
+      onInteraction={ctx.onScienceInteraction}
+      onPublish={ctx.publishValues}
+    />
+  );
 }
 
 /** A model-written formula, recomputed on every input change. */

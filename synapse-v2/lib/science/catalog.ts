@@ -1,8 +1,20 @@
 /**
- * The Tier A catalog: pre-built science components the model specialises by
- * filling typed slots.
+ * The Tier A catalog: the short list of experiments we do NOT let the model
+ * design.
  *
- * Two ideas do the work here.
+ * This used to be five components and the default path. It is now three, and
+ * the exception. Everything else — circuits, refraction, reaction vessels,
+ * anything a question asks for — is designed per question by the model as a
+ * generative sim (see ../sim.ts), because a fixed library can only ever answer
+ * the questions somebody anticipated.
+ *
+ * What survives here earns its place: each one targets a misconception that is
+ * documented in the SPM cohort, where being right matters more than being
+ * bespoke, and where a pin can guarantee it. Osmosis (water moves toward higher
+ * solute), forces (moving is not the same as accelerating), bonding (transfer
+ * vs share). If a component here does not have a pin, it should not be here.
+ *
+ * Two ideas do the work.
  *
  * 1. SLOTS. Each component declares a Zod schema of bounded, typed props. The
  *    model fills them from the student's specifics, so "show me diffusion" and
@@ -141,68 +153,9 @@ const bonding: ScienceComponent<typeof BondingSlots> = {
   evidence_slots: ["pairs"],
 };
 
-/* --------------------------------------------------------------- circuit */
-
-const CircuitSlots = z.object({
-  emf_v: z.number().min(0).max(24).describe("Supply voltage"),
-  resistors_ohm: z
-    .array(z.number().min(0.5).max(100))
-    .min(1)
-    .max(4)
-    .describe("Resistance of each resistor"),
-  topology: z.enum(["series", "parallel"]).default("series"),
-  show_calculation: z.boolean().default(true),
-  predict_prompt: z
-    .string()
-    .default("What happens to the total current if you add another resistor?"),
-});
-
-const circuit: ScienceComponent<typeof CircuitSlots> = {
-  id: "circuit-sandbox",
-  title: "Circuit builder",
-  subject: "physics",
-  summary:
-    "Series/parallel circuits with a live Ohm's law solve. Student edits resistances and supply voltage; total resistance, current and per-resistor voltage drop update live, with the working shown.",
-  slots: CircuitSlots,
-  pins: { law: "ohm" },
-  manipulables: ["supply voltage", "each resistance", "series or parallel"],
-  evidence_slots: ["emf_v", "resistors_ohm", "topology"],
-};
-
-/* ----------------------------------------------------------- refraction */
-
-const RefractionSlots = z.object({
-  medium_1: z.string().default("air").describe("Incident medium name"),
-  medium_2: z.string().default("water").describe("Refracting medium name"),
-  n1: z.number().min(1).max(3).describe("Refractive index of medium 1"),
-  n2: z.number().min(1).max(3).describe("Refractive index of medium 2"),
-  incidence_deg: z.number().min(0).max(89).default(30),
-  predict_prompt: z
-    .string()
-    .default("Which way will the ray bend as it enters the second medium?"),
-});
-
-const refraction: ScienceComponent<typeof RefractionSlots> = {
-  id: "refraction-sandbox",
-  title: "Refraction and total internal reflection",
-  subject: "physics",
-  summary:
-    "A light ray crossing a boundary, solved with Snell's law. Drag the angle of incidence; the refracted ray tracks it and total internal reflection appears on its own once past the critical angle.",
-  slots: RefractionSlots,
-  pins: { law: "snell" },
-  manipulables: ["angle of incidence", "both refractive indices"],
-  evidence_slots: ["n1", "n2", "medium_1", "medium_2"],
-};
-
 /* --------------------------------------------------------------- export */
 
-export const CATALOG: ScienceComponent[] = [
-  osmosis,
-  motion,
-  bonding,
-  circuit,
-  refraction,
-];
+export const CATALOG: ScienceComponent[] = [osmosis, motion, bonding];
 
 export const BY_ID = new Map(CATALOG.map((c) => [c.id, c]));
 

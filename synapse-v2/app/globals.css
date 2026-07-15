@@ -211,6 +211,7 @@ code, .working code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
 .sci[data-subject="biology"] { --subject: var(--bio); }
 .sci[data-subject="chemistry"] { --subject: var(--chem); }
 .sci[data-subject="physics"] { --subject: var(--phys); }
+.sci[data-subject="generated"] { --subject: var(--accent); }
 
 .sci-head { display: flex; align-items: center; gap: 8px; }
 .sci-head h3 { margin: 0; font-size: 15px; flex: 1; }
@@ -544,3 +545,15 @@ code, .working code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
 @media (prefers-reduced-motion: reduce) {
   .skel, .preview-item { animation: none; }
 }
+
+/* ------------------------------------------------- generated experiments */
+
+.sim-stage {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+}
+/* Height comes from the aspect ratio of the model's own viewBox, so a tall
+   beaker and a wide track both fit without a fixed height to overflow. */
+.sim-svg { width: 100%; height: auto; display: block; }
+.sim-svg text { font-family: ui-sans-serif, system-ui, sans-serif; }
+.sim-caption { margin: 0; font-size: 11.5px; color: var(--muted); }

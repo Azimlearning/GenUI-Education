@@ -23,6 +23,7 @@ import {
 import { runStructured, runStreaming, type Message } from "./router";
 import { CATALOG, catalogForPrompt, evidenceFor, fillSlots } from "./science/catalog";
 import { RENDER_UI_TOOL, UISpecSchema, inspectSpec, tierBSystemPrompt } from "./uispec";
+import { SimSpec } from "./sim";
 import { TIER_C_SYSTEM, extractHtml, validateGenerated } from "./sandbox";
 
 type Emit = (event: SynapseEvent) => void;
@@ -99,21 +100,29 @@ function planSystemPrompt(): string {
 You do three things in one pass, then call plan_experiment.
 
 # 1. PLAN
-Decide what experiment actually answers this student's question, and pick the LOWEST tier that can express it faithfully. Lower tiers are faster and more trustworthy.
+Decide what experiment actually answers this student's question, then pick the tier that builds it.
 
-Tier A — a pre-built science sim, specialised with the student's specifics. The machinery is
-pre-built and correct; you only fill its slots. PREFER THIS whenever a component genuinely covers
-the question. Available:
+**Tier B is the default. You design the experiment yourself.** Tier B gives you a simulation
+primitive: you write the state variables, the formulas that step them, and a scene of shapes whose
+positions are formulas. From those you can build a beaker, a pendulum, a ray diagram, a circuit, a
+reaction vessel, a graph — whatever this question needs. You are not choosing from a shelf; you are
+designing the lab. Use Tier B unless one of the two exceptions below applies.
+
+Tier A — three pre-built sims, and ONLY these three. Each exists because it targets a specific
+documented SPM misconception where the science is guaranteed in code rather than trusted to you.
+Choose Tier A **only when the student's question is squarely about one of these misconceptions** —
+not merely when the topic is adjacent. "Which way does water move in osmosis?" is Tier A. "How does
+a kidney use osmosis?" is Tier B, even though it says osmosis, because the pre-built sim answers a
+question they did not ask.
 
 ${catalogForPrompt()}
 
-Tier B — no single sim fits, but the screen can be composed from layout, text, charts, controls and
-live formulas (and may embed a Tier A sim inside it). Use for comparisons, multi-step reasoning,
-calculators, relationships between variables, anything the catalog doesn't cover.
+Tier C — a full custom-coded interactive. Slow (over a minute) and least predictable. Escalate only
+when the experiment genuinely cannot be expressed as shapes driven by formulas: it needs a bespoke
+game mechanic, freeform drawing, or text/DOM interaction Tier B has no vocabulary for. Most physics,
+chemistry and biology experiments CAN be expressed in Tier B — reach for C rarely.
 
-Tier C — the question needs a bespoke interactive that neither tier can express (a novel apparatus,
-a custom animation, a game-like mechanic). Slowest and least predictable. Escalate only when B
-genuinely cannot express it.
+When in doubt between A and B, choose B. When in doubt between B and C, choose B.
 
 # 2. CHECK
 Read the student's OWN WORDING for a claim that contradicts the real science. Malaysian SPM
@@ -325,10 +334,38 @@ async function generateTierB(
     type: "pipeline_step",
     step: "generator",
     status: "done",
-    detail: `Composed a ${report.nodeCount}-node screen`,
-    evidence: [`title = ${JSON.stringify(spec.title ?? "")}`],
+    detail: report.simCount
+      ? `Designed ${report.simCount === 1 ? "an experiment" : `${report.simCount} experiments`} from scratch (${report.nodeCount}-node screen)`
+      : `Composed a ${report.nodeCount}-node screen`,
+    // The model's own physics, on screen. This is the audit surface for a
+    // generated experiment: no pin can guarantee a sim nobody pre-built, so
+    // the formulas it runs on are shown instead of hidden.
+    evidence: [`title = ${JSON.stringify(spec.title ?? "")}`, ...simEvidence(spec.root)],
   });
   return true;
+}
+
+/** Pull each generated sim's prediction physics out for the pipeline panel. */
+function simEvidence(root: unknown): string[] {
+  const out: string[] = [];
+  const walk = (node: unknown) => {
+    if (!node || typeof node !== "object") return;
+    const n = node as Record<string, unknown>;
+    if (n.type === "sim") {
+      const parsed = SimSpec.safeParse(n.spec);
+      if (parsed.success) {
+        for (const [key, formula] of Object.entries(parsed.data.step)) {
+          out.push(`step: ${key} = ${formula}`);
+        }
+        for (const o of parsed.data.predict?.options ?? []) {
+          out.push(`"${o.label}" when ${o.when}`);
+        }
+      }
+    }
+    if (Array.isArray(n.children)) n.children.forEach(walk);
+  };
+  walk(root);
+  return out.slice(0, 8);
 }
 
 /** Tier C: write a whole self-contained interactive, streamed as it comes. */
@@ -407,7 +444,20 @@ export async function runGenerator(
     evidence: [],
   });
 
-  const ladder: Tier[] = plan.tier === "C" ? ["C", "B", "A"] : plan.tier === "B" ? ["B", "A"] : ["A"];
+  /**
+   * The ladder only degrades into Tier A when the Planner actually chose a
+   * component — meaning the question really is one of the three pinned
+   * misconceptions.
+   *
+   * It used to always end in A via a keyword guess, which was fine when the
+   * catalog was a broad library. With three components it isn't: a failed
+   * pendulum "fell back" to a trolley and confidently answered a question
+   * nobody asked. A wrong lab is worse than an honest explanation, so when
+   * there's no pinned component for the topic, that's where it stops.
+   */
+  const hasPinnedComponent = plan.pattern !== null;
+  const full: Tier[] = plan.tier === "C" ? ["C", "B"] : plan.tier === "B" ? ["B"] : ["A"];
+  const ladder: Tier[] = hasPinnedComponent && plan.tier !== "A" ? [...full, "A"] : full;
 
   for (const tier of ladder) {
     const isFallback = tier !== plan.tier;
@@ -426,7 +476,7 @@ export async function runGenerator(
       if (tier === "C") ok = await generateTierC(prompt, history, emit);
       else if (tier === "B") ok = await generateTierB(prompt, history, emit);
       else {
-        // Falling back into A with no planned component: use the closest one.
+        // Only reached when the Planner named a component, so no guessing.
         const pattern = plan.pattern ?? closestComponent(prompt);
         ok = await generateTierA(pattern, prompt, history, emit);
       }
@@ -450,16 +500,18 @@ export async function runGenerator(
   return { tier: null, fellBackFrom: plan.tier };
 }
 
-/** Crude keyword match — only ever used as the last rung of the fallback. */
+/**
+ * Crude keyword match, only ever used as the last rung of the fallback chain.
+ * The catalog is deliberately tiny now, so this is a coarse net by design: if
+ * nothing matches, the motion sandbox at least shows real physics.
+ */
 function closestComponent(prompt: string): string {
   const p = prompt.toLowerCase();
   const hit = (words: string[]) => words.some((w) => p.includes(w));
   if (hit(["osmosis", "diffusion", "membrane", "concentration", "solute", "turgor", "cell"]))
     return "concentration-gradient-sandbox";
-  if (hit(["bond", "ionic", "covalent", "electron", "molecule"])) return "bonding-explorer";
-  if (hit(["circuit", "resistor", "ohm", "current", "voltage"])) return "circuit-sandbox";
-  if (hit(["refract", "light", "snell", "lens", "ray", "internal reflection"]))
-    return "refraction-sandbox";
+  if (hit(["bond", "ionic", "covalent", "electron", "molecule", "electronegativity"]))
+    return "bonding-explorer";
   return "motion-sandbox";
 }
 
@@ -480,6 +532,7 @@ export async function runGuide(
   prompt: string,
   history: Turn[],
   emit: Emit,
+  context: string | null = null,
 ): Promise<void> {
   emit({
     type: "pipeline_step",
@@ -496,13 +549,16 @@ export async function runGuide(
   const guide = await runStructured({
     role: "fast",
     system: `You are the Guide for Synapse. A Form 4-5 KSSM SPM student is working with an interactive experiment you built. They just did something. Respond to what they ACTUALLY did.
-
+${context ? `\n# What is on their screen right now\n${context}\n` : ""}
 Rules:
 - Interpret what their specific manipulation demonstrated. Name the values they used.
 - If they made a prediction and it was wrong, say so directly and point at what the sim showed.
 - Push them toward the NEXT prediction. End with a question they can test by changing something.
 - 2-4 sentences. Plain language, no markdown, no lists. Talk like a good teacher standing next to them.
-- Never praise a manipulation that showed nothing. Tell them what to change to see the effect.`,
+- Never praise a manipulation that showed nothing. Tell them what to change to see the effect.
+- You have the experiment's design above. Name the actual controls and refer to the formulas it
+  runs. NEVER ask the student what they changed or what the sim shows — you built it, and the
+  values are in the event. Asking reveals you are guessing.`,
     messages: [
       ...history,
       {

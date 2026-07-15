@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       try {
         // --- Guide round-trip ---------------------------------------------
         if (body.interaction) {
-          await runGuide(body.interaction, body.prompt, body.history, emit);
+          await runGuide(body.interaction, body.prompt, body.history, emit, body.context);
           emit({ type: "done", tier: null, fell_back_from: null, ms: Date.now() - started });
           return;
         }
