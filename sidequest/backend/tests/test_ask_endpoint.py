@@ -15,12 +15,17 @@ async def _noop(*args, **kwargs):
     return None
 
 
+def _sync_noop(*args, **kwargs):
+    return None
+
+
 @pytest.fixture(autouse=True)
 def no_db(monkeypatch):
     monkeypatch.setattr(ask_module, "ensure_session", _noop)
     monkeypatch.setattr(ask_module, "save_message", _noop)
-    monkeypatch.setattr(router_module, "record_trace", _noop)
-    monkeypatch.setattr(explainer_module, "record_trace", _noop)
+    # record_trace is fire-and-forget (sync API over a background write)
+    monkeypatch.setattr(router_module, "record_trace", _sync_noop)
+    monkeypatch.setattr(explainer_module, "record_trace", _sync_noop)
 
 
 def parse_frames(raw: str) -> list[tuple[int, str, dict]]:

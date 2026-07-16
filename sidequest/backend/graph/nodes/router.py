@@ -87,7 +87,13 @@ async def router_node(state: PipelineState, config: RunnableConfig) -> PipelineS
                 logger.warning("router %s", error)
 
     ctx.add_usage(*tokens)
-    await record_trace(
+
+    # Emit meta first: the client is waiting on it, and the trace write is
+    # background telemetry (Phase 0 has no cache node; every request is a miss).
+    await ctx.emit(
+        MetaPayload(intent=intent.public, canonical_concept=intent.canonical_concept, cache="miss")
+    )
+    record_trace(
         run_id=ctx.run_id,
         session_id=ctx.session_id,
         node="router",
@@ -98,10 +104,5 @@ async def router_node(state: PipelineState, config: RunnableConfig) -> PipelineS
         cost_usd=tokens[2],
         latency_ms=int((time.monotonic() - started) * 1000),
         error=error,
-    )
-
-    # Phase 0 has no cache node yet; every request is a miss by definition.
-    await ctx.emit(
-        MetaPayload(intent=intent.public, canonical_concept=intent.canonical_concept, cache="miss")
     )
     return {"intent": intent, "canonical_concept": intent.canonical_concept}

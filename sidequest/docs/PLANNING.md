@@ -29,11 +29,14 @@ Living document. The coding agent updates checklists as tasks complete. Phases a
 submitted, `meta` rendered, text streamed token by token, `done` closed the stream,
 29 backend tests and 8 frontend tests green, ruff/eslint/tsc clean.
 
-**Caveat, carry into Phase 1:** the live model path is unverified. No
-`ANTHROPIC_API_KEY` was available at Phase 0 close, so the Router and Explainer
-have never been exercised against a real Claude response, and no trace row has
-been written with real token counts or cost. First Phase 1 task is to run a live
-query and confirm the Router returns parseable strict JSON and traces populate.
+**Caveat resolved 2026-07-16:** live-model smoke ran with a real key. Router
+returned parseable strict JSON on every attempt (5 queries, zero parse retries),
+canonical_concept normalization matched the prompt rules exactly
+(`ice_water_density_buoyancy`, `wave_interference_superposition`), G10 routed
+text_only with the correct value, and real usage flowed into `done`
+(~0.0026 USD per text-only run on haiku). Trace rows remain unverified because
+neither Docker nor Postgres exists on the dev machine; confirm rows on the
+first `make dev` + `make migrate` run.
 
 ### Phase 0 findings that shape Phase 1
 
@@ -53,12 +56,26 @@ query and confirm the Router returns parseable strict JSON and traces populate.
    0.159.0, the last release that ships it (verified: defines `THREE` global,
    REVISION 159). A future three.js upgrade requires an ES-module strategy, which
    the single-document artifact format does not currently allow.
+4. **DB writes must never sit on the stream's critical path.** With the database
+   down, awaited best-effort writes (session upsert, message insert, trace row)
+   each cost ~4s of connect timeout and pushed first token to 19s. Fixed: traces
+   and chat persistence are fire-and-forget background tasks
+   (`services/background.py`) with a 2s engine connect timeout, and `meta` is
+   emitted before the trace write. Keep this rule for every node added later.
+5. **Sequential Router then Explainer costs ~4.4s to first token warm** (two
+   LLM round trips back to back; measured on haiku, 3 queries). This is the
+   baseline the Phase 3 parallel-branch work must beat to hit the sub-2s budget.
+6. **Router prompt tuning input:** G1 ("why does ice float?") routed to
+   explorable_diagram; golden expects simulation. Same for wave interference.
+   Not a Phase 1 blocker, but Router prompt v1 tuning should revisit the
+   simulation vs explorable_diagram boundary ("continuous process you perturb"
+   vs "structure you step through").
 
 ## Phase 1 — Tier 3 Core
 
 **Goal:** real artifacts, no verification yet.
 
-- [ ] Live-model smoke: one real query end to end, Router JSON parses, traces show tokens and cost (carried from Phase 0)
+- [x] Live-model smoke: one real query end to end, Router JSON parses, usage and cost flow (2026-07-16; trace rows still pending a DB-up run, see Phase 0 findings 4)
 - [ ] Resolve the artifact CSP / opaque-origin conflict (Phase 0 finding 2) before the post-processor injects CSP
 - [ ] Router prompt v1 with canonical_concept output, JSON schema validation
 - [ ] Artifact Planner node + prompt v1

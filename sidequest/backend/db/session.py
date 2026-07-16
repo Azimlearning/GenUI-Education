@@ -16,7 +16,13 @@ from config import get_settings
 
 @lru_cache
 def get_engine() -> AsyncEngine:
-    return create_async_engine(get_settings().database_url, pool_pre_ping=True)
+    # Short connect timeout: DB writes here are off the request's critical
+    # path, and a down database must fail fast, not hang for seconds.
+    return create_async_engine(
+        get_settings().database_url,
+        pool_pre_ping=True,
+        connect_args={"timeout": 2},
+    )
 
 
 @lru_cache

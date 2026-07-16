@@ -74,7 +74,7 @@ async def explainer_node(state: PipelineState, config: RunnableConfig) -> Pipeli
 
     ctx.add_usage(tokens_in, tokens_out, cost)
     await ctx.emit(TextDonePayload())
-    await record_trace(
+    record_trace(
         run_id=ctx.run_id,
         session_id=ctx.session_id,
         node="explainer",
