@@ -58,10 +58,10 @@ function ThemeToggle() {
     transition.ready
       .then(() => {
         document.documentElement.animate(
-          { clipPath: ["circle(0% at 50% 50%)", "circle(150% at 50% 50%)"] },
+          { clipPath: ["circle(0% at 50% 0%)", "circle(160% at 50% 0%)"] },
           {
-            duration: 520,
-            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            duration: 820,
+            easing: "cubic-bezier(0.65, 0, 0.35, 1)",
             pseudoElement: "::view-transition-new(root)",
           }
         );
@@ -77,7 +77,7 @@ function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      className="grid h-8 w-8 place-items-center rounded-full border-2 border-line text-ink-dim transition-colors hover:text-ink"
+      className="grid h-8 w-8 place-items-center rounded-full border-2 border-line bg-card text-ink-dim shadow-[0_2px_0_var(--line-2)] hover:text-ink"
     >
       {/* Render a stable icon until mounted to avoid a hydration mismatch. */}
       {mounted && dark ? (
