@@ -5,6 +5,10 @@ experiment type and subject: query -> { artifact_type, domain, complexity }.
 The teacher is our production LLM Router (haiku + prompts/router.md); the
 student is a tiny text model that runs in milliseconds on CPU.
 
+**For what happens once the full KSSM dataset is collected** (ingestion at
+scale, topic grounding, regeneration, production integration), see
+[`../IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md).
+
 ## Why
 
 | | LLM Router (today) | Distilled student |

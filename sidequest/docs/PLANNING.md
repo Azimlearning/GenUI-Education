@@ -205,7 +205,8 @@ whether the production Router's classification step (query -> artifact_type,
 domain, complexity) can be distilled into a small offline TensorFlow model
 for near-zero latency and cost, scoped to Malaysian KSSM Form 4/5 Biology,
 Chemistry, and Physics. Full detail: `ml/router-distill/README.md` and
-`ml/rag/README.md`.
+`ml/rag/README.md`. The phased plan for once the full dataset (all 6
+subject/form combinations) is collected: `ml/IMPLEMENTATION_PLAN.md`.
 
 **What was built:**
 - `ml/router-distill/kssm_topics.py`: illustrative topic taxonomy across all

@@ -1,17 +1,21 @@
-# Curriculum RAG (architecture only, no content yet)
+# Curriculum RAG
 
 Retrieval pipeline to ground the Planner/Generator (and later the dataset
 generators in `ml/router-distill/`) in real KSSM Form 4/5 textbook or syllabus
-text, instead of the hand-drafted `kssm_topics.py` topic list. No source
-files are checked in yet; this is the wiring, ready for content to be
-dropped in.
+text, instead of the hand-drafted `kssm_topics.py` topic list.
+
+**For ingesting the full dataset once collected** (all 6 subject/form
+combinations, topic grounding, downstream regeneration), see
+[`../IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md).
 
 ## Status
 
-Scaffolded, self-tested with a synthetic example, zero real curriculum
-content. Nothing here is used by the live Axiom backend or by the
-router-distill dataset generators yet; wiring that in is future work, listed
-at the bottom.
+Scaffolded and self-tested with a synthetic example. Proof-of-concept run
+against 2 real biology experiment PDFs (2026-07-18): extraction clean, top
+retrieval result correct. `sources/biology/form4/` has those 2 real files;
+every other subject/form slot is still empty pending the full dataset.
+Nothing here is used by the live Axiom backend or by the router-distill
+dataset generators yet; wiring that in is future work, listed at the bottom.
 
 ## Why a from-scratch TF-IDF baseline, not embeddings
 
