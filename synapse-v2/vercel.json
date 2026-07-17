@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "bun install",
+  "regions": ["sin1"],
+  "functions": {
+    "app/api/pipeline/route.ts": {
+      "maxDuration": 300
+    }
+  }
+}
