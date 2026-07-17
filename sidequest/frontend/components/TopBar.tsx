@@ -29,15 +29,46 @@ function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  const toggle = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
+  const applyTheme = (next: "light" | "dark") => {
     document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem("axiom-theme", next);
     } catch {
-      /* private mode: fall back to session-only */
+      /* private mode: session-only, no persistence */
     }
+  };
+
+  const toggle = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => { ready: Promise<void> };
+    };
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // No View Transitions support (or reduced motion): swap instantly.
+    if (!doc.startViewTransition || reduce) {
+      applyTheme(next);
+      return;
+    }
+
+    // The sweep: the new theme is revealed by a circle expanding from the centre.
+    const transition = doc.startViewTransition(() => applyTheme(next));
+    transition.ready
+      .then(() => {
+        document.documentElement.animate(
+          { clipPath: ["circle(0% at 50% 50%)", "circle(150% at 50% 50%)"] },
+          {
+            duration: 520,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            pseudoElement: "::view-transition-new(root)",
+          }
+        );
+      })
+      .catch(() => {
+        /* transition skipped (e.g. tab hidden): theme already applied */
+      });
   };
 
   const dark = theme === "dark";

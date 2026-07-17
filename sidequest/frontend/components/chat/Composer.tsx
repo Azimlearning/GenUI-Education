@@ -48,7 +48,7 @@ export function Composer({
         maxLength={2000}
         placeholder={hero ? "Why does ice float?" : "Ask a science question…"}
         aria-label="Your science question"
-        className={`flex-1 resize-none rounded-card border-2 border-line-2 bg-card text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-primary focus:ring-4 focus:ring-primary-soft ${
+        className={`flex-1 resize-none rounded-card border-2 border-line-2 bg-card text-ink outline-none placeholder:text-ink-faint focus:border-primary focus:ring-4 focus:ring-primary-soft ${
           hero
             ? "min-h-[58px] px-5 py-4 text-lg font-semibold"
             : "min-h-[48px] px-4 py-3 text-[15px] font-medium"
