@@ -4,8 +4,13 @@
 
 /*
  * Axiom palette and form language. Implements design/BRAND.md.
- * Light-committed by design: teal = working, green = verified, gold = reward.
- * No glow, no background grid, no gradient wallpaper.
+ * Teal = working, green = verified, gold = reward. No glow, no background
+ * grid, no gradient wallpaper.
+ *
+ * Theming: :root is light. Dark is retuned (not inverted): a warm near-black
+ * canvas, accents lifted a step, soft chip text brightened so it stays legible.
+ * It applies from the system preference, and the top-bar toggle stamps
+ * data-theme on <html> to override the system in either direction.
  */
 :root {
   --canvas: #f7f8f4;
@@ -21,6 +26,8 @@
   --primary-btn: #0a776b;
   --primary-edge: #075247;
   --primary-soft: #e1f3ef;
+  --primary-ink: #0a776b; /* teal used as text on soft / canvas */
+  --primary-line: #cbe7e1; /* teal hairline (the tutor bubble) */
 
   --verify: #1fa35b;
   --verify-edge: #157a42;
@@ -32,6 +39,69 @@
 
   --warn: #b5720c;
   --danger: #c24a42;
+}
+
+/* Dark tokens. Applied from the system preference unless the user forced
+ * light, and always when the user forced dark. Values are duplicated across
+ * the two selectors on purpose (plain CSS has no shared variable block). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas: #0e1512;
+    --band: #131b17;
+    --card: #16201c;
+    --ink: #e9efea;
+    --ink-dim: #a4b2ab;
+    --ink-faint: #6b7a73;
+    --line: #26302b;
+    --line-2: #34403a;
+
+    --primary: #16b6a3;
+    --primary-btn: #0a776b;
+    --primary-edge: #063f38;
+    --primary-soft: #123a33;
+    --primary-ink: #5ad6c5;
+    --primary-line: #204a42;
+
+    --verify: #22a95d;
+    --verify-edge: #12633a;
+    --verify-soft: #16291e;
+    --verify-ink: #4ad088;
+
+    --gold: #f0b02a;
+    --gold-soft: #2b2410;
+
+    --warn: #d89a3a;
+    --danger: #e06b62;
+  }
+}
+
+:root[data-theme="dark"] {
+  --canvas: #0e1512;
+  --band: #131b17;
+  --card: #16201c;
+  --ink: #e9efea;
+  --ink-dim: #a4b2ab;
+  --ink-faint: #6b7a73;
+  --line: #26302b;
+  --line-2: #34403a;
+
+  --primary: #16b6a3;
+  --primary-btn: #0a776b;
+  --primary-edge: #063f38;
+  --primary-soft: #123a33;
+  --primary-ink: #5ad6c5;
+  --primary-line: #204a42;
+
+  --verify: #22a95d;
+  --verify-edge: #12633a;
+  --verify-soft: #16291e;
+  --verify-ink: #4ad088;
+
+  --gold: #f0b02a;
+  --gold-soft: #2b2410;
+
+  --warn: #d89a3a;
+  --danger: #e06b62;
 }
 
 body {

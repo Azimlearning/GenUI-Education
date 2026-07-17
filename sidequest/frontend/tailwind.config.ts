@@ -27,6 +27,8 @@ const config: Config = {
           btn: "var(--primary-btn)",
           edge: "var(--primary-edge)",
           soft: "var(--primary-soft)",
+          ink: "var(--primary-ink)",
+          line: "var(--primary-line)",
         },
         verify: {
           DEFAULT: "var(--verify)",

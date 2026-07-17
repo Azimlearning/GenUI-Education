@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 /** The learning-app chrome (design/FLOW.md section 0): the wordmark, plus light
  *  motivators (streak, gems) so Axiom reads as a place you come back to. The
  *  counters are non-interactive labels, never nag banners. */
@@ -12,6 +14,62 @@ export function Logomark({ size = 28 }: { size?: number }) {
         <circle r="3.6" fill="var(--ink)" />
       </g>
     </svg>
+  );
+}
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const current =
+      (document.documentElement.dataset.theme as "light" | "dark" | undefined) ??
+      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    setTheme(current);
+    setMounted(true);
+  }, []);
+
+  const toggle = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem("axiom-theme", next);
+    } catch {
+      /* private mode: fall back to session-only */
+    }
+  };
+
+  const dark = theme === "dark";
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      className="grid h-8 w-8 place-items-center rounded-full border-2 border-line text-ink-dim transition-colors hover:text-ink"
+    >
+      {/* Render a stable icon until mounted to avoid a hydration mismatch. */}
+      {mounted && dark ? (
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden>
+          <circle cx="10" cy="10" r="4" stroke="currentColor" strokeWidth="1.6" />
+          <path
+            d="M10 1.5v2.5M10 16v2.5M18.5 10H16M4 10H1.5M15.5 4.5l-1.8 1.8M6.3 13.7l-1.8 1.8M15.5 15.5l-1.8-1.8M6.3 6.3L4.5 4.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          />
+        </svg>
+      ) : (
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden>
+          <path
+            d="M16.5 11.5A6.5 6.5 0 0 1 8.5 3.5a6.5 6.5 0 1 0 8 8z"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
+    </button>
   );
 }
 
@@ -55,6 +113,8 @@ export function TopBar() {
           </svg>
           120
         </span>
+
+        <ThemeToggle />
 
         <span className="grid h-8 w-8 place-items-center rounded-full bg-primary-btn font-display text-[13px] font-bold text-white shadow-[0_3px_0_var(--primary-edge)]">
           A

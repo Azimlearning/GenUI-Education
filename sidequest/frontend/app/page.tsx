@@ -72,9 +72,9 @@ export default function ChatPage() {
         <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-5 pb-16 pt-8">
           <div className="flex items-end gap-3">
             <Mascot mood="happy" size={92} />
-            <div className="relative mb-2 rounded-2xl border-2 border-[#cbe7e1] bg-primary-soft px-4 py-2.5 font-display text-[15px] font-semibold text-primary-btn">
+            <div className="relative mb-2 rounded-2xl border-2 border-primary-line bg-primary-soft px-4 py-2.5 font-display text-[15px] font-semibold text-primary-ink">
               Hi, I&apos;m Axi. What should we figure out today?
-              <span className="absolute -left-1.5 bottom-3 h-3 w-3 rotate-45 border-b-2 border-l-2 border-[#cbe7e1] bg-primary-soft" />
+              <span className="absolute -left-1.5 bottom-3 h-3 w-3 rotate-45 border-b-2 border-l-2 border-primary-line bg-primary-soft" />
             </div>
           </div>
 

@@ -47,7 +47,7 @@ export function ProgressStages({
     >
       <div className="flex items-center justify-between py-3">
         <span className="font-display text-sm font-semibold text-ink">{current}</span>
-        <span className="rounded-full bg-primary-soft px-2.5 py-1 font-display text-[13px] font-semibold text-primary-btn">
+        <span className="rounded-full bg-primary-soft px-2.5 py-1 font-display text-[13px] font-semibold text-primary-ink">
           {stepNumber} of {shown.length}
         </span>
       </div>
@@ -98,7 +98,7 @@ export function ProgressStages({
                   state === "done"
                     ? "text-verify-ink"
                     : state === "active"
-                      ? "text-primary-btn"
+                      ? "text-primary-ink"
                       : "text-ink-faint"
                 }`}
               >

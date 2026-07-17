@@ -29,9 +29,20 @@ export const metadata: Metadata = {
   description: "Ask a science question. Watch it get built, and checked.",
 };
 
+// Set the theme before first paint so there is no light-to-dark flash. Reads a
+// saved choice, else the system preference. The top-bar toggle updates both.
+const themeScript = `try{var t=localStorage.getItem('axiom-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.theme=t;}catch(e){}`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+    <html
+      lang="en"
+      className={`${display.variable} ${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-screen font-sans antialiased">{children}</body>
     </html>
   );
