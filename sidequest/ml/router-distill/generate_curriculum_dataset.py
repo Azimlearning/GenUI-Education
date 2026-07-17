@@ -15,8 +15,16 @@ standard routing labels, so the classifier's core heads
 schema (backend/schemas/intent.py) per the "keep generic domains, add
 curriculum tag alongside" decision.
 
+Retrieval-anchored generation (2026-07-18, ml/IMPLEMENTATION_PLAN.md Phase
+3): before generating queries for a topic, one real passage is retrieved
+from ml/rag's index (if built) and included in the generation prompt, so
+questions echo the actual textbook's register and vocabulary instead of
+generic international-English science phrasing. Falls back to topic-only
+generation (the v1/kssm1 method) if the RAG index is missing or empty for
+that subject/form, so this never hard-fails a run.
+
 Usage (from this directory):
-  ..\\..\\backend\\.venv\\Scripts\\python generate_curriculum_dataset.py --tag kssm1
+  ..\\..\\backend\\.venv\\Scripts\\python generate_curriculum_dataset.py --tag kssm2 --per-style 6
   ..\\..\\backend\\.venv\\Scripts\\python generate_curriculum_dataset.py --tag dev --topics-limit 4
 """
 
@@ -28,12 +36,20 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent.parent / "backend"))
+sys.path.insert(0, str(HERE.parent / "rag"))
 
 from graph.nodes.router import parse_intent  # noqa: E402
 from services.llm import get_llm  # noqa: E402
 from services.prompts import load_prompt  # noqa: E402
 from config import get_settings  # noqa: E402
 from kssm_topics import all_topics  # noqa: E402
+
+try:
+    from retrieve import load_index as rag_load_index  # noqa: E402
+    from retrieve import search as rag_search  # noqa: E402
+except ImportError:
+    rag_load_index = None
+    rag_search = None
 
 DOMAIN_BY_SUBJECT = {
     "biology": "biology",
@@ -79,14 +95,61 @@ STYLES = [
 ]
 
 GEN_PROMPT = """Generate {k} distinct short questions a Malaysian secondary school student ({form_label}) might type into a science chat app about this specific topic: {topic_label} ({hint}).
-
+{grounding_block}
 Style: {style_desc}
 
 Write in natural student phrasing, mixing formal and casual tone. One question per line, no numbering, no quotes, 4 to 20 words each. Do not repeat phrasings. Do not explicitly mention "Form 4" or "Form 5" in the question text; just ask the science question."""
 
+GROUNDING_BLOCK_TEMPLATE = """
+Real textbook excerpt for this topic (match this vocabulary and register, do not quote it directly):
+\"\"\"{excerpt}\"\"\"
+"""
 
-async def generate_for_topic_style(llm, settings, topic: dict, artifact_type: str, style_desc: str, k: int) -> list[str]:
+_RAG_INDEX = None  # lazy-loaded once, reused across all topics
+
+
+def _rag_index():
+    global _RAG_INDEX
+    if _RAG_INDEX is not None:
+        return _RAG_INDEX
+    if rag_load_index is None:
+        _RAG_INDEX = False
+        return False
+    try:
+        _RAG_INDEX = rag_load_index()
+    except SystemExit:
+        # ml/rag/index/ not built yet; degrade to topic-only generation
+        # rather than hard-failing the whole run.
+        _RAG_INDEX = False
+    return _RAG_INDEX
+
+
+def grounding_excerpt(topic: dict, max_chars: int = 500) -> str | None:
+    """One real passage for this topic's subject/form, or None if the RAG
+    index is unavailable or has nothing relevant. Best-effort only: retrieval
+    quality varies by subject/form (see ml/rag/README.md "Status"), so a
+    weak or missing excerpt just means plain topic-only generation for that
+    row, never a crash."""
+    index = _rag_index()
+    if not index:
+        return None
+    passages, vectors, embedder = index
+    query = f"{topic['label']} {topic['hint']}"
+    results = rag_search(
+        query, passages, vectors, embedder, k=1, subject=topic["subject"], form=topic["form"]
+    )
+    if not results:
+        return None
+    return results[0]["text"][:max_chars]
+
+
+async def generate_for_topic_style(
+    llm, settings, topic: dict, artifact_type: str, style_desc: str, k: int, excerpt: str | None
+) -> list[str]:
     form_label = f"Form {topic['form']}"
+    grounding_block = (
+        GROUNDING_BLOCK_TEMPLATE.format(excerpt=excerpt) if excerpt else ""
+    )
     result = await llm.complete(
         model=settings.model_fast,
         system="You generate realistic student science questions for a training dataset. Output only the questions, one per line.",
@@ -95,6 +158,7 @@ async def generate_for_topic_style(llm, settings, topic: dict, artifact_type: st
             form_label=form_label,
             topic_label=topic["label"],
             hint=topic["hint"],
+            grounding_block=grounding_block,
             style_desc=style_desc.format(topic=topic["label"]),
         ),
         max_tokens=700,
@@ -125,12 +189,21 @@ async def label_query(llm, settings, query: str) -> dict | None:
 
 async def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--tag", default="kssm1")
+    parser.add_argument("--tag", default="kssm2")
     parser.add_argument(
-        "--per-style", type=int, default=3, help="queries per (topic, style) pair"
+        "--per-style", type=int, default=6, help="queries per (topic, style) pair"
     )
     parser.add_argument("--topics-limit", type=int, default=None, help="cap topics, for a cheap test run")
+    parser.add_argument(
+        "--topics-contains",
+        default=None,
+        help="only generate for topics whose curriculum_topic contains this substring "
+        "(comma-separated for multiple), for a targeted top-up round",
+    )
     parser.add_argument("--concurrency", type=int, default=8)
+    parser.add_argument(
+        "--no-grounding", action="store_true", help="skip RAG retrieval, topic-only generation"
+    )
     args = parser.parse_args()
 
     settings = get_settings()
@@ -139,6 +212,11 @@ async def main() -> None:
     llm = get_llm()
 
     topics = all_topics()
+    if args.topics_contains:
+        needles = [s.strip() for s in args.topics_contains.split(",") if s.strip()]
+        topics = [t for t in topics if any(n in t["curriculum_topic"] for n in needles)]
+        if not topics:
+            raise SystemExit(f"no topics matched --topics-contains {args.topics_contains!r}")
     if args.topics_limit:
         topics = topics[: args.topics_limit]
 
@@ -148,6 +226,16 @@ async def main() -> None:
         f"{args.per_style} = ~{n_expected} queries"
     )
 
+    # One retrieval per topic (not per style): reused across all 5 styles.
+    excerpts: dict[str, str | None] = {}
+    if not args.no_grounding:
+        for topic in topics:
+            excerpts[topic["curriculum_topic"]] = grounding_excerpt(topic)
+        n_grounded = sum(1 for v in excerpts.values() if v)
+        print(f"grounding: {n_grounded}/{len(topics)} topics matched a real passage")
+    else:
+        print("grounding: disabled (--no-grounding)")
+
     # Stage 1: generate queries, one task per (topic, style).
     gen_semaphore = asyncio.Semaphore(args.concurrency)
     pending_rows: list[dict] = []  # {query, curriculum_topic, intended_style}
@@ -155,7 +243,13 @@ async def main() -> None:
     async def gen_one(topic: dict, artifact_type: str, style_desc: str):
         async with gen_semaphore:
             queries = await generate_for_topic_style(
-                llm, settings, topic, artifact_type, style_desc, args.per_style
+                llm,
+                settings,
+                topic,
+                artifact_type,
+                style_desc,
+                args.per_style,
+                excerpts.get(topic["curriculum_topic"]),
             )
             for q in queries:
                 pending_rows.append(

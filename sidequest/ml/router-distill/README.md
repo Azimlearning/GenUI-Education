@@ -27,46 +27,119 @@ artifact branch where its latency does not block text.
 
 This track does not replace Phase 4 (cache + library); it runs alongside it.
 
-## Status (2026-07-18)
+## Status (2026-07-18, round 3: independent cross-check found + fixed 4 more topic errors)
 
-**Not production-ready.** Trained on 1057 rows (846 train / 211 held-out):
+An independent topic-grounding report (`TOPIC_GROUNDING_REPORT.md`, produced
+separately from this session's own extraction, found unstaged in the repo
+partway through round 2's work) largely CONFIRMED round 2's major
+corrections but also caught what round 2 missed: 2 entire Biology Form 4
+chapters (Support and Movement; Sexual Reproduction/Development/Growth) and
+a genuine placement conflict on Chemistry's "Manufactured Substances in
+Industry" (round 2 had put it in Form 5; two independent sources, including
+round 2's own discarded direct-text evidence, agree it's Form 4). Fixed in
+`kssm_topics.py` v3 (50 -> 53 topics), plus a newly-recognized distinct
+Form 5 "Polymer" chapter.
 
-| Metric | Target | Achieved |
-|---|---|---|
-| artifact_type accuracy | >= 90% | 67.3% |
-| domain accuracy | >= 92% | 78.7% |
-| complexity accuracy | (no target set) | 73.9% |
-| text_only recall | >= 95% | 86.7% |
+A small, targeted generation round (`--tag kssm3 --topics-contains
+"support_and_movement,reproduction_development_growth,manufactured_substances_in_industry,polymer"`,
+120 rows, ~$0.20-0.40) closed the gap without a full 53-topic re-generation.
+Final dataset: 2693 rows (2154 train / 538 held-out). Metrics moved little
+(artifact_type 69.3%, domain 86.4%, complexity 76.8%, text_only recall
+80.3% — some within noise of round 2's numbers, a couple slightly down),
+consistent with round 2's own plateau finding rather than contradicting it.
+**This round's value was correctness, not a metrics bump**: earlier rounds
+trained on data where two real curriculum chapters were entirely absent and
+one topic was tagged to the wrong form. A model trained on curriculum-
+accurate data is more trustworthy than one trained on slightly more data
+that misrepresents the curriculum, even at a similar accuracy score.
 
-None of the targets are met. See "Known limitation" below before spending
-more time tuning the model itself; the evidence points at data volume, not
-architecture, as the bottleneck.
+kssm1's `curriculum_topic` tags are now stale against v3 in TWO ways (v2's
+corrections, then v3's); kssm2 additionally has
+`chemistry_form5_manufactured_substances_in_industry` rows that are stale
+against v3's `chemistry_form4_...` placement. None of this corrupts the
+core classifier training (artifact_type/domain/complexity labels are
+unaffected), only the `curriculum_topic` metadata field on older rows.
 
-## Known limitation: data volume, not model capacity
+## Status (2026-07-18, round 2: grounded topics + 2x data + learning-curve study)
 
-Two model configurations were tried against the same 846-row training set:
-the baseline (64-dim embedding, 128-unit dense, dropout 0.3) and a more
+**Still not production-ready, but the picture is clearer and improved.**
+Full dataset now 2573 rows (2058 train / 514 held-out), combining v1
+(generic), kssm1 (curriculum, uncorrected topics), and kssm2 (curriculum,
+corrected topics + retrieval-anchored generation, see
+`../IMPLEMENTATION_PLAN.md` Phases 2-3):
+
+| Metric | Target | Round 1 (1057 rows) | Round 2 (2573 rows) |
+|---|---|---|---|
+| artifact_type accuracy | >= 90% | 67.3% | 70.4% |
+| domain accuracy | >= 92% | 78.7% | **88.1%** |
+| complexity accuracy | (no target set) | 73.9% | 78.6% |
+| text_only recall | >= 95% | 86.7% | 84.8% |
+
+domain accuracy is now within 4 points of target and still clearly rising
+with data (see the learning curve below). artifact_type is not: it improved
+but the curve is plateauing, a materially different and more honest picture
+than round 1's blanket "gather more data" recommendation.
+
+## Learning-curve study (`learning_curve.py`)
+
+Trained on 25%, 50%, 75%, 100% of the training set, same architecture, no
+hyperparameter changes (`out/learning_curve.json`):
+
+| Train n | artifact_type | domain | complexity |
+|---|---|---|---|
+| 514 (25%) | 63.4% | 71.4% | 74.9% |
+| 1029 (50%) | 70.0% | 80.4% | 75.3% |
+| 1543 (75%) | 68.7% | 84.2% | 74.3% |
+| 2058 (100%) | 70.4% | 85.6% | 77.4% |
+
+**domain**: clean, consistent rise across every step (+14.2 points end to
+end). Unambiguously still data-bound; another round of data should keep
+closing the gap to 92%.
+
+**artifact_type**: a real jump from 25% to 50% (+6.6 points), then
+flat/noisy from 50% to 100% (70.0 -> 68.7 -> 70.4). This is NOT the same
+shape as domain's curve. Two live explanations, not mutually exclusive: (1)
+the 75% teacher-self-disagreement rate on deliberately-styled queries (see
+round-1 finding below) caps how much any volume of this kind of data can
+teach the model, since a quarter of the "ground truth" is itself
+inconsistent; (2) `GlobalAveragePooling1D` bag-of-words averaging may
+genuinely not carry enough of the phrasing signal ("show me" vs "explain")
+that separates these five classes, independent of data volume. Round 1's
+"just add more data" recommendation undersold this; it is now a real,
+evidence-backed open question rather than an assumption.
+
+**Next step, if this track continues:** for domain, generate another round
+of data, same method, and expect continued improvement. For artifact_type,
+do not blindly repeat that; either (a) try a small architecture change (a
+pretrained embedding, or an n-gram/positional feature that preserves some
+word order) on the EXISTING 2058 rows first, since more data alone has
+stopped moving this specific metric, or (b) accept the ceiling and lean on
+Phase 4's confidence-gated fallback (low-confidence artifact_type
+predictions fall back to the LLM router; that path was always the plan for
+exactly this situation, not a failure mode).
+
+## Round 1 finding: data volume was ruled out as a capacity/overfitting problem
+
+Two model configurations were tried against the round-1 846-row training
+set: the baseline (64-dim embedding, 128-unit dense, dropout 0.3) and a more
 heavily regularized variant (32-dim embedding, L2 weight decay, dropout 0.5,
 meant to fight the visible train/val gap: train accuracy reached 91%+ while
 validation plateaued around 65-69%). The regularized variant scored WORSE on
 held-out data (artifact_type 64.5% vs 65.9%, domain 74.4% vs 77.8%) and
 converged more slowly to essentially the same ceiling. If overfitting were
 the fixable cause, shrinking capacity should have closed the gap; it did
-not. That rules out capacity as the lever to pull here.
+not. That ruled out capacity as the lever to pull, and motivated round 2's
+data-volume increase, which is why domain's clean improvement (and
+artifact_type's more complicated one) is meaningful evidence rather than
+noise.
 
-A second piece of evidence: `generate_curriculum_dataset.py`'s own generation
-step, which deliberately writes queries in a style intended to match a
-specific `artifact_type`, only got the teacher to agree with that intended
-style 75% of the time. A quarter of even the CONSTRUCTED examples are
-genuinely ambiguous by the teacher's own judgment (e.g. "how do enzymes
-work" is defensibly text_only or explorable_diagram). That puts a real,
-non-architectural ceiling on what any classifier can learn from this data
-without more examples to average the ambiguity out.
-
-**Next step, if this track continues:** generate 2 to 3x more curriculum
-data (`--per-style 6` to `8` instead of the current 3) before touching
-hyperparameters again. Do not re-run the regularization experiment; it is
-already answered.
+`generate_curriculum_dataset.py`'s own generation step, which deliberately
+writes queries in a style intended to match a specific `artifact_type`, only
+got the teacher to agree with that intended style 75% (round 1) / 56% (round
+2, after adding retrieval-anchored, more textbook-realistic phrasing) of the
+time. Realistic phrasing surfaces MORE genuine ambiguity, not less; this is
+expected and is itself evidence the label noise explanation for
+artifact_type's plateau is real, not a generation artifact.
 
 ## Not in scope (and why)
 
@@ -81,20 +154,27 @@ Revisit when the library holds hundreds of rated artifacts.
 ```
 ml/router-distill/
 ├── kssm_topics.py                   KSSM Form 4/5 topic taxonomy, Bio/Chem/Phy
-│                                     (illustrative, drafted from general knowledge;
-│                                     see ml/rag/ for grounding it in real syllabus text)
+│                                     (v2: grounded in real textbook chapters via
+│                                     ml/rag/extract_toc.py; see the file's own
+│                                     docstring for the v1 -> v2 correction log)
 ├── generate_dataset.py               generic query synth + teacher labels (v1)
-├── generate_curriculum_dataset.py    topic- and style-diverse synth + teacher labels (kssm*)
+├── generate_curriculum_dataset.py    topic- and style-diverse synth + teacher labels
+│                                      (kssm1: uncorrected topics; kssm2: corrected
+│                                      topics + retrieval-anchored generation)
 ├── prepare_dataset.py                cleaning: validate, normalize, dedupe, split 80/20
 ├── train_local.py                    TensorFlow training, local
+├── learning_curve.py                 trains at 25/50/75/100% of data, same architecture,
+│                                      to test whether more data is still the right lever
 ├── train_colab.ipynb                 same model, Colab-ready
 ├── EXPERIMENT_SCHEMA.md              target schema for a future, richer per-query record
+├── TOPIC_GROUNDING_REPORT.md         independent topic cross-check that caught v3's corrections
+│                                      (contents-page reading, separate method from extract_toc.py)
 ├── dataset/
 │   ├── raw/                          stage-1 queries before labeling (queries_<tag>.txt)
 │   ├── labeled/                      teacher-labeled rows (labeled_<tag>.jsonl)
 │   └── clean/                        train.jsonl, test.jsonl, stats.json (train-ready)
 └── out/                              trained artifacts (gitignored): .keras, saved_model/,
-                                       .tflite, metrics.json, labels.json
+                                       .tflite, metrics.json, labels.json, learning_curve.json
 ```
 
 Rows are `{query, artifact_type, domain, complexity}`, with curriculum rows
@@ -113,11 +193,16 @@ Multiple labeled files (tags) accumulate; `prepare_dataset.py` merges all of
 # 1a. generic query synthesis (cheap, ~$0.001/row)
 ..\..\backend\.venv\Scripts\python generate_dataset.py --n 500 --tag v1
 
-# 1b. KSSM curriculum-scoped, style-diverse synthesis (recommended: this is
-#     what fixed the v1 class imbalance, see "Known limitation" above)
-..\..\backend\.venv\Scripts\python generate_curriculum_dataset.py --tag kssm1
-#     --per-style N controls volume: 3 (default) gave 599 rows across 40
-#     topics; use --topics-limit K for a cheap test run first.
+# 1b. KSSM curriculum-scoped, style-diverse, retrieval-anchored synthesis
+#     (recommended: this is what fixed v1's class imbalance and, once
+#     kssm_topics.py is grounded, produces textbook-register queries).
+#     Requires ml/rag/index/ to exist (ingest.py + embed.py run first) for
+#     retrieval-anchoring; falls back to topic-only with --no-grounding.
+..\..\backend\.venv\Scripts\python generate_curriculum_dataset.py --tag kssm2 --per-style 6
+#     --per-style N controls volume per (topic, style) pair; --topics-limit K
+#     for a cheap test run first. See kssm_topics.py's docstring before
+#     trusting its topic-to-form placement for a NEW subject/form combo not
+#     already grounded there.
 
 # 2. clean + merge every dataset/labeled/*.jsonl + split
 python prepare_dataset.py
@@ -127,7 +212,12 @@ python prepare_dataset.py
 # 3b. or train locally (pip install -r requirements.txt first):
 python train_local.py
 
-# 4. artifacts land in ./out (keras, saved_model/, tflite, metrics.json)
+# 3c. before concluding "need more data" again: check whether the curve is
+#     actually still rising (see "Status" above; it was NOT uniform last time)
+python learning_curve.py
+
+# 4. artifacts land in ./out (keras, saved_model/, tflite, metrics.json,
+#    learning_curve.json)
 ```
 
 There is no Colab MCP in this environment; the Kaggle MCP can run the same

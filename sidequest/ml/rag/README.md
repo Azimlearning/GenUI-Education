@@ -8,13 +8,51 @@ text, instead of the hand-drafted `kssm_topics.py` topic list.
 combinations, topic grounding, downstream regeneration), see
 [`../IMPLEMENTATION_PLAN.md`](../IMPLEMENTATION_PLAN.md).
 
-## Status
+## Status (2026-07-18, full corpus ingested)
 
-Scaffolded and self-tested with a synthetic example. Proof-of-concept run
-against 2 real biology experiment PDFs (2026-07-18): extraction clean, top
-retrieval result correct. `sources/biology/form4/` has those 2 real files;
-every other subject/form slot is still empty pending the full dataset.
-Nothing here is used by the live Axiom backend or by the router-distill
+All 6 subject/form combinations now have real source material (556MB, 17
+PDFs) under `sources/`, and the full pipeline has been run end to end. See
+`../IMPLEMENTATION_PLAN.md` Phase 1 for the checklist this satisfies.
+
+**Ingestion:** 1971 passages across all 6 combos (285 to 377 each). 4 files
+failed extraction with zero text: `Aktiviti _ Eksperimen Kimia.pdf` and
+`Experiment _ Activity Chemistry(.pdf/2.pdf)` in both chemistry/form4 and
+chemistry/form5. Confirmed these are scanned/image PDFs (one image per page,
+no text layer), not a pypdf bug. No Tesseract OCR engine is available on
+this machine and installing one is a system-level change, not made here.
+**These 4 files (the dedicated chemistry experiment/activity books, both
+forms) are not in the index.** Partial mitigation: `CHEMISTRY F4.pdf` and
+`CHEMISTRY F5.pdf` (the general textbooks, which DID extract) contain
+embedded experiments in the same Problem/Hypothesis/Variables format, so
+chemistry experiment content is reduced, not absent.
+
+**Retrieval quality, honestly evaluated with smoke queries per combo:**
+4 of 6 (biology_form4, chemistry_form4, physics_form4, physics_form5) return
+strong, correct top-1 matches (scores 0.45 to 0.48). 2 of 6 initially did
+not: `biology_form5` queries about human nervous/endocrine coordination kept
+surfacing plant hormone content, and `chemistry_form5` queries about
+reaction rate kept surfacing thermochemistry content.
+
+**Correction (2026-07-18, Phase 2 topic grounding):** this was NOT a TF-IDF
+ranking failure. Extracting the real tables of contents (`extract_toc.py`)
+showed the hand-drafted topic taxonomy had those topics in the wrong form
+entirely: human Coordination and Response is a Form 4 chapter, not Form 5
+(Biology Form 5's real content is almost entirely plant biology, genetics,
+and ecosystems, with no human nervous-system chapter at all), and
+Collision Theory is a Form 4 chapter (CHEMISTRY F4.pdf, "7.4 Collision
+Theory", p.243), not Form 5. The smoke queries were testing the wrong
+hypothesis, not exposing a retrieval defect. `kssm_topics.py` v2 corrects
+this; see `ml/router-distill/README.md`.
+
+This does NOT mean TF-IDF's lexical-only limitation is a non-issue in
+general (same-word-different-topic confusion is a real, documented category
+of failure for pure keyword matching) — only that THIS specific piece of
+evidence for it was invalid. The "Deferred: real embeddings" section below
+still stands as a real future consideration, just without this false
+positive backing it. Re-evaluate retrieval quality against the corrected
+topic list before citing a fresh example.
+
+Nothing here is used by the live Axiom backend or the router-distill
 dataset generators yet; wiring that in is future work, listed at the bottom.
 
 ## Why a from-scratch TF-IDF baseline, not embeddings

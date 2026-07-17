@@ -10,6 +10,7 @@ Usage:
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -70,6 +71,12 @@ def search(
 
 
 def main() -> None:
+    # Windows terminals commonly default to cp1252, which cannot render many
+    # textbook symbols (for example Δ and −). Retrieval must not fail merely
+    # because a matched passage contains one of them.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser()
     parser.add_argument("query")
     parser.add_argument("--subject", choices=["biology", "chemistry", "physics"])

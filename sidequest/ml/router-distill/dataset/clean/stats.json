@@ -1,30 +1,32 @@
 {
   "source_files": [
     "labeled_kssm1.jsonl",
+    "labeled_kssm2.jsonl",
+    "labeled_kssm3.jsonl",
     "labeled_v1.jsonl"
   ],
-  "raw_rows": 1057,
+  "raw_rows": 2693,
   "dropped_malformed": 0,
-  "duplicates_removed": 0,
-  "train": 846,
-  "test": 211,
+  "duplicates_removed": 1,
+  "train": 2154,
+  "test": 538,
   "artifact_type_dist": {
-    "simulation": 206,
-    "explorable_diagram": 303,
-    "virtual_experiment": 128,
-    "text_only": 332,
-    "data_visualization": 88
+    "explorable_diagram": 880,
+    "text_only": 751,
+    "simulation": 439,
+    "virtual_experiment": 409,
+    "data_visualization": 213
   },
   "domain_dist": {
-    "earth_space": 102,
-    "physics": 291,
-    "biology": 314,
-    "chemistry": 268,
-    "math_adjacent": 82
+    "biology": 1071,
+    "math_adjacent": 114,
+    "chemistry": 699,
+    "physics": 683,
+    "earth_space": 125
   },
   "complexity_dist": {
-    "3": 133,
-    "2": 658,
-    "1": 266
+    "3": 309,
+    "1": 559,
+    "2": 1824
   }
 }

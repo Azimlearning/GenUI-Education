@@ -208,38 +208,52 @@ Chemistry, and Physics. Full detail: `ml/router-distill/README.md` and
 `ml/rag/README.md`. The phased plan for once the full dataset (all 6
 subject/form combinations) is collected: `ml/IMPLEMENTATION_PLAN.md`.
 
-**What was built:**
-- `ml/router-distill/kssm_topics.py`: illustrative topic taxonomy across all
-  6 subject/form combinations (40 topics), drafted from general knowledge,
-  not an official syllabus document.
-- `generate_curriculum_dataset.py`: generates queries per topic in 5
-  deliberately diverse phrasing styles (one per artifact_type), fixing a
-  severe class imbalance in the first generic pass (virtual_experiment was
-  3/458 rows before, 128/1057 after). Labels always come from the real,
-  unmodified production Router prompt.
-- A small text classifier (TensorFlow, TextVectorization + embedding +
-  dense heads), trained on 1057 rows (846 train / 211 held-out).
-- `ml/rag/`: a curriculum retrieval pipeline (ingest/embed/retrieve), pure
-  numpy TF-IDF baseline, zero new heavy dependencies, self-tested end to end
-  on synthetic placeholder text. No real textbook/syllabus content yet;
-  scaffolded so content can be dropped in later.
+**What was built, round 1 (2026-07-17/18):** hand-drafted 40-topic taxonomy,
+style-diverse curriculum generation, small TensorFlow classifier trained on
+1057 rows, and a self-tested-but-empty RAG scaffold. Held-out accuracy
+(artifact_type 67.3%, domain 78.7%) was well below target; diagnosed as
+data-volume-bound, not architecture-bound (two model capacities tried,
+the more regularized one scored worse).
 
-**Result: not production-ready, and the reason is understood.** Held-out
-accuracy (artifact_type 67.3%, domain 78.7%, text_only recall 86.7%) is well
-below the success criteria in the README. Two model capacities were tried
-against the same data; the more regularized one scored worse, ruling out
-"the model is overfitting a small architecture" as the fixable cause. A
-quarter of the curriculum dataset's own deliberately-styled examples got a
-different label than intended, straight from the teacher — real ambiguity,
-not generation noise. Conclusion: this is a data-volume problem, and the
-fix is more labeled examples (2 to 3x), not more tuning.
+**Round 2 (2026-07-18): the full dataset arrived and Phases 1-3 of
+`ml/IMPLEMENTATION_PLAN.md` ran to completion.** All 6 subject/form
+combinations ingested (556MB, 17 real KSSM textbooks/experiment books, 1971
+passages). Extracting real tables of contents surfaced that the hand-drafted
+topic taxonomy had SYSTEMATIC placement errors, not minor gaps: Biology's
+Coordination/Nervous/Endocrine System is a Form 4 chapter, not Form 5 as
+guessed (3 more Form 4 chapters were missing entirely); Physics had
+Waves/Light and Forces/Pressure/Elasticity assigned to the wrong forms,
+swapped relative to the real curriculum; Chemistry's Collision Theory is
+Form 4, not Form 5. This also retroactively explained round 1's apparent
+"TF-IDF ranking weakness" on 2 of 6 combos — it wasn't a retrieval defect,
+it was querying content that genuinely doesn't exist in that form.
+Correction reviewed and approved before merging (`kssm_topics.py` v2, 40 ->
+50 topics, each citing its source page/chapter).
 
-**Decision point for continuing this track:** generate more curriculum data
-before any further architecture work, and separately, supply real KSSM
-textbook/syllabus source files to ground `kssm_topics.py` (the RAG pipeline
-is ready to ingest them) and to fix the two subject/form combinations that
-still rest on general knowledge rather than official material. Neither is
-blocking Phase 4; this track can resume whenever.
+Regenerated the dataset against the corrected topics with a new
+retrieval-anchoring step (real textbook passages included in the generation
+prompt), then ran an actual learning-curve study (25/50/75/100% of data)
+instead of assuming more data would help uniformly. It didn't, uniformly:
+domain accuracy rose cleanly to 88.1% (within 4 points of target, still
+data-bound); artifact_type improved to 70.4% but plateaus, a materially
+different and more honest finding than round 1's blanket recommendation.
+
+**Round 3, same day:** an independently-produced topic-grounding report
+(different extraction method, found unstaged mid-session) confirmed round
+2's major corrections but caught 4 more errors: 2 entire missing Biology
+Form 4 chapters and a Chemistry topic placed in the wrong form. Corrected
+(`kssm_topics.py` v3, 50 -> 53 topics) and closed with a small targeted
+generation round (120 rows, ~$0.20-0.40) rather than a full re-generation.
+Final: 2693 rows, metrics essentially flat (consistent with the plateau
+finding). This round's value was curriculum correctness, not an accuracy
+gain, and is recorded that way rather than as a regression.
+
+**Decision point for continuing this track:** Phase 4 (production
+integration into the live backend: shadow mode, confidence-gated routing,
+rollout) is the next actual work and was deliberately not started this
+round — it touches production code, not just `ml/`, and is scoped as a
+separate decision in `ml/IMPLEMENTATION_PLAN.md`. Not blocking Phase 4 of
+the main app either way.
 
 **Production bug found and fixed along the way:** running the real Router
 prompt at dataset-generation volume surfaced a live bug, not just a dataset

@@ -22,8 +22,16 @@ evals/fixtures/
 evals/history.jsonl
 
 # real textbook/curriculum source PDFs: likely copyrighted, too large for
-# git regardless (381MB as of 2026-07-18). Never commit; treat as local-only
+# git regardless (556MB as of 2026-07-18). Never commit; treat as local-only
 # input to ml/rag/sources/.
 /Dataset/
 ml/rag/sources/**/*.pdf
 evals/last_artifact.html
+
+# leftover copies of the same source PDFs/zip that ended up in
+# ml/router-distill/dataset/ alongside the legitimate labeled_*.jsonl /
+# clean/* deliverables in that same tree (which ARE tracked). Precise
+# extension match so it never catches the real dataset files.
+ml/router-distill/dataset/*.pdf
+ml/router-distill/dataset/*.zip
+
