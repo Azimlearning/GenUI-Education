@@ -4,6 +4,7 @@ import { useCallback, useMemo, useReducer, useRef, useState } from "react";
 
 import { Composer } from "@/components/chat/Composer";
 import { MessageList } from "@/components/chat/MessageList";
+import { TopBar } from "@/components/TopBar";
 import { LabPane } from "@/components/study/LabPane";
 import { StudyRail } from "@/components/study/StudyRail";
 import { chatReducer, initialChatState } from "@/lib/reducer";
@@ -91,14 +92,16 @@ export default function ChatPage() {
   }, []);
 
   return (
-    <main
-      className={
-        "grid min-h-dvh overflow-x-hidden transition-[grid-template-columns] duration-300 ease-out " +
-        (labActive
-          ? "xl:grid-cols-[0px_1fr_4fr]"
-          : "xl:grid-cols-[272px_minmax(420px,0.9fr)_minmax(460px,1.1fr)]")
-      }
-    >
+    <div className="min-h-dvh">
+      <TopBar />
+      <main
+        className={
+          "grid min-h-[calc(100dvh-54px)] overflow-x-hidden transition-[grid-template-columns] duration-300 ease-out " +
+          (labActive
+            ? "xl:grid-cols-[0px_1fr_4fr]"
+            : "xl:grid-cols-[272px_minmax(420px,0.9fr)_minmax(460px,1.1fr)]")
+        }
+      >
       <div className="overflow-hidden">
         <StudyRail onPrompt={(prompt) => void send(prompt)} disabled={busy} />
       </div>
@@ -131,6 +134,7 @@ export default function ChatPage() {
         onRetry={() => labIndex !== null && retryFrom(labIndex)}
         onCrash={(message) => labIndex !== null && crashArtifact(labIndex, message)}
       />
-    </main>
+      </main>
+    </div>
   );
 }
