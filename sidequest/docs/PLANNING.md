@@ -7,7 +7,9 @@ Living document. The coding agent updates checklists as tasks complete. Phases a
 - **Active phase:** Phase 4 next. Phases 2 and 3 are built and live-validated
   (at user direction, with the Phase 1/2 DoD measurement, the full 12-query
   eval run, still pending an explicit go-ahead; smoke subset is 4/4).
-- **Last updated:** 2026-07-17
+- **Parallel experiment track:** `ml/router-distill/` and `ml/rag/` (see below,
+  not a numbered phase, runs alongside Phase 4+).
+- **Last updated:** 2026-07-18
 
 ---
 
@@ -195,6 +197,58 @@ still awaits the explicit go-ahead (cost discipline).
 sub-2s text becomes binding: trim router output tokens, a faster fast-model,
 or speculative explainer start. Long generations feel alive via stages plus
 the live code preview; a 240s worst-case run stayed responsive end to end.
+
+## Experiment track — Router distillation and curriculum RAG (2026-07-18)
+
+Not a numbered phase; runs alongside Phase 4+ at user direction, exploring
+whether the production Router's classification step (query -> artifact_type,
+domain, complexity) can be distilled into a small offline TensorFlow model
+for near-zero latency and cost, scoped to Malaysian KSSM Form 4/5 Biology,
+Chemistry, and Physics. Full detail: `ml/router-distill/README.md` and
+`ml/rag/README.md`.
+
+**What was built:**
+- `ml/router-distill/kssm_topics.py`: illustrative topic taxonomy across all
+  6 subject/form combinations (40 topics), drafted from general knowledge,
+  not an official syllabus document.
+- `generate_curriculum_dataset.py`: generates queries per topic in 5
+  deliberately diverse phrasing styles (one per artifact_type), fixing a
+  severe class imbalance in the first generic pass (virtual_experiment was
+  3/458 rows before, 128/1057 after). Labels always come from the real,
+  unmodified production Router prompt.
+- A small text classifier (TensorFlow, TextVectorization + embedding +
+  dense heads), trained on 1057 rows (846 train / 211 held-out).
+- `ml/rag/`: a curriculum retrieval pipeline (ingest/embed/retrieve), pure
+  numpy TF-IDF baseline, zero new heavy dependencies, self-tested end to end
+  on synthetic placeholder text. No real textbook/syllabus content yet;
+  scaffolded so content can be dropped in later.
+
+**Result: not production-ready, and the reason is understood.** Held-out
+accuracy (artifact_type 67.3%, domain 78.7%, text_only recall 86.7%) is well
+below the success criteria in the README. Two model capacities were tried
+against the same data; the more regularized one scored worse, ruling out
+"the model is overfitting a small architecture" as the fixable cause. A
+quarter of the curriculum dataset's own deliberately-styled examples got a
+different label than intended, straight from the teacher — real ambiguity,
+not generation noise. Conclusion: this is a data-volume problem, and the
+fix is more labeled examples (2 to 3x), not more tuning.
+
+**Decision point for continuing this track:** generate more curriculum data
+before any further architecture work, and separately, supply real KSSM
+textbook/syllabus source files to ground `kssm_topics.py` (the RAG pipeline
+is ready to ingest them) and to fix the two subject/form combinations that
+still rest on general knowledge rather than official material. Neither is
+blocking Phase 4; this track can resume whenever.
+
+**Production bug found and fixed along the way:** running the real Router
+prompt at dataset-generation volume surfaced a live bug, not just a dataset
+issue. `canonical_concept`'s validation regex is lowercase-only, but the
+model reaches for standard notation like "pH" even when told snake_case;
+the resulting validation failure could silently misroute a legitimate
+acid-base query to the text_only fallback after both retry attempts failed
+the same way. Fixed in `graph/nodes/router.py::parse_intent` by lowercasing
+before validation (deterministic, preserves cache-key stability, changes
+nothing for already-valid values). Regression test added.
 
 ## Phase 4 — Cache and Library
 

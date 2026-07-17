@@ -1,0 +1,30 @@
+{
+  "source_files": [
+    "labeled_kssm1.jsonl",
+    "labeled_v1.jsonl"
+  ],
+  "raw_rows": 1057,
+  "dropped_malformed": 0,
+  "duplicates_removed": 0,
+  "train": 846,
+  "test": 211,
+  "artifact_type_dist": {
+    "simulation": 206,
+    "explorable_diagram": 303,
+    "virtual_experiment": 128,
+    "text_only": 332,
+    "data_visualization": 88
+  },
+  "domain_dist": {
+    "earth_space": 102,
+    "physics": 291,
+    "biology": 314,
+    "chemistry": 268,
+    "math_adjacent": 82
+  },
+  "complexity_dist": {
+    "3": 133,
+    "2": 658,
+    "1": 266
+  }
+}

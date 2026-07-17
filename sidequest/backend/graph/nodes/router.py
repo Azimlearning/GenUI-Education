@@ -48,7 +48,16 @@ def parse_intent(raw: str) -> Intent:
     start, end = text.find("{"), text.rfind("}")
     if start == -1 or end == -1:
         raise ValueError("no JSON object in router output")
-    return Intent.model_validate(json.loads(text[start : end + 1]))
+    data = json.loads(text[start : end + 1])
+    # canonical_concept must be lowercase snake_case (schemas/intent.py), but
+    # the model reaches for standard scientific notation like "pH" even when
+    # told to use snake_case, which fails validation and can silently
+    # misroute a legitimate query to the text_only fallback. Lowercasing is
+    # deterministic, preserves cache-key stability, and never changes a
+    # value that was already valid.
+    if isinstance(data.get("canonical_concept"), str):
+        data["canonical_concept"] = data["canonical_concept"].lower()
+    return Intent.model_validate(data)
 
 
 async def router_node(state: PipelineState, config: RunnableConfig) -> PipelineState:

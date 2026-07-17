@@ -20,4 +20,10 @@ out/
 .playwright-mcp/
 evals/fixtures/
 evals/history.jsonl
+
+# real textbook/curriculum source PDFs: likely copyrighted, too large for
+# git regardless (381MB as of 2026-07-18). Never commit; treat as local-only
+# input to ml/rag/sources/.
+/Dataset/
+ml/rag/sources/**/*.pdf
 evals/last_artifact.html

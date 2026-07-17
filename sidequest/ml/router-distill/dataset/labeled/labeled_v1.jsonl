@@ -1,0 +1,458 @@
+{"query": "simulate climate change over the next 100 years", "artifact_type": "data_visualization", "domain": "earth_space", "complexity": 3}
+{"query": "How does photosynthesis convert sunlight into energy?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "why does a ball bounce less high each time", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "demonstrate the greenhouse effect happening", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "show me the phases of the moon", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "What is the difference between mean and median?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "can you see infrared light or is it invisible", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "what percentage of mutations are beneficial to organisms", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "what is the smallest thing you can see without a microscope", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "Can bacteria actually help our bodies or are they all bad", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "What role do decomposers play in the food chain", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "What's an example of logistic growth in nature?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "how long until a population doubles at 3 percent annual growth", "artifact_type": "data_visualization", "domain": "math_adjacent", "complexity": 2}
+{"query": "visualize the moon phases throughout a month", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "Why does ice float on water unlike other solids?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What is the pH scale used for?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "Why is ice cold and fire hot at the atomic level?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "How does natural selection work in real ecosystems?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "What is the half-life of carbon-14?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "how do waves travel through water and make surfing possible?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What does the term half-life mean?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "what is the poisson distribution used for", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How does photosynthesis actually convert sunlight into energy?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "how do you find the slope of exponential decay", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 2}
+{"query": "what was Mendel's probability ratio for dominant traits", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "how many times can you fold a piece of paper", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "Why is water considered a polar molecule?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "what is the difference between correlation and causation", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What does correlation coefficient measure?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "what should i name my dog", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "Why do metals conduct electricity but nonmetals don't?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 2}
+{"query": "How is probability used in weather forecasting?", "artifact_type": "text_only", "domain": "earth_space", "complexity": 2}
+{"query": "Can organisms adapt to environmental changes within their lifetime?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "what is the difference between heat and temperature?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "How fast does light actually travel compared to sound?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "Can you explain what a catalyst does in a reaction?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What is the half-life formula?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How do acids and bases neutralize each other?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "What makes up an ecosystem and how do things interact?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "show what happens during an eclipse", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "What happens during meiosis versus mitosis?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "Why do some substances dissolve better in water than others?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "What is the difference between a physical and chemical change?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "How do rainbows form from regular white sunlight?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "How does natural selection actually work in practice?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "How do cells know when to divide?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "simulate what happens during an earthquake", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "What is the difference between endothermic and exothermic?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "why do small animals have higher metabolic rates than large ones", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "show me the water cycle in action", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "what's the best pizza topping", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "how do waves move energy from one place to another", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "What happens to energy when something stops moving?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "How do genes determine physical characteristics in humans?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "asdfghjkl", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "simulate a tsunami", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "Why do some reactions require energy to start?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "what is radioactive decay measured in", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "How do magnets work and why do some stick together?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "how do waves in the ocean get so big", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "how do tides work? visualize it", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "How do gases behave differently from liquids and solids?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "simulate a volcanic eruption for me", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "How does electricity flow through wires in my house?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "How does solubility change when temperature increases?", "artifact_type": "data_visualization", "domain": "chemistry", "complexity": 2}
+{"query": "What's the difference between a virus and bacteria?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "How does solubility change when you heat a solution?", "artifact_type": "simulation", "domain": "chemistry", "complexity": 2}
+{"query": "What role do decomposers play in nutrient cycling?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "what makes a lightbulb glow when you turn it on", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "can you demonstrate the water cycle step by step", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "How is exponential decay different from linear decay?", "artifact_type": "data_visualization", "domain": "math_adjacent", "complexity": 2}
+{"query": "What is molarity and how do I calculate it?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "can you show solar flares", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "What's the connection between climate change and ecosystem collapse", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 3}
+{"query": "What happens when predators disappear from a food chain?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "What's the difference between ionic and covalent bonds?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "how does scaling affect surface area versus volume", "artifact_type": "data_visualization", "domain": "math_adjacent", "complexity": 2}
+{"query": "how many atoms in a grain of sand approximately", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How do viruses reproduce if they're not living?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "How does temperature influence the speed of molecular movement?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "demonstrate tidal forces from the moon", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "visualize the moon's orbit around earth", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "can sound travel through space or only through air?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "How does the human digestive system break down food molecules?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "can electricity hurt you and how does it flow", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "Why is chi-square test used in science?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What does correlation coefficient tell you about data?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "how can planets stay in orbit around the sun?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "why do guitar strings make different sounds when you pluck them", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "can you show me a tornado forming", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "Why do some organisms go extinct while others survive?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "demonstrate the water cycle in action", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "show me earth's magnetic field", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "whats the median versus the mean in a dataset", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "what is the difference between speed and velocity?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "who won the world cup in 2022", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How do gases behave at different temperatures and pressures?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why do some traits skip generations in families?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "Can you explain what pH means and how it's measured?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "Why does salt dissolve better in hot water than cold water?", "artifact_type": "simulation", "domain": "chemistry", "complexity": 2}
+{"query": "show me how seasons change throughout the year", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "what causes lightning and is it the same as electricity", "artifact_type": "text_only", "domain": "earth_space", "complexity": 1}
+{"query": "what is the standard deviation formula", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "how do people make rainbows with light", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "visualize ocean currents around the world", "artifact_type": "data_visualization", "domain": "earth_space", "complexity": 2}
+{"query": "Can mutations ever be beneficial or are they always harmful", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Why is biodiversity important for the survival of species", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "can heat move through things like metal or does it stay in one place", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "show me how ocean currents move around earth", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "what is the difference between speed and velocity in physics", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "how does surface area to volume ratio change when you scale up a cube", "artifact_type": "data_visualization", "domain": "math_adjacent", "complexity": 2}
+{"query": "Why do gases expand to fill their container?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "show me why we have different climate zones", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "Why do some animals have opposable thumbs and others don't", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "what force makes planets orbit around the sun", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "How do you balance a chemical equation step by step?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "can you display the greenhouse effect", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "how many bacteria in a colony after 8 hours if doubling every hour", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "How do you balance a chemical equation?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What is a chemical reaction?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "show me how tides work", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "what percent of data falls within 2 standard deviations", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "show me how earthquakes happen", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "demonstrate what causes tides on earth", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "demonstrate the moon phases throughout a month", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "How do mutations actually lead to evolution over time?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "How does pressure affect gas volume and density?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What causes genetic mutations and are they always bad?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "What determines whether a reaction is endothermic or exothermic?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What makes photosynthesis so important for life on Earth", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "hi", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What is the difference between a mixture and a compound?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "Why do populations grow exponentially at first?", "artifact_type": "data_visualization", "domain": "biology", "complexity": 2}
+{"query": "visualize how weather patterns move", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "Why do some substances conduct electricity in solution?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "how do you calculate exponential growth rate", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "demonstrate plate tectonics and continental drift", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "What percentage of coin flips typically show heads?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "what makes light bend when it goes through a glass prism?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "How did fish become land animals during evolution?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "how come planets dont fall into the sun", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "can you explain the rule of 70 for doubling time", "artifact_type": "data_visualization", "domain": "math_adjacent", "complexity": 2}
+{"query": "how many times must you roll a die to expect one six", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What's the difference between mitosis and meiosis again?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "simulate what happens during a solar eclipse", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "Can you explain what a chemical reaction is?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "Why do objects orbit around planets instead of flying away?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "show me the water cycle", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "what is the difference between heat and temperature", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "What makes something acidic or basic?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "Can you explain what happens during combustion?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "how do seasons happen explain with visuals", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "why do we see rainbows and how are they formed?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "why does rubbing balloons make your hair stand up", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why is pH important in chemistry?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "how many people need to be in a room for 50 percent chance birthday match", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How do catalysts speed up chemical reactions?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "what makes light bend when it goes through water", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What distinguishes a virus from a bacterium?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "What is the difference between ionic and covalent bonding?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 2}
+{"query": "can you visualize the greenhouse effect", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "why does a spinning top stay upright instead of falling over", "artifact_type": "simulation", "domain": "physics", "complexity": 3}
+{"query": "How do genes pass down from parents to kids", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "what is friction and why does it slow things down?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "visualize the layers of earth's atmosphere", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "Why does sugar dissolve in water but oil does not?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "is gravity stronger on bigger planets or just heavier stuff falls faster", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "How do you scale measurements between different units?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How do vaccines interact with our immune system exactly?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "how do mirrors work and why do they show reflections", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "How does pressure affect gas volume?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What's the connection between DNA and proteins?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "How does pressure affect the volume of a gas?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "how do planets orbit the sun without drifting away", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why do some species go extinct and others survive?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "Can you see magnetic fields or are they invisible?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "What's the difference between prokaryotes and eukaryotes?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Did all life on Earth come from a common ancestor?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "what happens to energy when you stop pedaling a bike", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Explain how pH scale measures acidity and basicity", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What happens inside a chloroplast during photosynthesis?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "what is the geometric mean and when to use it", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What caused the dinosaurs to disappear from Earth?", "artifact_type": "text_only", "domain": "earth_space", "complexity": 2}
+{"query": "why does friction slow things down", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Can you explain oxidation and reduction reactions?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 2}
+{"query": "can electricity flow through anything or only certain materials", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "visualize how seasons change throughout the year", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "What is the pH scale and how does it work?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "why are magnets stronger at the poles", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "I saw something about natural selection last night, can you explain it simply?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "what makes a magnet stick to the fridge", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "When was the Poisson distribution first discovered?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What happens during an exothermic reaction?", "artifact_type": "simulation", "domain": "chemistry", "complexity": 2}
+{"query": "How did humans evolve from apes over millions of years", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "How do microbes reproduce so quickly?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "What exactly happens inside a mitochondria?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "Why do organisms adapt to their environment?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "can sound travel through empty space or does it need air", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "Why does friction slow things down?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why does salt dissolve better in hot water than cold?", "artifact_type": "simulation", "domain": "chemistry", "complexity": 2}
+{"query": "What's chlorophyll and why is it green?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "do all objects fall at the same speed without air", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why do some metals react faster than others?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "How do you identify if a reaction is reversible?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "why do we feel heavier in a car when it speeds up", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What exactly is photosynthesis and why do plants need it?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "How does a solution differ from a mixture?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What makes some things float and others sink?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "How do you calculate exponential growth rate?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How do genes get passed down from parents to their kids?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "Why do some species go extinct while others survive?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "how do waves move across the ocean", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "simulate a tsunami occurring", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "How do statisticians measure uncertainty in experiments?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 2}
+{"query": "Why do identical twins sometimes look different?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Why is the human immune system so complicated?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "what's the birthday paradox probability threshold", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How can waves travel through water and air?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "When was Bayesian statistics first developed?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "how does a roller coaster go upside down without falling", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "How do gases behave differently from solids and liquids?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "simulate coral bleaching in real time", "artifact_type": "simulation", "domain": "biology", "complexity": 3}
+{"query": "What happens during cellular respiration?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "Does DNA really contain all the instructions for life?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "what makes magnets stick to metal", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "How does temperature affect the rate of chemical reactions?", "artifact_type": "data_visualization", "domain": "chemistry", "complexity": 2}
+{"query": "what's the difference between correlation and causation", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What happens during the process of neutralization?", "artifact_type": "virtual_experiment", "domain": "chemistry", "complexity": 2}
+{"query": "Why does salt dissolve in water?", "artifact_type": "simulation", "domain": "chemistry", "complexity": 2}
+{"query": "can you see magnets or just feel what they do", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "How do you estimate large populations using sampling?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 2}
+{"query": "what percentage of coin flips should be heads in 100 tosses", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "simulate deep ocean pressure and conditions", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "How does natural selection work to create new species", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "What's the connection between electricity and magnetism?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "What role do decomposers play in an ecosystem?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "how does sound make your ears hear things", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "demonstrate the greenhouse effect visually", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "Do all cells have nuclei or just some types", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "How does concentration affect the molarity of a solution?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "why do you hear thunder after you see lightning?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "can sound travel in space or not", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "show what happens inside a volcano", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "Can evolution happen within a single organism's lifetime?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "can you show me a tornado forming?", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "show me the carbon cycle in action", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "Why is water called the universal solvent?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "what does a solar eclipse look like", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "how does a microwave heat up food so quickly?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "What determines the strength of an acid or base?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "why do things get hot when you rub them together?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "can you show me a meteor shower", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "Why do organisms evolve if they're already adapted?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Why do plants need chlorophyll to make their own food?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "why does ice feel colder than cold water at the same temperature", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "plan my birthday party", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How does the Richter scale use logarithms?", "artifact_type": "text_only", "domain": "earth_space", "complexity": 1}
+{"query": "How do waves make sound that we can hear?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What was that about the food chain I half-watched?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "why does a ball roll down a hill faster than flat ground", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "how do electric circuits work and why do they need batteries?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "When will the world population reach 10 billion?", "artifact_type": "text_only", "domain": "earth_space", "complexity": 1}
+{"query": "Is evolution still happening to humans right now?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "simulate what happens when continents collide", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "Can bacteria actually help our body or are they all bad?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "show me a solar flare", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "write me a poem about clouds", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How does scaling work when you change object dimensions?", "artifact_type": "explorable_diagram", "domain": "math_adjacent", "complexity": 2}
+{"query": "what is the half-life of carbon-14", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "How many atoms are in a grain of salt?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "how does a microwave heat up food without touching it", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "Why is hydrogen bonding important in chemistry?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 2}
+{"query": "visualize how polar ice melts over time", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "How do hydrogen bonds form between molecules?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "How does salt dissolve in water exactly?", "artifact_type": "simulation", "domain": "chemistry", "complexity": 2}
+{"query": "can you display how ocean currents work", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "what happens to energy when something burns or breaks", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "what happens to energy when a toy car crashes into a wall?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "simulate a tsunami wave", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "demonstrate why we have seasons", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "animate the rock cycle", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 3}
+{"query": "why does a ball slow down when I throw it?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why does a ball always come back down when you throw it up?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What percentage of data falls within one standard deviation?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "can you visualize plate tectonics?", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "what does a volcano eruption look like", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "Can microorganisms help fight disease or just cause it?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Why do we feel heat from the sun if space is cold?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "can you animate continental drift over millions of years", "artifact_type": "data_visualization", "domain": "earth_space", "complexity": 2}
+{"query": "show me the rock cycle in motion", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "When do radioactive elements decay fastest?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "why do things get hot when you rub them together", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "How do mirrors and lenses make light do different things?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "what happens to light when it goes through a prism", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "what is lightning made of exactly", "artifact_type": "text_only", "domain": "earth_space", "complexity": 1}
+{"query": "How do ecosystems stay balanced without humans interfering with them", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "Can light bend around corners like sound does?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "Why is DNA shaped like a double helix?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "what does standard deviation measure in data", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "Can humans evolve to adapt to climate change?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "What are the properties of solids liquids and gases?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What role do decomposers play in food chains?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "Can bacteria actually help us or are they always bad?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Why do some substances conduct electricity and others don't?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "Why do some diseases spread faster than others through populations", "artifact_type": "data_visualization", "domain": "biology", "complexity": 2}
+{"query": "how does natural selection relate to probability and statistics", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "does the moon pull on us like it pulls the tides", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "visualize the structure of earth's layers", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "why do things move faster when you push them harder", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why do polar molecules dissolve better in polar solvents?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "How do antibiotics kill bacteria without harming us?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "What exactly is the difference between prokaryotes and eukaryotes?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "How do catalysts speed up chemical reactions without being consumed?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "what makes something float in water instead of sinking?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "how does half-life decay work mathematically", "artifact_type": "data_visualization", "domain": "physics", "complexity": 2}
+{"query": "why do satellites not fall out of the sky", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "what is a confidence interval in statistics", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "How does photosynthesis work in plants?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "what's the probability of rolling two dice and getting a 7", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What's the formula for radioactive decay?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "translate hello to spanish", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "why do acids taste sour?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What does the central limit theorem state?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 2}
+{"query": "What is an exothermic reaction and when does it happen?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "how many grains of sand on Earth rough estimate", "artifact_type": "text_only", "domain": "earth_space", "complexity": 1}
+{"query": "Can you explain the states of matter?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "Do viruses count as living organisms or something else entirely", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Explain how balancing chemical equations works", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "what is the half life of carbon 14", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "Why do some substances conduct electricity while others don't?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "how do jet streams work? show me", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "Why do some substances dissolve better in hot water?", "artifact_type": "simulation", "domain": "chemistry", "complexity": 2}
+{"query": "tell me a joke", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What is the difference between ionic and covalent bonds?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "How are acids and bases neutralized?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "What's the difference between a mixture and a compound?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "how fast does bacteria population double", "artifact_type": "data_visualization", "domain": "biology", "complexity": 2}
+{"query": "Who developed the normal distribution curve?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "visualize how continents drift apart over time", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "can you display all planets orbiting the sun", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "show me what causes lightning storms", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "Why do polar molecules dissolve better in water?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "How many atoms decay per second in one gram of uranium?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "What's the role of DNA in passing traits to offspring?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "What exactly is DNA made of?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "visualize the greenhouse effect and global warming", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "How do mutations and natural selection involve probability?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "show me what happens during a tornado", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "qqqqqq wwww eeee", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "Why is biodiversity important for ecosystem survival?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "show me tidal forces from the moon", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "What makes something a weak acid versus a strong acid?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "animate how the moon orbits earth", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "What's the difference between mean and median?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "why do some things float and others sink in water", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why do gases expand to fill their containers?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "What is equilibrium in a reversible chemical reaction?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "How do plants get energy from the sun exactly", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "How do double displacement reactions occur?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "How do ecosystems collapse without biodiversity?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "visualize continental drift over millions of years", "artifact_type": "data_visualization", "domain": "earth_space", "complexity": 2}
+{"query": "How are antibiotic resistant bacteria becoming such a big problem", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "How do food chains maintain balance in an ecosystem?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "can you visualize plate tectonics", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "How do polar molecules differ from nonpolar ones?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "why does electricity flow through some materials but not others?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "What determines whether a substance is solid liquid or gas?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "show me planetary orbits around the sun", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "show me how wind patterns affect weather", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "Why do things weigh less on the moon?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Define standard deviation in simple terms", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "Why do some reactions release heat and others absorb it?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "What is the probability of rolling two sixes?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What is the relationship between temperature and reaction rate?", "artifact_type": "data_visualization", "domain": "chemistry", "complexity": 2}
+{"query": "can you visualize plate tectonics moving", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "can you show ocean currents moving?", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "What makes a solution different from a suspension?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "Why does dry ice sublime instead of melting?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "how fast can light travel through space", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "Why do noble gases rarely form chemical bonds with other elements?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What are extremophiles and where do they live?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "why do mirrors flip things sideways but not upside down", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "why do we feel hot when the sun shines on us", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "simulate a hurricane formation process", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "can you fix my python code", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "what's the Avogadro number", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "why does a ball fall down instead of up", "artifact_type": "simulation", "domain": "physics", "complexity": 1}
+{"query": "How do cells divide and create new cells?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "how do magnets work and why do opposite poles attract", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "How do bacteria multiply in exponential growth?", "artifact_type": "data_visualization", "domain": "biology", "complexity": 2}
+{"query": "what is energy and where does it come from", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "What makes something an acid or a base chemically?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "Can you explain how the heart pumps blood?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "What's the purpose of white blood cells?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "can you see radio waves with your eyes", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "why do magnets have north and south poles?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "How do genes get passed down through families?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "why does ice melt when you add heat to it", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "How many cells are in the human body?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "What happens to matter when it changes state?", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "What's the difference between DNA and RNA in simple terms", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "How do hydrogen bonds form and why are they important?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "What makes the human immune system so complex and effective", "artifact_type": "text_only", "domain": "biology", "complexity": 3}
+{"query": "What causes a precipitate to form in a solution?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "What's the difference between a magnet and gravity?", "artifact_type": "text_only", "domain": "physics", "complexity": 2}
+{"query": "how many atoms in a grain of salt estimate", "artifact_type": "text_only", "domain": "chemistry", "complexity": 1}
+{"query": "demonstrate how earthquakes happen underground", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "What is a standard deviation in statistics?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "exponential growth formula explained simply", "artifact_type": "data_visualization", "domain": "math_adjacent", "complexity": 1}
+{"query": "What makes things move faster or slower?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "how do magnets work and why do some push each other away?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "why does the moon look different sizes at different times?", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "does hot water cool down faster than cold water", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Why is genetic diversity important for a species?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Can you explain photosynthesis in simple terms?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "visualize a volcanic eruption", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "simulate climate change over the next century", "artifact_type": "data_visualization", "domain": "earth_space", "complexity": 3}
+{"query": "How do you calculate exponential decay?", "artifact_type": "data_visualization", "domain": "math_adjacent", "complexity": 1}
+{"query": "What happens when you heat a gas in a closed container?", "artifact_type": "simulation", "domain": "physics", "complexity": 2}
+{"query": "Explain what happens during a neutralization reaction between HCl and NaOH.", "artifact_type": "virtual_experiment", "domain": "chemistry", "complexity": 2}
+{"query": "what force makes things fall down not up", "artifact_type": "simulation", "domain": "physics", "complexity": 1}
+{"query": "approximately how many cells in the human body", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "What factors affect the rate of a chemical reaction?", "artifact_type": "text_only", "domain": "chemistry", "complexity": 2}
+{"query": "How do ecosystems recover after a major disaster?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "visualize what happens during a tsunami", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "can electricity flow through water safely", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "did mendel use probability in his pea plant experiments", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "can you explain what gravity is in simple words?", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "can you simulate the water cycle", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "How does the immune system recognize foreign invaders?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "Why do we need mitochondria in our cells?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "when was the poisson distribution first described", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "Why are bacteria considered both harmful and helpful?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "can sound travel through space or does it need air", "artifact_type": "text_only", "domain": "physics", "complexity": 1}
+{"query": "show me what happens during an earthquake", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "What happens during meiosis that makes sex cells unique", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "can you demonstrate the carbon cycle?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 2}
+{"query": "What happens when you mix an acid with a base?", "artifact_type": "virtual_experiment", "domain": "chemistry", "complexity": 2}
+{"query": "What is the Poisson distribution used for?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "Can you help me understand exothermic and endothermic reactions?", "artifact_type": "explorable_diagram", "domain": "chemistry", "complexity": 2}
+{"query": "Name three real-world applications of the normal distribution", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "help me write a cover letter", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "What causes mutations in our genes?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "Why is genetic diversity important for survival?", "artifact_type": "text_only", "domain": "biology", "complexity": 2}
+{"query": "How do you estimate large populations?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 2}
+{"query": "how do seasons work explain with animation", "artifact_type": "explorable_diagram", "domain": "earth_space", "complexity": 2}
+{"query": "What's the Fermi estimation method?", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 1}
+{"query": "show me the rotation of all planets", "artifact_type": "simulation", "domain": "earth_space", "complexity": 2}
+{"query": "demonstrate how weather patterns develop", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "How does concentration affect the rate of a reaction?", "artifact_type": "data_visualization", "domain": "chemistry", "complexity": 2}
+{"query": "simulate volcanic eruption", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "What exactly happens inside mitochondria?", "artifact_type": "explorable_diagram", "domain": "biology", "complexity": 3}
+{"query": "What exactly is mitochondria and why do they call it the powerhouse", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "why is the normal distribution so common in nature", "artifact_type": "text_only", "domain": "math_adjacent", "complexity": 2}
+{"query": "how can a mirror reflect light at different angles", "artifact_type": "explorable_diagram", "domain": "physics", "complexity": 2}
+{"query": "Can microorganisms live in extreme environments?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}
+{"query": "show me how hurricanes form", "artifact_type": "simulation", "domain": "earth_space", "complexity": 3}
+{"query": "Can we see cells without an electron microscope?", "artifact_type": "text_only", "domain": "biology", "complexity": 1}

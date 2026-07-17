@@ -1,0 +1,24 @@
+THIS IS A SYNTHETIC PLACEHOLDER FILE, NOT REAL CURRICULUM CONTENT.
+It exists only so ingest.py / embed.py / retrieve.py have something to chunk
+and search during test_pipeline.py, without depending on any real textbook
+material being present. Delete this folder once real sources are added
+under sources/<subject>/form<N>/.
+
+Osmosis is the movement of water molecules from a region of higher water
+potential to a region of lower water potential through a partially
+permeable membrane. In a hypertonic solution, water leaves the cell and the
+cell shrinks. In a hypotonic solution, water enters the cell and the cell
+may swell or burst. Plant cells become plasmolysed in a strongly hypertonic
+solution because the cell membrane pulls away from the cell wall.
+
+Newton's second law of motion states that the acceleration of an object is
+directly proportional to the net force acting on it and inversely
+proportional to its mass. This is written as F = ma, where F is the net
+force in newtons, m is the mass in kilograms, and a is the acceleration in
+metres per second squared.
+
+An acid is a substance that releases hydrogen ions (H+) when dissolved in
+water. A base is a substance that releases hydroxide ions (OH-) when
+dissolved in water, or that accepts hydrogen ions. Neutralisation is the
+reaction between an acid and a base to produce a salt and water, and the
+resulting solution has a pH close to seven at the equivalence point.
