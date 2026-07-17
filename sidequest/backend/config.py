@@ -6,6 +6,7 @@ See docs/TECHNICAL.md section 3 for the canonical variable list.
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -46,6 +47,11 @@ class Settings(BaseSettings):
 
     # Incident switch (SECURITY.md section 7): forces text-only mode app-wide.
     artifacts_disabled: bool = False
+
+    # ``shadow`` observes the full Keras model while the LLM stays authoritative.
+    # ``local`` is reserved for the later confidence-gated rollout.
+    router_mode: Literal["llm", "shadow", "local"] = "llm"
+    router_model_dir: Path = REPO_ROOT / "ml" / "router-distill" / "out"
 
     # When true (or when no API key is set) the pipeline runs without LLM calls,
     # echoing the query back. Keeps `make dev` working from a clean clone.

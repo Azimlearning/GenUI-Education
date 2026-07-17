@@ -60,6 +60,7 @@ docs/        architecture, API, data model, security, evals, planning
 2. `docs/SYSTEM_ARCHITECTURE.md`: components, the two-branch request flow, the delivery gate.
 3. `docs/API_SPEC.md`: SSE protocol and the iframe bridge contract.
 4. `CLAUDE.md`: the rules that govern changes to this repo.
+5. `docs/HACKATHON_CONTEXT.md`: Codex Community Hackathon KL 2026 context (Axiom is the "Synapse v3" build in this lineage) - timeline, judging criteria, team, open decisions.
 
 ## The non-negotiables
 

@@ -20,7 +20,7 @@ export function Composer({
 
   return (
     <form
-      className="flex items-end gap-2 pb-4 pt-2"
+      className="study-composer mt-2 flex items-end gap-2 pb-4 pt-3"
       onSubmit={(e) => {
         e.preventDefault();
         submit();
@@ -39,7 +39,7 @@ export function Composer({
         maxLength={2000}
         placeholder="Ask a science question…"
         aria-label="Your science question"
-        className="min-h-[44px] flex-1 resize-none rounded-lg px-4 py-2.5 text-[15px] outline-none focus:ring-1"
+        className="min-h-[52px] flex-1 resize-none rounded-xl px-4 py-3 text-[15px] outline-none focus:ring-1"
         style={{
           background: "var(--bg-raised)",
           border: "1px solid var(--rule)",
@@ -49,10 +49,10 @@ export function Composer({
       <button
         type="submit"
         disabled={disabled || value.trim().length === 0}
-        className="min-h-[44px] min-w-[44px] rounded-lg px-4 text-sm font-medium disabled:opacity-40"
+        className="min-h-[52px] min-w-[52px] rounded-xl px-4 text-sm font-medium disabled:opacity-40"
         style={{ background: "var(--accent)", color: "#0d1412" }}
       >
-        Ask
+        Study
       </button>
     </form>
   );

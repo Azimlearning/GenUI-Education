@@ -3,19 +3,18 @@
 import { useEffect, useRef } from "react";
 
 import type { ChatMessage, ChatStatus } from "@/lib/reducer";
-import { ArtifactCard } from "@/components/artifact/ArtifactCard";
 import { StreamRenderer } from "@/components/chat/StreamRenderer";
 
 export function MessageList({
   messages,
   status,
-  onRetry,
-  onCrash,
+  onOpenLab,
+  compact,
 }: {
   messages: ChatMessage[];
   status: ChatStatus;
-  onRetry: (assistantIndex: number) => void;
-  onCrash: (assistantIndex: number, message: string) => void;
+  onOpenLab: (assistantIndex: number) => void;
+  compact: boolean;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +28,16 @@ export function MessageList({
         className="flex flex-1 items-center justify-center text-sm"
         style={{ color: "var(--ink-dim)" }}
       >
-        Nothing asked yet. The notebook is open.
+        <div className="max-w-sm text-center">
+          <p className="study-kicker">OPEN NOTEBOOK</p>
+          <p className="mt-3 font-serif text-3xl" style={{ color: "var(--ink)" }}>
+            What are you trying to understand?
+          </p>
+          <p className="mt-3 leading-relaxed">
+            Ask one clear question. We&apos;ll turn it into a short study note and, when useful,
+            an interactive lab.
+          </p>
+        </div>
       </div>
     );
   }
@@ -40,20 +48,23 @@ export function MessageList({
         msg.role === "user" ? (
           <div key={i} className="flex justify-end">
             <div
-              className="max-w-[85%] rounded-lg px-4 py-2 text-sm"
+              className={
+                (compact ? "text-xs " : "text-sm ") +
+                "max-w-[85%] rounded-lg px-4 py-2"
+              }
               style={{ background: "var(--bg-raised)", border: "1px solid var(--rule)" }}
             >
               {msg.content}
             </div>
           </div>
         ) : (
-          <div key={i}>
-            <StreamRenderer message={msg} />
-            <ArtifactCard
-              artifact={msg.artifact}
-              onRetry={() => onRetry(i)}
-              onCrash={(message) => onCrash(i, message)}
-            />
+          <div key={i} className="study-response">
+            <StreamRenderer message={msg} compact={compact} />
+            {msg.artifact.status !== "none" ? (
+              <button type="button" className="lab-link mt-4" onClick={() => onOpenLab(i)}>
+                Open the interactive lab <span aria-hidden>→</span>
+              </button>
+            ) : null}
           </div>
         )
       )}

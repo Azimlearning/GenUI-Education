@@ -25,6 +25,7 @@ PLAN = ArtifactPlan(
     expected_behaviors=["range peaks at 45 degrees"],
     layout_notes="canvas top, controls below",
     library="p5",
+    study_note="Range peaks at 45 degrees because sin(2*theta) peaks there.",
 )
 
 GOOD_HTML = (

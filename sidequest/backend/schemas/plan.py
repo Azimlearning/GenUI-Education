@@ -10,6 +10,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 Library = Literal["p5", "matter", "three", "chart", "d3", "none"]
+InteractionMode = Literal["controls", "drag_drop"]
 
 
 class Variable(BaseModel):
@@ -34,3 +35,18 @@ class ArtifactPlan(BaseModel):
     )
     layout_notes: str = Field(max_length=1200)
     library: Library
+    interaction_mode: InteractionMode = "controls"
+    # The learner-facing note and (for experiments) procedure the Generator
+    # renders INSIDE the artifact itself, not left to the chat transcript
+    # (UX_IMPROVEMENT_PLAN.md W3: "note inside the artifact, not chat text").
+    study_note: str = Field(
+        min_length=1,
+        max_length=400,
+        description="2-3 sentence scannable takeaway, rendered as a card inside the artifact",
+    )
+    steps: list[str] = Field(
+        default_factory=list,
+        max_length=6,
+        description="Numbered procedure steps; required for virtual_experiment / drag_drop, "
+        "empty otherwise",
+    )

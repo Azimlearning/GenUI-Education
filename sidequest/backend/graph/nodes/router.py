@@ -5,6 +5,7 @@ fail we fall back to text_only so the Explainer still runs; the failure is
 recorded in the trace. The text branch must never be blocked (principle 3).
 """
 
+import asyncio
 import json
 import logging
 import time
@@ -18,6 +19,7 @@ from graph.state import PipelineState
 from schemas.events import MetaPayload
 from schemas.intent import Intent
 from services.llm import get_llm
+from services.local_router import get_local_router, shadow_details
 from services.prompts import load_prompt, prompt_version
 from services.traces import record_trace
 
@@ -70,6 +72,12 @@ async def router_node(state: PipelineState, config: RunnableConfig) -> PipelineS
     model: str | None = None
     tokens = (0, 0, 0.0)
 
+    # Begin student inference alongside the LLM so its warm work is normally
+    # hidden under the authoritative router call. It is observation only.
+    shadow_task: asyncio.Task | None = None
+    if settings.router_mode == "shadow" and settings.llm_enabled:
+        shadow_task = asyncio.create_task(get_local_router().classify(state["query"]))
+
     if not settings.llm_enabled:
         logger.warning("ECHO MODE: no ANTHROPIC_API_KEY; router returning static intent")
         intent = ECHO_INTENT
@@ -96,6 +104,27 @@ async def router_node(state: PipelineState, config: RunnableConfig) -> PipelineS
                 logger.warning("router %s", error)
 
     ctx.add_usage(*tokens)
+
+    if shadow_task is not None:
+        try:
+            local = await shadow_task
+            details = shadow_details(intent, local)
+            shadow_error = None
+        except Exception as exc:
+            # Optional TensorFlow/model failures must never change LLM routing.
+            details = None
+            shadow_error = str(exc)
+            logger.warning("router shadow unavailable: %s", shadow_error)
+        record_trace(
+            run_id=ctx.run_id,
+            session_id=ctx.session_id,
+            node="router_shadow",
+            model="router_student.keras",
+            latency_ms=local.latency_ms if shadow_error is None else None,
+            verdict="agree" if details and details["agreement"]["all"] else "disagree",
+            error=shadow_error,
+            details=details,
+        )
 
     # Emit meta first: the client is waiting on it, and the trace write is
     # background telemetry (Phase 0 has no cache node; every request is a miss).

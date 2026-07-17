@@ -101,6 +101,7 @@ CREATE TABLE traces (
   verdict        TEXT,                        -- verifier only: pass|fail
   retry_index    SMALLINT NOT NULL DEFAULT 0,
   error          TEXT,
+  details        JSONB,                       -- structured telemetry; never raw queries
   created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX idx_traces_run ON traces(run_id);

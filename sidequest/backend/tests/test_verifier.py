@@ -18,6 +18,7 @@ PLAN = ArtifactPlan(
     expected_behaviors=["y follows x"],
     layout_notes="n/a",
     library="none",
+    study_note="y follows x directly.",
 )
 
 PASS_DATA = {

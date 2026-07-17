@@ -26,12 +26,16 @@ services:
       MAX_RUN_COST_USD: ${MAX_RUN_COST_USD:-0.75}
       ARTIFACT_TIMEOUT_S: ${ARTIFACT_TIMEOUT_S:-420}
       GEN_RATE_LIMIT_PER_HOUR: ${GEN_RATE_LIMIT_PER_HOUR:-10}
+      ROUTER_MODE: ${ROUTER_MODE:-llm}
+      ROUTER_MODEL_DIR: /models/router
       VENDOR_DIR: /vendor
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
       - ./vendor:/vendor:ro
+      # Full Keras export; harmlessly empty while ROUTER_MODE=llm.
+      - ./ml/router-distill/out:/models/router:ro
     depends_on:
       db:
         condition: service_healthy

@@ -30,6 +30,7 @@ def record_trace(
     verdict: str | None = None,
     retry_index: int = 0,
     error: str | None = None,
+    details: dict | None = None,
 ) -> None:
     """Schedule the trace write in the background and return immediately."""
     spawn(
@@ -46,6 +47,7 @@ def record_trace(
             verdict=verdict,
             retry_index=retry_index,
             error=error,
+            details=details,
         ),
         name=f"trace:{node}:{run_id}",
     )

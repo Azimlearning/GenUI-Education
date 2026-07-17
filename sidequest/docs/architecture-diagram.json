@@ -1,0 +1,210 @@
+{
+  "diagram_title": "Synapse System Architecture",
+  "subtitle": "Tier 3 generative UI science learning app - verified, sandboxed, interactive artifacts",
+  "source_of_truth": "docs/SYSTEM_ARCHITECTURE.md",
+  "generated_for": "image/diagram generation input, not authoritative documentation",
+  "style_hints": {
+    "layout": "top-to-bottom, three horizontal bands: Client, Backend, Data/External",
+    "palette": {
+      "client_band": "#2563eb (blue) - browser-side components",
+      "backend_band": "#7c3aed (violet) - FastAPI + LangGraph pipeline",
+      "data_band": "#059669 (green) - Postgres and persistence",
+      "external_band": "#6b7280 (gray) - third-party API (Claude)",
+      "security_boundary": "#dc2626 (red, dashed border) - sandbox / trust boundary",
+      "gate": "#ea580c (orange) - the delivery gate, a hard structural checkpoint"
+    },
+    "icon_suggestions": {
+      "chat_ui": "chat bubble",
+      "iframe_sandbox": "shield / locked box",
+      "langgraph_pipeline": "flowchart nodes",
+      "postgres": "database cylinder",
+      "claude_api": "cloud with brain/spark",
+      "delivery_gate": "turnstile / gate icon"
+    }
+  },
+  "layers": [
+    {
+      "id": "browser",
+      "label": "Browser (Client)",
+      "band": "client_band",
+      "components": [
+        {
+          "id": "chat_ui",
+          "label": "Chat UI",
+          "description": "SSE consumer; renders streamed text_delta events token by token"
+        },
+        {
+          "id": "artifact_card",
+          "label": "Artifact Card",
+          "description": "Container for the generated interactive artifact and its staged-progress UI",
+          "contains": ["iframe_sandbox"]
+        },
+        {
+          "id": "iframe_sandbox",
+          "label": "iframe sandbox=\"allow-scripts\" srcdoc",
+          "description": "Generated HTML/JS artifact runtime. Cross-origin by construction (srcdoc + no allow-same-origin). Cannot touch parent DOM, cookies, or storage.",
+          "parent": "artifact_card",
+          "is_security_boundary": true
+        },
+        {
+          "id": "library_page",
+          "label": "/library",
+          "description": "Cache browser: lets a user browse previously generated, verified artifacts"
+        }
+      ]
+    },
+    {
+      "id": "backend",
+      "label": "FastAPI Backend",
+      "band": "backend_band",
+      "components": [
+        {
+          "id": "api_layer",
+          "label": "API layer (SSE emitter)",
+          "description": "POST /api/ask entry point; multiplexes text branch and artifact branch events onto one SSE response"
+        },
+        {
+          "id": "langgraph_pipeline",
+          "label": "LangGraph pipeline",
+          "description": "Router forks into a fast text branch and a slower artifact branch",
+          "subcomponents": [
+            {"id": "router", "label": "Router", "model_tier": "fast", "role": "classifies intent, strict JSON output"},
+            {"id": "explainer", "label": "Explainer", "model_tier": "fast", "role": "streams conversational text answer, text branch only"},
+            {"id": "cache", "label": "Cache lookup", "role": "keyed on sha256(domain|artifact_type|canonical_concept)"},
+            {"id": "planner", "label": "Planner", "model_tier": "strongest", "role": "produces the artifact plan: equations and behavior contract"},
+            {"id": "generator", "label": "Generator", "model_tier": "strongest, high max tokens", "role": "the Tier 3 core; writes the self-contained HTML/JS artifact"},
+            {"id": "verifier", "label": "Verifier", "model_tier": "strongest", "role": "independently recomputes physics/science; pass or fail verdict; only source of the delivery-gate type"},
+            {"id": "postprocessor", "label": "Post-processor", "role": "deterministic fixups after a verifier pass"}
+          ]
+        },
+        {
+          "id": "delivery_gate",
+          "label": "Delivery gate",
+          "description": "artifact_done events are constructed exclusively by deliver_verified_artifact(report: PassedVerifierReport). PassedVerifierReport is only instantiable by the verifier module on a pass verdict - bypassing verification is a type error, not a code-review catch.",
+          "is_gate": true
+        }
+      ]
+    },
+    {
+      "id": "postgres",
+      "label": "Postgres",
+      "band": "data_band",
+      "components": [
+        {"id": "tbl_artifacts", "label": "artifacts", "description": "plan, html, verifier_report, model_version, screenshot"},
+        {"id": "tbl_sessions", "label": "sessions"},
+        {"id": "tbl_messages", "label": "messages"},
+        {"id": "tbl_events", "label": "events"},
+        {"id": "tbl_feedback", "label": "feedback", "description": "ratings feed cache eviction (avg_rating < 2.5, n >= 3)"},
+        {"id": "tbl_traces", "label": "traces", "description": "run_id, node, model, prompt_version, input_hash, output_hash, tokens_in/out, cost, latency_ms, verdict"}
+      ]
+    },
+    {
+      "id": "external",
+      "label": "External services",
+      "band": "external_band",
+      "components": [
+        {"id": "claude_api", "label": "Claude API", "description": "model calls for Router, Explainer, Planner, Generator, Verifier, Tutor"}
+      ]
+    }
+  ],
+  "connections": [
+    {"from": "chat_ui", "to": "api_layer", "label": "HTTPS SSE + JSON (POST /api/ask)", "type": "request"},
+    {"from": "api_layer", "to": "chat_ui", "label": "text_delta, artifact_status, artifact_done/failed, done (SSE)", "type": "stream"},
+    {"from": "api_layer", "to": "langgraph_pipeline", "label": "invokes pipeline per request", "type": "call"},
+    {"from": "langgraph_pipeline", "to": "claude_api", "label": "model calls per node", "type": "external_api"},
+    {"from": "langgraph_pipeline", "to": "tbl_traces", "label": "one trace row per node call", "type": "write"},
+    {"from": "cache", "to": "tbl_artifacts", "label": "read by cache key", "type": "read"},
+    {"from": "postprocessor", "to": "delivery_gate", "label": "PassedVerifierReport only", "type": "gated_handoff"},
+    {"from": "delivery_gate", "to": "tbl_artifacts", "label": "write on verified pass", "type": "write"},
+    {"from": "delivery_gate", "to": "api_layer", "label": "artifact_done event", "type": "event"},
+    {"from": "artifact_card", "to": "iframe_sandbox", "label": "mounts srcdoc={html}", "type": "render"},
+    {"from": "iframe_sandbox", "to": "artifact_card", "label": "postMessage: axiom_ready / axiom_event{control,value} / axiom_error{message}", "type": "bridge_inbound", "validated_with": "zod"},
+    {"from": "artifact_card", "to": "api_layer", "label": "POST /api/artifact/{id}/event (forwarded from bridge)", "type": "request"},
+    {"from": "library_page", "to": "tbl_artifacts", "label": "browse cached verified artifacts", "type": "read"}
+  ],
+  "notes": {
+    "outbound_iframe_policy": "Parent never posts into the iframe. Remix/reset = remount with new srcdoc, never a live postMessage into the sandbox.",
+    "no_allow_same_origin": "sandbox is allow-scripts only, never allow-same-origin - this is a hard rule (CLAUDE.md), not a tunable default.",
+    "single_active_iframe": "Only the active, viewport-visible, most recent artifact iframe stays mounted; history artifacts render as static Playwright-captured screenshots until clicked."
+  },
+  "pipeline_conditional_edges": [
+    {"from": "router", "to": "END (text branch only)", "condition": "intent.artifact_type == text_only"},
+    {"from": "cache", "to": "delivery_gate", "condition": "cache hit"},
+    {"from": "cache", "to": "planner", "condition": "cache miss"},
+    {"from": "verifier", "to": "postprocessor", "condition": "pass"},
+    {"from": "verifier", "to": "generator", "condition": "fail and retry_count < 2 (retry with revision context)"},
+    {"from": "verifier", "to": "degraded_state", "condition": "fail and retry_count >= 2 (hard cap)"}
+  ],
+  "sequence_example": {
+    "scenario": "cache miss with one verifier retry",
+    "steps": [
+      {"actor": "Client", "action": "ask", "to": "API"},
+      {"actor": "API", "action": "classify", "to": "Router"},
+      {"actor": "Router", "action": "intent", "to": "API"},
+      {"actor": "API", "action": "meta", "to": "Client"},
+      {"actor": "API", "action": "stream (text branch starts)", "to": "Explainer"},
+      {"actor": "Explainer", "action": "text_delta (token by token)", "to": "Client", "via": "API"},
+      {"actor": "API", "action": "lookup", "to": "Cache", "result": "miss"},
+      {"actor": "API", "action": "status: planning", "to": "Client"},
+      {"actor": "Planner", "action": "produces artifact_plan"},
+      {"actor": "API", "action": "status: generating", "to": "Client"},
+      {"actor": "Generator", "action": "produces artifact_code"},
+      {"actor": "API", "action": "status: verifying", "to": "Client"},
+      {"actor": "Verifier", "action": "verdict: fail (issues found)"},
+      {"actor": "API", "action": "status: revising", "to": "Client"},
+      {"actor": "Generator", "action": "revises artifact_code with issue context"},
+      {"actor": "API", "action": "status: verifying", "to": "Client"},
+      {"actor": "Verifier", "action": "verdict: pass"},
+      {"actor": "API", "action": "status: postprocessing", "to": "Client"},
+      {"actor": "Postprocessor", "action": "deterministic fixups"},
+      {"actor": "DeliveryGate", "action": "constructs artifact_done (html) - only possible on PassedVerifierReport"},
+      {"actor": "Cache", "action": "write (plan, report, model_version, screenshot)"},
+      {"actor": "API", "action": "artifact_done", "to": "Client"},
+      {"actor": "API", "action": "done", "to": "Client"}
+    ]
+  },
+  "state_schema": {
+    "name": "PipelineState",
+    "fields": [
+      {"name": "session_id", "type": "str"},
+      {"name": "query", "type": "str"},
+      {"name": "intent", "type": "Intent | None", "description": "Router output, pydantic"},
+      {"name": "canonical_concept", "type": "str | None"},
+      {"name": "cache_key", "type": "str | None"},
+      {"name": "explanation_done", "type": "bool"},
+      {"name": "artifact_plan", "type": "ArtifactPlan | None"},
+      {"name": "artifact_code", "type": "str | None"},
+      {"name": "verification_report", "type": "VerifierReport | None"},
+      {"name": "retry_count", "type": "int", "constraint": "hard cap 2"},
+      {"name": "prior_artifact_html", "type": "str | None", "description": "set only in modification cycles"},
+      {"name": "final_artifact_id", "type": "str | None"},
+      {"name": "failure_reason", "type": "str | None"}
+    ]
+  },
+  "caching": {
+    "key_formula": "sha256(domain + \"|\" + artifact_type + \"|\" + canonical_concept)",
+    "canonical_concept_rule": "Router normalization: snake_case, singular, qualifier-ordered",
+    "write_trigger": "after verifier pass + post-process",
+    "write_payload": ["plan", "report", "model_version", "playwright_screenshot"],
+    "eviction_triggers": [
+      "any wrong_science flag",
+      "avg_rating < 2.5 with n >= 3 ratings",
+      "model_version bump (lazy: served stale until re-requested, then regenerated)"
+    ],
+    "dedup_scope_v1": "exact-key only; semantic/embedding dedup is a later optimization, not built in v1"
+  },
+  "failure_taxonomy": [
+    {"failure": "Generator invalid JSON/HTML", "detection": "pydantic/parse error", "user_experience": "one silent retry, then counts as verifier fail"},
+    {"failure": "Verifier fail x3", "detection": "retry cap hit", "user_experience": "text + honest degrade card + retry button"},
+    {"failure": "Artifact runtime crash", "detection": "axiom_error event / watchdog timeout", "user_experience": "degrade card + retry; auto-flag artifact in cache"},
+    {"failure": "Artifact branch timeout 30s", "detection": "asyncio timeout", "user_experience": "degrade card; text branch unaffected"},
+    {"failure": "SSE disconnect", "detection": "client reconnect", "user_experience": "idempotent replay from last event id (v1: simple restart of request)"},
+    {"failure": "Claude API outage", "detection": "circuit breaker", "user_experience": "text-only mode banner"}
+  ],
+  "hard_rules": [
+    "No unverified artifact may reach the client - the delivery path must be structurally unable to bypass the Verifier.",
+    "sandbox=\"allow-scripts\" only, never allow-same-origin.",
+    "Generated code libraries served from /vendor/ (same origin), never a runtime CDN fetch.",
+    "No predefined component library for learning artifacts - Tier 3 generation or degrade to text."
+  ]
+}

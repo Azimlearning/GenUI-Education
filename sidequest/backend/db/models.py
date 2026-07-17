@@ -126,6 +126,7 @@ class Trace(Base):
     verdict: Mapped[str | None] = mapped_column(Text)  # verifier only: pass|fail
     retry_index: Mapped[int] = mapped_column(SmallInteger, default=0, server_default="0")
     error: Mapped[str | None] = mapped_column(Text)
+    details: Mapped[dict | None] = mapped_column()  # structured telemetry; never raw queries
     created_at: Mapped[datetime] = mapped_column(server_default=NOW)
 
     __table_args__ = (

@@ -82,7 +82,7 @@ export function SandboxFrame({
 
   return (
     <div
-      className="mt-3 overflow-hidden rounded-lg border"
+      className="flex h-full min-h-[430px] flex-col overflow-hidden rounded-xl border"
       style={{ borderColor: "var(--rule)", background: "var(--bg-raised)" }}
     >
       <div
@@ -105,7 +105,7 @@ export function SandboxFrame({
         sandbox="allow-scripts"
         srcDoc={html}
         title={title}
-        className="block h-[min(480px,65dvh)] w-full"
+        className="block min-h-[430px] w-full flex-1 xl:min-h-0"
         style={{ border: "0", opacity: ready ? 1 : 0.4, transition: "opacity 300ms" }}
       />
     </div>
