@@ -2,21 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Axiom palette and form language. Implements design/BRAND.md.
+ * Light-committed by design: teal = working, green = verified, gold = reward.
+ * No glow, no background grid, no gradient wallpaper.
+ */
 :root {
-  --bg: #101214;
-  --bg-raised: #16191c;
-  --ink: #d7dbdf;
-  --ink-dim: #8a9096;
-  --accent: #7fb4a2;
-  --rule: #24282c;
+  --canvas: #f7f8f4;
+  --band: #eff2eb;
+  --card: #ffffff;
+  --ink: #2f3a34;
+  --ink-dim: #61706a;
+  --ink-faint: #9aa49e;
+  --line: #e4e8df;
+  --line-2: #d3dace;
+
+  --primary: #12a594;
+  --primary-btn: #0a776b;
+  --primary-edge: #075247;
+  --primary-soft: #e1f3ef;
+
+  --verify: #1fa35b;
+  --verify-edge: #157a42;
+  --verify-soft: #e4f6ea;
+  --verify-ink: #147e43;
+
+  --gold: #e6a200;
+  --gold-soft: #fcf1d3;
+
+  --warn: #b5720c;
+  --danger: #c24a42;
 }
 
 body {
-  background: var(--bg);
+  background: var(--canvas);
   color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
 }
 
-/* Streaming caret; suppressed for reduced-motion users. */
+/* ---- The chunky pressable button (the Axiom signature). ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: 18px;
+  cursor: pointer;
+  font-family: var(--font-display), "Trebuchet MS", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--primary-btn);
+  color: #ffffff;
+  box-shadow: 0 4px 0 var(--primary-edge);
+}
+.btn-primary:not(:disabled):active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--primary-edge);
+}
+.btn-ghost {
+  background: var(--card);
+  color: var(--ink-dim);
+  box-shadow: 0 4px 0 var(--line-2), inset 0 0 0 2px var(--line);
+}
+.btn-ghost:not(:disabled):active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--line-2), inset 0 0 0 2px var(--line);
+}
+
+/* ---- Streaming caret; the machine is working, so it is teal. ---- */
 .caret::after {
   content: "";
   display: inline-block;
@@ -24,18 +86,71 @@ body {
   height: 1em;
   margin-left: 2px;
   vertical-align: text-bottom;
-  background: var(--ink-dim);
+  background: var(--primary);
+  border-radius: 1px;
   animation: caret-blink 1s steps(2) infinite;
 }
-
 @keyframes caret-blink {
   50% {
     opacity: 0;
   }
 }
 
+/* ---- Axi, the mascot: a gentle idle float, so it feels alive. ---- */
+@keyframes axiom-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.mascot-bob {
+  animation: axiom-bob 3s ease-in-out infinite;
+}
+
+/* ---- The active pipeline node: a soft pulse, never a glow. ---- */
+@keyframes axiom-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.node-pulse {
+  animation: axiom-pulse 1.4s ease-in-out infinite;
+}
+
+/* ---- Celebrate the checkpoint: the verified badge pops in once. ---- */
+@keyframes axiom-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.pop {
+  animation: axiom-pop 0.28s ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .caret::after {
+  .btn {
+    transition: none;
+  }
+  .caret::after,
+  .node-pulse,
+  .pop,
+  .mascot-bob {
     animation: none;
+    opacity: 1;
   }
 }

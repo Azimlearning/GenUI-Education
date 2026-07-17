@@ -2,12 +2,19 @@
 
 import { useState } from "react";
 
+/**
+ * The one clear next step (design/FLOW.md sections 1-2). Two placements share the
+ * same logic: "hero" is the big front-door prompt, "bar" is the pinned composer
+ * once a conversation is going.
+ */
 export function Composer({
   onSend,
   disabled,
+  variant = "bar",
 }: {
   onSend: (message: string) => void;
   disabled: boolean;
+  variant?: "bar" | "hero";
 }) {
   const [value, setValue] = useState("");
 
@@ -18,9 +25,11 @@ export function Composer({
     onSend(message);
   };
 
+  const hero = variant === "hero";
+
   return (
     <form
-      className="flex items-end gap-2 pb-4 pt-2"
+      className={hero ? "flex items-stretch gap-3" : "flex items-end gap-2.5 pb-5 pt-2"}
       onSubmit={(e) => {
         e.preventDefault();
         submit();
@@ -37,22 +46,20 @@ export function Composer({
         }}
         rows={1}
         maxLength={2000}
-        placeholder="Ask a science question…"
+        placeholder={hero ? "Why does ice float?" : "Ask a science question…"}
         aria-label="Your science question"
-        className="min-h-[44px] flex-1 resize-none rounded-lg px-4 py-2.5 text-[15px] outline-none focus:ring-1"
-        style={{
-          background: "var(--bg-raised)",
-          border: "1px solid var(--rule)",
-          color: "var(--ink)",
-        }}
+        className={`flex-1 resize-none rounded-card border-2 border-line-2 bg-card text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-primary focus:ring-4 focus:ring-primary-soft ${
+          hero
+            ? "min-h-[58px] px-5 py-4 text-lg font-semibold"
+            : "min-h-[48px] px-4 py-3 text-[15px] font-medium"
+        }`}
       />
       <button
         type="submit"
         disabled={disabled || value.trim().length === 0}
-        className="min-h-[44px] min-w-[44px] rounded-lg px-4 text-sm font-medium disabled:opacity-40"
-        style={{ background: "var(--accent)", color: "#0d1412" }}
+        className={`btn btn-primary ${hero ? "px-7 text-base" : "min-h-[48px] px-5 text-[15px]"}`}
       >
-        Ask
+        Build it
       </button>
     </form>
   );
