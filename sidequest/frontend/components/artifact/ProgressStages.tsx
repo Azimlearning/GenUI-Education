@@ -9,7 +9,13 @@ const STAGES: [string, string][] = [
   ["postprocessing", "polishing"],
 ];
 
-export function ProgressStages({ stage }: { stage: string }) {
+export function ProgressStages({
+  stage,
+  codePreview,
+}: {
+  stage: string;
+  codePreview: string;
+}) {
   const activeIndex = STAGES.findIndex(([key]) => key === stage);
   return (
     <div
@@ -51,6 +57,23 @@ export function ProgressStages({ stage }: { stage: string }) {
           }
         )}
       </ol>
+      {codePreview ? (
+        <details className="mt-2">
+          <summary
+            className="cursor-pointer select-none text-xs"
+            style={{ color: "var(--ink-dim)" }}
+          >
+            watch the code being written
+          </summary>
+          <pre
+            className="mt-1 max-h-40 overflow-hidden whitespace-pre-wrap break-all rounded p-2 text-[11px] leading-snug"
+            style={{ background: "var(--bg)", color: "var(--ink-dim)" }}
+            aria-hidden
+          >
+            {codePreview}
+          </pre>
+        </details>
+      ) : null}
     </div>
   );
 }

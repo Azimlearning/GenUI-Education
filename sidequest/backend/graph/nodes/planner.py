@@ -18,16 +18,15 @@ from services.traces import record_trace
 logger = logging.getLogger(__name__)
 
 
-def parse_plan(raw: str) -> ArtifactPlan:
-    text = raw.strip()
-    if text.startswith("```"):
-        text = text.strip("`")
-        if text.startswith("json"):
-            text = text[4:]
-    start, end = text.find("{"), text.rfind("}")
-    if start == -1 or end == -1:
-        raise ValueError("no JSON object in planner output")
-    return ArtifactPlan.model_validate(json.loads(text[start : end + 1]))
+def validate_plan(data: dict) -> ArtifactPlan:
+    """Validate tool output, tolerating one wrapper level ({'plan': {...}}),
+    an observed live failure mode even under forced tool use."""
+    try:
+        return ArtifactPlan.model_validate(data)
+    except ValidationError:
+        if len(data) == 1 and isinstance(next(iter(data.values())), dict):
+            return ArtifactPlan.model_validate(next(iter(data.values())))
+        raise
 
 
 async def run_planner(ctx: RunContext, query: str, artifact_type: str, domain: str) -> ArtifactPlan:
@@ -43,21 +42,29 @@ async def run_planner(ctx: RunContext, query: str, artifact_type: str, domain: s
     error: str | None = None
     plan: ArtifactPlan | None = None
     tokens = (0, 0, 0.0)
-    for attempt in range(2):  # one silent retry on parse failure
-        result = await llm.complete(
-            model=model, system=load_prompt("planner"), user=user, max_tokens=3000
-        )
-        tokens = (
-            tokens[0] + result.tokens_in,
-            tokens[1] + result.tokens_out,
-            tokens[2] + result.cost_usd,
-        )
+    for attempt in range(2):  # one silent retry on validation failure
         try:
-            plan = parse_plan(result.text)
+            # Forced tool use: structurally valid JSON guaranteed by the API.
+            # Adopted after the third free-text JSON failure class in live runs
+            # (PLANNING.md finding 9's pre-registered escalation).
+            data, result = await llm.complete_structured(
+                model=model,
+                system=load_prompt("planner"),
+                user=user,
+                tool_name="submit_artifact_plan",
+                input_schema=ArtifactPlan.model_json_schema(),
+                max_tokens=3000,
+            )
+            tokens = (
+                tokens[0] + result.tokens_in,
+                tokens[1] + result.tokens_out,
+                tokens[2] + result.cost_usd,
+            )
+            plan = validate_plan(data)
             error = None
             break
         except (ValueError, ValidationError, json.JSONDecodeError) as exc:
-            error = f"parse failure (attempt {attempt + 1}): {exc}"
+            error = f"validation failure (attempt {attempt + 1}): {exc}"
             logger.warning("planner %s", error)
 
     ctx.add_usage(*tokens)

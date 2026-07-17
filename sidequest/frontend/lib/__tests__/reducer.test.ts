@@ -101,6 +101,39 @@ describe("chatReducer", () => {
     });
   });
 
+  it("accumulates artifact_delta into the code preview while building", () => {
+    const state = runStream([
+      event("meta", META),
+      event("artifact_status", { stage: "generating" }),
+      event("artifact_delta", { chunk: "<canvas " }),
+      event("artifact_delta", { chunk: 'id="stage">' }),
+    ]);
+    expect(state.messages[1]).toMatchObject({
+      artifact: { status: "building", codePreview: '<canvas id="stage">' },
+    });
+  });
+
+  it("caps the code preview to its tail", () => {
+    const big = "x".repeat(3000);
+    const state = runStream([
+      event("meta", META),
+      event("artifact_status", { stage: "generating" }),
+      event("artifact_delta", { chunk: big }),
+      event("artifact_delta", { chunk: "TAIL" }),
+    ]);
+    const msg = state.messages[1];
+    if (msg?.role !== "assistant" || msg.artifact.status !== "building") {
+      throw new Error("expected building artifact");
+    }
+    expect(msg.artifact.codePreview.length).toBeLessThanOrEqual(2000);
+    expect(msg.artifact.codePreview.endsWith("TAIL")).toBe(true);
+  });
+
+  it("ignores artifact_delta before any build stage", () => {
+    const state = runStream([event("meta", META), event("artifact_delta", { chunk: "x" })]);
+    expect(state.messages[1]).toMatchObject({ artifact: { status: "none" } });
+  });
+
   it("artifact_crashed marks a ready artifact as crashed by index", () => {
     let state = runStream([
       event("meta", META),

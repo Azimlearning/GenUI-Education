@@ -38,6 +38,8 @@ class AskRequest(BaseModel):
     # Oversized/degenerate input (hostile case H5) is rejected here,
     # before any LLM spend. Limit mirrors config.max_query_chars.
     message: str = Field(min_length=1, max_length=2000)
+    # Opt-in progressive code stream for the build-progress preview.
+    artifact_delta: bool = False
 
 
 async def _event_stream(req: AskRequest) -> AsyncIterator[str]:
@@ -47,7 +49,12 @@ async def _event_stream(req: AskRequest) -> AsyncIterator[str]:
     async def emit(payload: BaseModel) -> None:
         await queue.put(payload)
 
-    ctx = RunContext(run_id=run_id, session_id=req.session_id, emit=emit)
+    ctx = RunContext(
+        run_id=run_id,
+        session_id=req.session_id,
+        emit=emit,
+        artifact_delta_enabled=req.artifact_delta,
+    )
 
     # Persistence is off the critical path: chat must stream even if the
     # database is slow or down (failures are logged inside the services).

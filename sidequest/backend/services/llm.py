@@ -31,13 +31,20 @@ class LLMClient:
         price_in, price_out = self._settings.price_for(model)
         return tokens_in * price_in / 1_000_000 + tokens_out * price_out / 1_000_000
 
+    @staticmethod
+    def _system_blocks(system: str) -> list[dict]:
+        """System prompts are static per node; cache them. Cuts input-token
+        cost ~90% on repeat calls (retries, verifier passes) and reduces
+        time-to-first-token on the 8k-token generator prompt."""
+        return [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}]
+
     async def complete(
         self, *, model: str, system: str, user: str, max_tokens: int = 1024
     ) -> LLMResult:
         """Non-streaming completion (Router-style strict-JSON nodes)."""
         message = await self._client.messages.create(
             model=model,
-            system=system,
+            system=self._system_blocks(system),
             max_tokens=max_tokens,
             messages=[{"role": "user", "content": user}],
         )
@@ -45,6 +52,43 @@ class LLMClient:
         tokens_in = message.usage.input_tokens
         tokens_out = message.usage.output_tokens
         return LLMResult(text, tokens_in, tokens_out, self._cost(model, tokens_in, tokens_out))
+
+    async def complete_structured(
+        self,
+        *,
+        model: str,
+        system: str,
+        user: str,
+        tool_name: str,
+        input_schema: dict,
+        max_tokens: int = 3000,
+    ) -> tuple[dict, LLMResult]:
+        """Forced tool-use completion: the API guarantees structurally valid
+        JSON arguments, eliminating the free-text JSON failure classes
+        (unescaped quotes, trailing prose) seen live with the Planner."""
+        message = await self._client.messages.create(
+            model=model,
+            system=self._system_blocks(system),
+            max_tokens=max_tokens,
+            tools=[
+                {
+                    "name": tool_name,
+                    "description": "Submit the structured result.",
+                    "input_schema": input_schema,
+                }
+            ],
+            tool_choice={"type": "tool", "name": tool_name},
+            messages=[{"role": "user", "content": user}],
+        )
+        data = next(
+            (block.input for block in message.content if block.type == "tool_use"), None
+        )
+        if data is None:
+            raise ValueError(f"model returned no {tool_name} tool call")
+        tokens_in = message.usage.input_tokens
+        tokens_out = message.usage.output_tokens
+        result = LLMResult("", tokens_in, tokens_out, self._cost(model, tokens_in, tokens_out))
+        return data, result
 
     async def stream(
         self,
@@ -58,7 +102,7 @@ class LLMClient:
         """Streaming completion; awaits on_chunk for every text delta."""
         async with self._client.messages.stream(
             model=model,
-            system=system,
+            system=self._system_blocks(system),
             max_tokens=max_tokens,
             messages=[{"role": "user", "content": user}],
         ) as stream:

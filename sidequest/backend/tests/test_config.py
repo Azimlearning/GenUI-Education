@@ -24,6 +24,7 @@ def test_unknown_model_price_is_zero():
 def test_budget_defaults():
     s = make()
     assert s.max_run_cost_usd == 0.75
-    # 150, not the brief's 30: measured generation runs 60-90s (PLANNING.md finding 7)
-    assert s.artifact_timeout_s == 150
+    # 420, not the brief's 30: generation size + provider TTFT variance +
+    # revision cycles (PLANNING.md findings 7 and 12)
+    assert s.artifact_timeout_s == 420
     assert s.gen_rate_limit_per_hour == 10

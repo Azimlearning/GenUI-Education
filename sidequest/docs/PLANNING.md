@@ -4,8 +4,10 @@ Living document. The coding agent updates checklists as tasks complete. Phases a
 
 ## Current status
 
-- **Active phase:** Phase 1 (Phase 0 DoD met, with one caveat below)
-- **Last updated:** 2026-07-16
+- **Active phase:** Phase 4 next. Phases 2 and 3 are built and live-validated
+  (at user direction, with the Phase 1/2 DoD measurement, the full 12-query
+  eval run, still pending an explicit go-ahead; smoke subset is 4/4).
+- **Last updated:** 2026-07-17
 
 ---
 
@@ -126,33 +128,73 @@ per the cost discipline rule.
    (render_check harness bug, fixed; relevant to any future artifact-preview
    feature that inlines HTML into JS).
 
+### Phase 2+3 findings (2026-07-17, built together at user direction with the
+### Phase 1 DoD measurement deferred)
+
+12. **Provider time-to-first-token varies wildly on cold prompts** (measured
+   17s to 107s before the first generator chunk on identical requests).
+   Responses: prompt caching on all static system prompts (cache_control
+   ephemeral; also cuts input cost ~90% on retries), timeout raised to a 420s
+   pathological cap, and the branch degrades early instead of starting a
+   revision with under 90s of runway (no tokens burned on doomed attempts).
+13. **Free-text JSON died a third death; structured output adopted** per the
+   pre-registered escalation in finding 9: Planner and Verifier now use forced
+   tool-use. Two follow-on live fixes: models sometimes wrap fields in a
+   container key (singleton-unwrap tolerance in validate_plan/validate_report),
+   and the verifier's genuine spot-check traces (Stefan-Boltzmann hand
+   calculations) blew the 200-char field caps, which were relaxed.
+14. **The verifier retry loop pays for itself.** Live: ice-float attempt 1
+   failed with 4 issues, orbital-motion attempt 1 failed with 3 (spot-check
+   mismatches among them); both revisions passed and shipped. Wrong science
+   was caught before render twice in one afternoon.
+15. **The Router is an unplanned fourth defense layer.** H1-H3 hostile queries
+   all routed text_only (per router prompt rule 3), so no artifact spend at
+   all. Verifier layer-0 and postprocess scans remain the two required
+   independent layers (proven in unit suites); planner rule 6 is a third.
+16. **Generator invalid output must consume a retry, not abort** (failure
+   taxonomy row 1); found live when an orbit generation produced no <html>
+   document and the branch degraded without using its retries. Fixed.
+
 ## Phase 2 — Verification
 
 **Goal:** zero unverified artifacts can reach the client, enforced structurally.
 
-- [ ] Verifier prompt v1: five-check protocol, strict JSON verdict
-- [ ] Retry loop: fail routes back to Generator with issues, max 2 retries
-- [ ] Degradation path: artifact_failed event, retry button, honest copy
-- [ ] Delivery gate: artifact_done can only be emitted from the post-verification code path (make bypass a type error, not a convention)
-- [ ] Hostile input tests green (fetch injection, cookie access, parent access)
-- [ ] Post-processor forbidden-API scan as independent second layer
-- [ ] Eval harness v2: verifier pass-rate and retry-count metrics in CI
+- [x] Verifier prompt v1: five-check protocol, verdict via forced tool use (v2 after live JSON failures)
+- [x] Retry loop: fail routes back to Generator with issues, max 2 retries; invalid generator output and postprocess rejects consume retries too; early-degrade when < 90s runway remains
+- [x] Degradation path: artifact_failed event, retry button, honest copy
+- [x] Delivery gate: PassedVerifierReport mintable only by the verifier module; deliver_verified_artifact is the sole artifact_done emitter; both enforced by source-scan tests in CI (test_delivery_gate.py)
+- [x] Hostile input tests green: H1/H2/H3 live-neutralized at the Router (text_only, zero artifact spend); verifier layer-0 scan and postprocess scan proven independent in unit suites; H5 rejected 422 pre-LLM live. H4 (hostile remix) pending the Phase 5 modify endpoint.
+- [x] Post-processor forbidden-API scan as independent second layer
+- [ ] Eval harness v2: verifier pass-rate and retry-count metrics in CI (run.py records pass/fail + cost to history.jsonl; per-retry metrics need trace rows, pending a DB-up environment)
 
 **DoD:** all 12 golden queries handled correctly (10 artifacts pass within 2 retries, 2 route to text_only); both hostile tests blocked by two independent layers.
+
+**Status 2026-07-17:** the loop is proven live: the verifier failed real first
+attempts (ice float: 4 issues; orbital motion: 3 issues, including spot-check
+mismatches) and the revised artifacts passed and were delivered through the
+gate. Smoke subset 4/4 after Router prompt v2. Full 12-query DoD measurement
+still awaits the explicit go-ahead (cost discipline).
 
 ## Phase 3 — Streaming UX
 
 **Goal:** perceived responsiveness under 2 seconds on every query.
 
-- [ ] Parallel branches: Explainer streams while artifact branch runs
-- [ ] Full typed SSE protocol per API_SPEC.md
-- [ ] Staged progress card driven by artifact_status events
-- [ ] artifact_delta progressive stream (build-progress code preview, optional toggle)
-- [ ] All artifact card states: loading, ready, degraded, flagged
-- [ ] Timeout: 30s artifact branch cap, text branch never blocked
-- [ ] Mobile pass at 360px, reduced-motion respected
+- [x] Parallel branches: Explainer streams while artifact branch runs (fan-out after Router)
+- [x] Full typed SSE protocol per API_SPEC.md (every event type now live, incl. artifact_delta)
+- [x] Staged progress card driven by artifact_status events (revising stage exercised live)
+- [x] artifact_delta progressive stream (client opt-in flag; collapsed code preview in the progress card)
+- [x] All artifact card states: loading, ready, degraded, flagged (flagged reachable in Phase 4)
+- [x] Timeout: artifact branch capped (420s hard, 90s revision headroom), text branch never blocked
+- [x] Mobile pass at 360px (44px targets, responsive iframe height, no hover-only), reduced-motion respected; full device/accessibility pass remains Phase 6
 
 **DoD:** text starts streaming under 2s on all golden queries; a 60s generation still feels alive via staged progress.
+
+**Status 2026-07-17:** partially met, honestly measured. First visible activity
+(meta + planning stage) lands at 1.7-1.9s; first TEXT token at 2.6-2.7s p50
+(router ~1.5s + explainer TTFT ~0.9s, sequential by architecture). Levers if
+sub-2s text becomes binding: trim router output tokens, a faster fast-model,
+or speculative explainer start. Long generations feel alive via stages plus
+the live code preview; a 240s worst-case run stayed responsive end to end.
 
 ## Phase 4 — Cache and Library
 

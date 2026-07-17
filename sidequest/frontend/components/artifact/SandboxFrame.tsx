@@ -105,7 +105,7 @@ export function SandboxFrame({
         sandbox="allow-scripts"
         srcDoc={html}
         title={title}
-        className="block h-[480px] w-full"
+        className="block h-[min(480px,65dvh)] w-full"
         style={{ border: "0", opacity: ready ? 1 : 0.4, transition: "opacity 300ms" }}
       />
     </div>

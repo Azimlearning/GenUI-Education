@@ -10,10 +10,17 @@ import type { AxiomEvent, Meta } from "@/types/events";
  *  runtime side (watchdog timeout or axiom_error), not from SSE. */
 export type ArtifactState =
   | { status: "none" }
-  | { status: "building"; stage: string }
+  | { status: "building"; stage: string; codePreview: string }
   | { status: "ready"; artifactId: string; title: string; html: string }
   | { status: "failed"; reason: string; detailUser: string; retryable: boolean }
-  | { status: "crashed"; message: string };
+  | { status: "crashed"; message: string }
+  // Hidden pending regeneration after a wrong_science flag (wired in Phase 4;
+  // the state machine is complete now so the card handles it from day one).
+  | { status: "flagged" };
+
+/** Keep only the tail of the streamed code preview; it is a build indicator,
+ *  not a source viewer, and unbounded growth would bloat every render. */
+const CODE_PREVIEW_MAX = 2000;
 
 export type ChatMessage =
   | { role: "user"; content: string }
@@ -100,8 +107,25 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         case "artifact_status":
           return updateLastAssistant(state, (msg) => ({
             ...msg,
-            artifact: { status: "building", stage: event.data.stage },
+            artifact: {
+              status: "building",
+              stage: event.data.stage,
+              codePreview:
+                msg.artifact.status === "building" ? msg.artifact.codePreview : "",
+            },
           }));
+        case "artifact_delta":
+          return updateLastAssistant(state, (msg) => {
+            if (msg.artifact.status !== "building") return msg;
+            const joined = msg.artifact.codePreview + event.data.chunk;
+            return {
+              ...msg,
+              artifact: {
+                ...msg.artifact,
+                codePreview: joined.slice(-CODE_PREVIEW_MAX),
+              },
+            };
+          });
         case "artifact_done":
           return updateLastAssistant(state, (msg) => ({
             ...msg,
@@ -122,9 +146,8 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
               retryable: event.data.retryable,
             },
           }));
-        // Progressive code stream and tutor messages arrive in later phases;
-        // the protocol already types them so ignoring is an explicit decision.
-        case "artifact_delta":
+        // Tutor messages arrive in Phase 5; the protocol already types them
+        // so ignoring is an explicit decision.
         case "tutor_msg":
           return state;
       }

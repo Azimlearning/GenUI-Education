@@ -34,11 +34,14 @@ class Settings(BaseSettings):
     model_fast: str = "claude-haiku-4-5-20251001"
 
     max_run_cost_usd: float = 0.75
-    # The founding brief said 30s, but a complete artifact is 3-9k output
-    # tokens and streams at ~60-130 tok/s on the strong model: measured runs
-    # land at 60-90s. Conflict resolved at 150s (PLANNING.md findings); the
-    # text branch is never blocked by this timeout either way.
-    artifact_timeout_s: int = 150
+    # The founding brief said 30s. Measured reality: a complete artifact is
+    # 3-9k output tokens, provider time-to-first-token varies up to ~100s on
+    # cold prompts, and a verifier-driven revision adds a full cycle. 420s is
+    # the hard pathological cap; the branch degrades early instead of starting
+    # a revision with < 90s of runway (see graph/nodes/artifact.py). The
+    # staged progress card is the UX answer, and the text branch is never
+    # blocked by this timeout either way. PLANNING.md findings 7 and 12.
+    artifact_timeout_s: int = 420
     gen_rate_limit_per_hour: int = 10
 
     # Incident switch (SECURITY.md section 7): forces text-only mode app-wide.

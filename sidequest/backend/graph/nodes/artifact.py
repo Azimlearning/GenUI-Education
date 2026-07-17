@@ -1,15 +1,21 @@
-"""The artifact branch: Planner -> Generator -> Verifier(stub) -> Post-processor.
+"""The artifact branch: Planner -> [Generator -> Verifier]xN -> Post-processor
+-> delivery gate.
 
-Phase 1 shape: one pass, no revision loop (the verifier retry loop is Phase 2).
-Runs under the 30s artifact timeout; every failure degrades to artifact_failed
-with honest copy and never breaks the already-streamed text (principle 4).
-Phase 3 moves this branch parallel to the Explainer.
+Phase 2 shape: verifier fail routes back to the Generator with the issues list
+as a revision request, max 2 retries, then the graceful-degradation path. A
+post-process reject counts as a verifier fail for retry purposes (SECURITY.md
+section 3). Delivery happens exclusively through
+services.delivery.deliver_verified_artifact, which requires the
+PassedVerifierReport type only the verifier can mint.
+
+Runs under the artifact timeout in parallel with the Explainer (Phase 3); the
+text branch is never blocked by anything here. Every failure degrades to
+artifact_failed with honest copy (principle 4).
 """
 
 import asyncio
 import logging
 import time
-import uuid
 
 from langchain_core.runnables import RunnableConfig
 
@@ -19,18 +25,36 @@ from graph.context import RunContext, get_ctx
 from graph.errors import NodeError
 from graph.nodes.generator import run_generator
 from graph.nodes.planner import run_planner
-from graph.nodes.verifier import run_verifier_stub
+from graph.nodes.verifier import PassedVerifierReport, run_verifier
 from graph.state import PipelineState
-from schemas.events import ArtifactDonePayload, ArtifactFailedPayload, ArtifactStatusPayload
+from schemas.events import ArtifactFailedPayload, ArtifactStatusPayload
+from services.delivery import deliver_verified_artifact
 from services.traces import record_trace
 
 logger = logging.getLogger(__name__)
 
+MAX_GENERATOR_RETRIES = 2  # revisions after the first attempt (guardrail)
+
+# A revision cycle (generation + verification) needs this much runway; if less
+# remains before the branch timeout, degrade honestly instead of starting a
+# doomed attempt that burns tokens and gets killed mid-flight.
+MIN_RETRY_HEADROOM_S = 90
+
 DEGRADE_COPY = "I couldn't build a stable interactive piece for this one."
 
 
-def _budget_left(ctx: RunContext) -> bool:
-    return ctx.usage.cost_usd < get_settings().max_run_cost_usd
+def _check_budget(ctx: RunContext) -> None:
+    if ctx.usage.cost_usd >= get_settings().max_run_cost_usd:
+        raise NodeError("budget", "per-run cost ceiling reached")
+
+
+def _revision_issues(report) -> list[str]:
+    issues = [
+        f"[{issue.category}/{issue.severity}] {issue.description} Fix: {issue.fix_hint}"
+        for issue in report.issues
+        if issue.severity in ("blocker", "major")
+    ]
+    return issues or ["The verifier failed the artifact; produce a corrected version."]
 
 
 async def artifact_branch(state: PipelineState, config: RunnableConfig) -> PipelineState:
@@ -45,59 +69,112 @@ async def artifact_branch(state: PipelineState, config: RunnableConfig) -> Pipel
         return {}
 
     started = time.monotonic()
+    failure_reason = "verification_failed"
     try:
         async with asyncio.timeout(settings.artifact_timeout_s):
             await ctx.emit(ArtifactStatusPayload(stage="planning"))
-            plan = await run_planner(
-                ctx, state["query"], intent.artifact_type, intent.domain
-            )
+            plan = await run_planner(ctx, state["query"], intent.artifact_type, intent.domain)
 
-            if not _budget_left(ctx):
-                raise NodeError("budget", "per-run cost ceiling reached before generation")
-
-            await ctx.emit(ArtifactStatusPayload(stage="generating"))
-            html = await run_generator(ctx, plan)
-
-            await ctx.emit(ArtifactStatusPayload(stage="verifying"))
-            await run_verifier_stub(ctx, plan, html)  # log-only in Phase 1
-
-            await ctx.emit(ArtifactStatusPayload(stage="postprocessing"))
-            processed = postprocess.run(
-                html,
-                public_origin=settings.public_origin,
-                max_bytes=settings.max_artifact_bytes,
-            )
-            record_trace(
-                run_id=ctx.run_id,
-                session_id=ctx.session_id,
-                node="postprocess",
-                latency_ms=0,
-                error=(
-                    f"{processed.rule}: {processed.reason}"
-                    if isinstance(processed, postprocess.PostprocessReject)
-                    else None
-                ),
-            )
-            if isinstance(processed, postprocess.PostprocessReject):
-                logger.warning("postprocess reject: %s: %s", processed.rule, processed.reason)
-                await ctx.emit(
-                    ArtifactFailedPayload(
-                        reason=f"postprocess_reject:{processed.rule}",
-                        detail_user=DEGRADE_COPY,
-                        retryable=True,
+            deadline = started + settings.artifact_timeout_s
+            issues: list[str] | None = None
+            last_report_dump: dict | None = None
+            for attempt in range(MAX_GENERATOR_RETRIES + 1):
+                _check_budget(ctx)
+                if attempt > 0 and deadline - time.monotonic() < MIN_RETRY_HEADROOM_S:
+                    logger.warning(
+                        "skipping revision %d: only %.0fs left before branch timeout",
+                        attempt,
+                        deadline - time.monotonic(),
                     )
+                    break
+                await ctx.emit(
+                    ArtifactStatusPayload(stage="generating" if attempt == 0 else "revising")
                 )
-                return {"failure_reason": processed.reason}
+                try:
+                    html = await run_generator(
+                        ctx, plan, revision_issues=issues, retry_index=attempt
+                    )
+                except NodeError as exc:
+                    # Invalid generator output counts as a verifier fail for
+                    # retry purposes (SYSTEM_ARCHITECTURE.md failure taxonomy).
+                    logger.warning("generator invalid output (attempt %d): %s", attempt + 1, exc)
+                    issues = [
+                        "[safety/blocker] Your previous reply was not a complete HTML "
+                        "document. Output ONLY the full document, <!doctype html> "
+                        "through </html>, with no commentary."
+                    ]
+                    continue
 
-            artifact_id = f"art_{uuid.uuid4().hex[:8]}"
-            ctx.artifact_total_ms = int((time.monotonic() - started) * 1000)
+                await ctx.emit(ArtifactStatusPayload(stage="verifying"))
+                outcome = await run_verifier(ctx, plan, html, retry_index=attempt)
+
+                if not isinstance(outcome, PassedVerifierReport):
+                    last_report_dump = outcome.model_dump()
+                    issues = _revision_issues(outcome)
+                    logger.info(
+                        "verifier fail (attempt %d/%d): %d issue(s)",
+                        attempt + 1,
+                        MAX_GENERATOR_RETRIES + 1,
+                        len(outcome.issues),
+                    )
+                    continue
+
+                await ctx.emit(ArtifactStatusPayload(stage="postprocessing"))
+                processed = postprocess.run(
+                    html,
+                    public_origin=settings.public_origin,
+                    max_bytes=settings.max_artifact_bytes,
+                )
+                record_trace(
+                    run_id=ctx.run_id,
+                    session_id=ctx.session_id,
+                    node="postprocess",
+                    latency_ms=0,
+                    retry_index=attempt,
+                    error=(
+                        f"{processed.rule}: {processed.reason}"
+                        if isinstance(processed, postprocess.PostprocessReject)
+                        else None
+                    ),
+                )
+                if isinstance(processed, postprocess.PostprocessReject):
+                    # Counts as a verifier fail for retry purposes; never auto-strip.
+                    logger.warning(
+                        "postprocess reject (attempt %d): %s: %s",
+                        attempt + 1,
+                        processed.rule,
+                        processed.reason,
+                    )
+                    last_report_dump = outcome.report.model_dump()
+                    issues = [
+                        f"[safety/blocker] Post-processor rejected the document: "
+                        f"{processed.reason}. Fix: remove it entirely."
+                    ]
+                    continue
+
+                artifact_id = await deliver_verified_artifact(ctx, outcome, plan, processed)
+                ctx.artifact_total_ms = int((time.monotonic() - started) * 1000)
+                return {
+                    "artifact_plan": plan.model_dump(),
+                    "artifact_code": processed,
+                    "verification_report": outcome.report.model_dump(),
+                    "retry_count": attempt,
+                    "final_artifact_id": artifact_id,
+                }
+
+            # Retries exhausted.
             await ctx.emit(
-                ArtifactDonePayload(artifact_id=artifact_id, title=plan.title, html=processed)
+                ArtifactFailedPayload(
+                    reason="verification_failed",
+                    detail_user=DEGRADE_COPY
+                    + " It didn't pass the science check after several tries.",
+                    retryable=True,
+                )
             )
             return {
-                "artifact_plan": plan.model_dump(),
-                "artifact_code": processed,
-                "final_artifact_id": artifact_id,
+                "failure_reason": failure_reason,
+                "verification_report": last_report_dump,
+                "retry_count": MAX_GENERATOR_RETRIES,
             }
 
     except TimeoutError:

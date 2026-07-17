@@ -1,11 +1,11 @@
 """StateGraph assembly.
 
-Phase 1 shape: router -> explainer -> artifact_branch -> END, sequential.
-The artifact branch no-ops for text_only intents (and in echo mode or when
-ARTIFACTS_DISABLED is set). Phase 2 adds the verifier retry loop inside the
-branch; Phase 3 runs explainer and artifact branch in parallel; Phase 4 adds
-the cache node ahead of the planner. Conditional-edge design lives in
-docs/SYSTEM_ARCHITECTURE.md section 4.
+Phase 3 shape: router -> [explainer || artifact_branch] -> END. The two-branch
+flow from docs/SYSTEM_ARCHITECTURE.md section 2: text is the fast path and is
+never blocked by the artifact branch; both multiplex onto one SSE stream and
+the client demuxes by event type. The artifact branch no-ops for text_only
+intents (and in echo mode or when ARTIFACTS_DISABLED is set); its internal
+timeout bounds only itself. Phase 4 adds the cache node ahead of the planner.
 """
 
 from functools import lru_cache
@@ -25,7 +25,10 @@ def build_graph():
     graph.add_node("explainer", explainer_node)
     graph.add_node("artifact_branch", artifact_branch)
     graph.set_entry_point("router")
+    # Fan-out: both branches start as soon as the router classifies. They
+    # write disjoint state keys, so the parallel superstep merge is safe.
     graph.add_edge("router", "explainer")
-    graph.add_edge("explainer", "artifact_branch")
+    graph.add_edge("router", "artifact_branch")
+    graph.add_edge("explainer", END)
     graph.add_edge("artifact_branch", END)
     return graph.compile()

@@ -31,7 +31,11 @@ export async function streamAsk(opts: {
   const res = await fetch(`${API_BASE}/api/ask`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ session_id: opts.sessionId, message: opts.message }),
+    body: JSON.stringify({
+      session_id: opts.sessionId,
+      message: opts.message,
+      artifact_delta: true, // opt in to the build-progress code stream
+    }),
     signal: opts.signal,
   });
 

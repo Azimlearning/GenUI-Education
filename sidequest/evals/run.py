@@ -31,7 +31,7 @@ ARTIFACT_TYPES_WITH_CARD = {
 }
 
 
-def ask(base_url: str, session_id: str, message: str, timeout: int = 120) -> list[tuple[str, dict]]:
+def ask(base_url: str, session_id: str, message: str, timeout: int = 360) -> list[tuple[str, dict]]:
     body = json.dumps({"session_id": session_id, "message": message}).encode()
     req = urllib.request.Request(
         f"{base_url}/api/ask", data=body, headers={"Content-Type": "application/json"}

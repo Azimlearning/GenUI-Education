@@ -25,6 +25,8 @@ class RunContext:
     usage: Usage = field(default_factory=Usage)
     first_token_ms: int | None = None
     artifact_total_ms: int = 0
+    # Client opt-in (API_SPEC.md): stream generator chunks as artifact_delta.
+    artifact_delta_enabled: bool = False
 
     def add_usage(self, tokens_in: int, tokens_out: int, cost_usd: float) -> None:
         self.usage.tokens_in += tokens_in

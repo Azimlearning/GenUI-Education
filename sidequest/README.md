@@ -8,9 +8,13 @@ learning artifacts: every artifact is generated, verified, then shown.
 
 ## Status
 
-**Phase 0 (walking skeleton) complete.** Type a question, see streamed text.
-The Router and Explainer nodes are live; the artifact branch (Planner,
-Generator, Verifier, post-processor) arrives in Phases 1 and 2.
+**Phases 0-3 built and live-validated.** Type a science question: text streams
+in about 2.5s while the artifact branch plans, generates, adversarially
+verifies (with revision retries), post-processes, and delivers an interactive
+artifact into the sandboxed iframe, with staged progress and a live code
+preview masking the generation time. Unverified artifacts structurally cannot
+reach the client (the delivery gate requires a type only the verifier can
+mint). Next: Phase 4 (cache + library).
 
 Current phase and the full task list: `docs/PLANNING.md`.
 

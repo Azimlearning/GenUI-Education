@@ -19,7 +19,7 @@ export function ArtifactCard({
     case "none":
       return null;
     case "building":
-      return <ProgressStages stage={artifact.stage} />;
+      return <ProgressStages stage={artifact.stage} codePreview={artifact.codePreview} />;
     case "ready":
       return (
         <SandboxFrame html={artifact.html} title={artifact.title} onCrash={onCrash} />
@@ -36,6 +36,14 @@ export function ArtifactCard({
       return (
         <DegradedCard
           detail="The interactive piece stopped working, so I took it down."
+          retryable
+          onRetry={onRetry}
+        />
+      );
+    case "flagged":
+      return (
+        <DegradedCard
+          detail="This interactive was flagged and is hidden while a new version is prepared."
           retryable
           onRetry={onRetry}
         />

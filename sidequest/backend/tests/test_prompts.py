@@ -1,11 +1,20 @@
+import re
+
 from services.prompts import load_prompt, prompt_version
 
 
 def test_prompts_load():
-    assert "Router" in load_prompt("router")
-    assert "Explainer" in load_prompt("explainer")
+    for name, marker in [
+        ("router", "Router"),
+        ("explainer", "Explainer"),
+        ("planner", "Planner"),
+        ("generator", "creative-coding educator"),
+        ("verifier", "adversarial reviewer"),
+    ]:
+        assert marker in load_prompt(name), name
 
 
 def test_prompt_versions_parse_from_header():
-    assert prompt_version("router") == "router-v1"
-    assert prompt_version("explainer") == "explainer-v1"
+    # Versions move as prompts are tuned; assert the header parses, not a pin.
+    for name in ("router", "explainer", "planner", "generator", "verifier"):
+        assert re.fullmatch(rf"{name}-v\d+", prompt_version(name)), name
