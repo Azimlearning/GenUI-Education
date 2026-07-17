@@ -76,20 +76,55 @@ first `make dev` + `make migrate` run.
 **Goal:** real artifacts, no verification yet.
 
 - [x] Live-model smoke: one real query end to end, Router JSON parses, usage and cost flow (2026-07-16; trace rows still pending a DB-up run, see Phase 0 findings 4)
-- [ ] Resolve the artifact CSP / opaque-origin conflict (Phase 0 finding 2) before the post-processor injects CSP
-- [ ] Router prompt v1 with canonical_concept output, JSON schema validation
-- [ ] Artifact Planner node + prompt v1
-- [ ] Generator prompt v1: Blocks A to D per spec
-- [ ] Write golden example 1: projectile motion (p5.js), hand-polished
-- [ ] Write golden example 2: pH explorable (vanilla JS), hand-polished
-- [ ] Post-processor v1: fence stripping, CSP injection, vendor path rewrite, error banner wrapper
-- [ ] Sandboxed iframe artifact card in frontend (srcdoc, allow-scripts only)
-- [ ] Bridge listener: axiom_ready, axiom_event, axiom_error with zod schemas
-- [ ] Watchdog: 5s ready timeout swaps to degraded card
-- [ ] Verifier stub: logs a report, never blocks (log-only mode)
-- [ ] Eval harness v1: Playwright headless render assertions on golden set
+- [x] Resolve the artifact CSP / opaque-origin conflict: CSP names the configured app origin explicitly instead of 'self'; scan-before-inject ordering (decision recorded in SECURITY.md section 2.3, 2026-07-16)
+- [x] Router prompt v1 with canonical_concept output, JSON schema validation
+- [x] Artifact Planner node + prompt v1
+- [x] Generator prompt v1: Blocks A to D per spec
+- [x] Write golden example 1: projectile motion (p5.js), hand-polished
+- [x] Write golden example 2: pH explorable (vanilla JS), hand-polished
+- [x] Post-processor v1: fence stripping, CSP injection, vendor path rewrite, error banner wrapper (plus forbidden-API scan, viewport/charset, size cap; 23 unit tests)
+- [x] Sandboxed iframe artifact card in frontend (srcdoc, allow-scripts only)
+- [x] Bridge listener: axiom_ready, axiom_event, axiom_error with zod schemas
+- [x] Watchdog: 5s ready timeout swaps to degraded card
+- [x] Verifier stub: logs a report, never blocks (log-only mode)
+- [x] Eval harness v1: Playwright headless render assertions (run.py + render_check.py)
 
 **DoD:** 8 of 12 golden queries produce a working interactive artifact rendered in the sandbox.
+
+**Status 2026-07-17:** pipeline proven live end to end. Three distinct artifacts
+generated and verified: G2 projectile lab (passed all render checks: axiom_ready,
+control wired via screenshot diff, zero forbidden APIs), G8 pendulum experiment,
+and G1 ice/density explorer rendered through the real UI in a browser with
+correct physics (91.9% submerged at 20 C, exactly rho_ice/rho_water). The DoD
+measurement itself (full 12-query eval run, $5-15) awaits an explicit go-ahead
+per the cost discipline rule.
+
+### Phase 1 live findings (2026-07-17)
+
+7. **Artifact timeout: 30s (brief) vs reality.** Generation streams at 60-130
+   tok/s and complete artifacts are 3-9k tokens; measured runs land at 60-90s
+   total. ARTIFACT_TIMEOUT_S now defaults to 150 (brief said 30, TECHNICAL.md
+   budgeted 45 p95; both are unachievable at current artifact sizes). Phase 3
+   should reconcile the TECHNICAL.md budget table with measured reality.
+8. **Generator must use the streaming API.** The same generation took 22s
+   standalone-streamed vs 77s+ (then killed) non-streaming in-pipeline; long
+   non-streaming requests can be held server-side. Also positions Phase 3's
+   artifact_delta for free.
+9. **Planner JSON discipline needed prompting.** Two live failure modes:
+   unescaped double quotes inside string values, and over-long layout_notes
+   blowing the schema cap. Fixed with prompt rule 7 (single quotes inside
+   values, start-with-{, end-with-}) plus explicit field length limits in the
+   prompt; layout_notes cap relaxed 600 -> 1200, governing_model 2000 -> 4000.
+   If a third planner-JSON failure class appears, stop prompt-patching and
+   switch the Planner to tool-use structured output.
+10. **Render harness must re-point the artifact CSP.** The injected CSP names
+   the configured public origin; the eval harness serves /vendor from an
+   ephemeral origin and must substitute it (evals/render_check.py does). Same
+   applies to any future non-3000 deployment: set PUBLIC_ORIGIN.
+11. **Embedding artifacts in a script string requires escaping `</`** or the
+   artifact's own closing script tags terminate the host script
+   (render_check harness bug, fixed; relevant to any future artifact-preview
+   feature that inlines HTML into JS).
 
 ## Phase 2 — Verification
 

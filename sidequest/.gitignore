@@ -13,9 +13,11 @@ __pycache__/
 node_modules/
 .next/
 out/
+*.tsbuildinfo
 
 # misc
 .DS_Store
 .playwright-mcp/
 evals/fixtures/
 evals/history.jsonl
+evals/last_artifact.html

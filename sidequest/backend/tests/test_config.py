@@ -24,5 +24,6 @@ def test_unknown_model_price_is_zero():
 def test_budget_defaults():
     s = make()
     assert s.max_run_cost_usd == 0.75
-    assert s.artifact_timeout_s == 30
+    # 150, not the brief's 30: measured generation runs 60-90s (PLANNING.md finding 7)
+    assert s.artifact_timeout_s == 150
     assert s.gen_rate_limit_per_hour == 10

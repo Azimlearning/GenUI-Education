@@ -94,7 +94,10 @@ async def _event_stream(req: AskRequest) -> AsyncIterator[str]:
 
         done = DonePayload(
             usage=ctx.usage,
-            timings_ms=Timings(first_token=ctx.first_token_ms or 0, artifact_total=0),
+            timings_ms=Timings(
+                first_token=ctx.first_token_ms or 0,
+                artifact_total=ctx.artifact_total_ms,
+            ),
         )
         event_id += 1
         yield format_sse(done, event_id)

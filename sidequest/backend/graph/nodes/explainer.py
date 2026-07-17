@@ -48,9 +48,12 @@ async def explainer_node(state: PipelineState, config: RunnableConfig) -> Pipeli
             await asyncio.sleep(0.02)  # visible streaming in the UI
     else:
         model = settings.model_fast
-        # Phase 0: the artifact branch does not exist yet, so never promise one.
-        # Phase 1 will set this from intent.artifact_type != "text_only".
-        artifact_coming = False
+        intent = state.get("intent")
+        artifact_coming = (
+            intent is not None
+            and intent.artifact_type != "text_only"
+            and not settings.artifacts_disabled
+        )
         user = (
             f"Question: {state['query']}\n\n"
             f"An interactive artifact {'IS' if artifact_coming else 'is NOT'} "

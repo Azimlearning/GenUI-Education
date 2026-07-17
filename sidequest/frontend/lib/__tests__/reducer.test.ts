@@ -59,13 +59,57 @@ describe("chatReducer", () => {
     expect(assistant.meta?.canonical_concept).toBe("ice_water_density_buoyancy");
   });
 
-  it("ignores artifact events in Phase 0 without corrupting state", () => {
+  it("tracks artifact build stages on the assistant message", () => {
     const state = runStream([
       event("meta", META),
       event("artifact_status", { stage: "planning" }),
       event("text_delta", { chunk: "hello" }),
+      event("artifact_status", { stage: "generating" }),
     ]);
-    expect(state.messages[1]).toMatchObject({ content: "hello" });
+    expect(state.messages[1]).toMatchObject({
+      content: "hello",
+      artifact: { status: "building", stage: "generating" },
+    });
+  });
+
+  it("artifact_done flips the card to ready with the html payload", () => {
+    const state = runStream([
+      event("meta", META),
+      event("artifact_status", { stage: "postprocessing" }),
+      event("artifact_done", {
+        artifact_id: "art_1234",
+        title: "Projectile Motion Lab",
+        html: "<!doctype html><html></html>",
+      }),
+    ]);
+    expect(state.messages[1]).toMatchObject({
+      artifact: { status: "ready", artifactId: "art_1234", title: "Projectile Motion Lab" },
+    });
+  });
+
+  it("artifact_failed flips the card to failed with honest copy", () => {
+    const state = runStream([
+      event("meta", META),
+      event("artifact_failed", {
+        reason: "timeout",
+        detail_user: "I couldn't build a stable interactive piece for this one.",
+        retryable: true,
+      }),
+    ]);
+    expect(state.messages[1]).toMatchObject({
+      artifact: { status: "failed", reason: "timeout", retryable: true },
+    });
+  });
+
+  it("artifact_crashed marks a ready artifact as crashed by index", () => {
+    let state = runStream([
+      event("meta", META),
+      event("artifact_done", { artifact_id: "a", title: "T", html: "<html></html>" }),
+    ]);
+    state = chatReducer(state, { type: "artifact_crashed", index: 1, message: "boom" });
+    expect(state.messages[1]).toMatchObject({
+      artifact: { status: "crashed", message: "boom" },
+    });
   });
 
   it("marks error state and stops streaming on stream_error", () => {

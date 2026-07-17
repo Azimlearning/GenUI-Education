@@ -3,14 +3,19 @@
 import { useEffect, useRef } from "react";
 
 import type { ChatMessage, ChatStatus } from "@/lib/reducer";
+import { ArtifactCard } from "@/components/artifact/ArtifactCard";
 import { StreamRenderer } from "@/components/chat/StreamRenderer";
 
 export function MessageList({
   messages,
   status,
+  onRetry,
+  onCrash,
 }: {
   messages: ChatMessage[];
   status: ChatStatus;
+  onRetry: (assistantIndex: number) => void;
+  onCrash: (assistantIndex: number, message: string) => void;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +47,14 @@ export function MessageList({
             </div>
           </div>
         ) : (
-          <StreamRenderer key={i} message={msg} />
+          <div key={i}>
+            <StreamRenderer message={msg} />
+            <ArtifactCard
+              artifact={msg.artifact}
+              onRetry={() => onRetry(i)}
+              onCrash={(message) => onCrash(i, message)}
+            />
+          </div>
         )
       )}
       {status === "waiting" ? (

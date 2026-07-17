@@ -35,6 +35,24 @@ export default function ChatPage() {
 
   const busy = state.status === "waiting" || state.status === "streaming";
 
+  // Retry re-asks the user question that produced this assistant message.
+  const retryFrom = useCallback(
+    (assistantIndex: number) => {
+      for (let i = assistantIndex - 1; i >= 0; i--) {
+        const msg = state.messages[i];
+        if (msg && msg.role === "user") {
+          void send(msg.content);
+          return;
+        }
+      }
+    },
+    [state.messages, send]
+  );
+
+  const crashArtifact = useCallback((index: number, message: string) => {
+    dispatch({ type: "artifact_crashed", index, message });
+  }, []);
+
   return (
     <main className="mx-auto flex h-dvh max-w-3xl flex-col px-4">
       <header className="border-b py-4" style={{ borderColor: "var(--rule)" }}>
@@ -44,7 +62,12 @@ export default function ChatPage() {
         </p>
       </header>
 
-      <MessageList messages={state.messages} status={state.status} />
+      <MessageList
+        messages={state.messages}
+        status={state.status}
+        onRetry={retryFrom}
+        onCrash={crashArtifact}
+      />
 
       {state.status === "error" && state.error ? (
         <p role="alert" className="pb-2 text-sm text-red-400">

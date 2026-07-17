@@ -24,6 +24,7 @@ class RunContext:
     started_at: float = field(default_factory=time.monotonic)
     usage: Usage = field(default_factory=Usage)
     first_token_ms: int | None = None
+    artifact_total_ms: int = 0
 
     def add_usage(self, tokens_in: int, tokens_out: int, cost_usd: float) -> None:
         self.usage.tokens_in += tokens_in

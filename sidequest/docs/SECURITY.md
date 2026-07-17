@@ -22,7 +22,18 @@ Axiom executes LLM-generated code in users' browsers on every request. Security 
 1. `<iframe sandbox="allow-scripts" srcdoc={html}>`. Never add `allow-same-origin`, `allow-top-navigation`, `allow-popups`, `allow-forms`, `allow-modals`, or `allow-downloads`.
 2. srcdoc + allow-scripts yields an opaque origin: the artifact is cross-origin to the app by construction. This is the load-bearing control; everything else is defense in depth.
 3. CSP injected by post-processor into every artifact:
-   `default-src 'none'; script-src 'unsafe-inline' 'self'; style-src 'unsafe-inline' 'self'; img-src data:; font-src 'self' data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';`
+   `default-src 'none'; script-src 'unsafe-inline' {APP_ORIGIN}; style-src 'unsafe-inline' {APP_ORIGIN}; img-src data:; font-src {APP_ORIGIN} data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';`
+   where `{APP_ORIGIN}` is the configured public origin of the app (config
+   `public_origin`, e.g. `http://localhost:3000`). Rationale, decided at Phase 1
+   start: the original spec said `'self'`, but a srcdoc iframe with
+   `allow-scripts` and no `allow-same-origin` has an opaque origin, and `'self'`
+   in an opaque origin matches nothing, so our own `/vendor/` script tags would
+   be blocked by our own CSP. Naming the app origin explicitly restores exactly
+   the intended reach (vendored libs served by us, same host the parent page
+   came from) without widening to arbitrary origins. Inlining libraries into
+   artifacts was rejected because it breaks the 200KB artifact size budget.
+   Ordering rule: the forbidden-API scan runs BEFORE CSP injection, so the
+   scan never sees (and never has to exempt) the origin literal we inject.
 4. Parent page CSP (app-level) additionally set via Next.js headers, including `frame-ancestors 'self'`.
 5. The parent never posts messages into the artifact iframe. One-way bridge only.
 

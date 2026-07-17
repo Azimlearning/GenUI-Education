@@ -5,9 +5,25 @@
  */
 import type { AxiomEvent, Meta } from "@/types/events";
 
+/** Artifact card state machine: discriminated union, not booleans
+ *  (TECHNICAL.md frontend conventions). `crashed` is entered from the
+ *  runtime side (watchdog timeout or axiom_error), not from SSE. */
+export type ArtifactState =
+  | { status: "none" }
+  | { status: "building"; stage: string }
+  | { status: "ready"; artifactId: string; title: string; html: string }
+  | { status: "failed"; reason: string; detailUser: string; retryable: boolean }
+  | { status: "crashed"; message: string };
+
 export type ChatMessage =
   | { role: "user"; content: string }
-  | { role: "assistant"; content: string; streaming: boolean; meta: Meta | null };
+  | {
+      role: "assistant";
+      content: string;
+      streaming: boolean;
+      meta: Meta | null;
+      artifact: ArtifactState;
+    };
 
 export type ChatStatus = "idle" | "waiting" | "streaming" | "error";
 
@@ -27,7 +43,8 @@ export type ChatAction =
   | { type: "user_sent"; message: string }
   | { type: "stream_event"; event: AxiomEvent }
   | { type: "stream_error"; message: string }
-  | { type: "stream_closed" };
+  | { type: "stream_closed" }
+  | { type: "artifact_crashed"; index: number; message: string };
 
 function updateLastAssistant(
   state: ChatState,
@@ -53,7 +70,13 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         messages: [
           ...state.messages,
           { role: "user", content: action.message },
-          { role: "assistant", content: "", streaming: true, meta: null },
+          {
+            role: "assistant",
+            content: "",
+            streaming: true,
+            meta: null,
+            artifact: { status: "none" },
+          },
         ],
       };
 
@@ -74,16 +97,49 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
           return updateLastAssistant(state, (msg) => ({ ...msg, streaming: false }));
         case "done":
           return { ...state, status: "idle" };
-        // Artifact and tutor events arrive in later phases; the protocol
-        // already types them so ignoring is an explicit decision here.
         case "artifact_status":
-        case "artifact_delta":
+          return updateLastAssistant(state, (msg) => ({
+            ...msg,
+            artifact: { status: "building", stage: event.data.stage },
+          }));
         case "artifact_done":
+          return updateLastAssistant(state, (msg) => ({
+            ...msg,
+            artifact: {
+              status: "ready",
+              artifactId: event.data.artifact_id,
+              title: event.data.title,
+              html: event.data.html,
+            },
+          }));
         case "artifact_failed":
+          return updateLastAssistant(state, (msg) => ({
+            ...msg,
+            artifact: {
+              status: "failed",
+              reason: event.data.reason,
+              detailUser: event.data.detail_user,
+              retryable: event.data.retryable,
+            },
+          }));
+        // Progressive code stream and tutor messages arrive in later phases;
+        // the protocol already types them so ignoring is an explicit decision.
+        case "artifact_delta":
         case "tutor_msg":
           return state;
       }
       return state;
+    }
+
+    case "artifact_crashed": {
+      const messages = [...state.messages];
+      const msg = messages[action.index];
+      if (!msg || msg.role !== "assistant") return state;
+      messages[action.index] = {
+        ...msg,
+        artifact: { status: "crashed", message: action.message },
+      };
+      return { ...state, messages };
     }
 
     case "stream_error":

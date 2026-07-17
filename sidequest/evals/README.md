@@ -5,22 +5,25 @@ each metric live in `docs/EVALS.md`; this directory holds the executable side.
 
 ## Status
 
-Phase 0 ships the data contracts only:
-
 - `golden.yaml`: the 12 golden queries, their expected routes, and assertions.
 - `hostile.yaml`: the 5 hostile inputs and the layers that must block each one.
+- `run.py` (Phase 1): drives a running backend through each golden query,
+  asserts routing and artifact delivery, appends metrics to `history.jsonl`.
+  Flags: `--smoke`, `--only G2`, `--render`, `--base-url`.
+- `render_check.py` (Phase 1): Playwright checks on one artifact, mounted
+  exactly as production mounts it (sandboxed srcdoc iframe, /vendor served
+  same-origin): axiom_ready within 5s, forbidden-API scan on model-authored
+  content, control wiring via screenshot diff, no page errors.
 
-The runner arrives with the pipeline it exercises:
+Setup: `pip install -r requirements.txt && playwright install chromium`.
+
+Still to come:
 
 | File | Arrives in | Purpose |
 |---|---|---|
-| `run.py` | Phase 1 | Drive the full pipeline, write metrics to `history.jsonl` |
-| `render_check.py` | Phase 1 | Playwright: axiom_ready, control wiring, forbidden-API scan |
-| `fixtures/` | Phase 1 | Recorded LLM request/response pairs so CI replays free and deterministic |
+| `fixtures/` | Phase 2 | Recorded LLM request/response pairs so CI replays free and deterministic |
 | `audits/` | Phase 2 | Weekly hand-audit logs (EVALS.md section 8) |
-
-`make evals` and `make evals-smoke` fail loudly until `run.py` exists, rather
-than reporting a false green.
+| memory/reset checks | Phase 2 | render_check items 5 and 6 from EVALS.md section 4 |
 
 ## Cost
 

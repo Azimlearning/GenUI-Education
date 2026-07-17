@@ -17,12 +17,12 @@ lint:
 migrate:
 	docker compose exec backend alembic upgrade head
 
-# Live evals cost real tokens; they arrive with the Phase 1 eval harness.
+# Live evals cost real tokens (~$5-15 full, ~$1-3 smoke). Backend must be running.
 evals:
-	@echo "evals: not implemented until Phase 1 (see evals/run.py)" && exit 1
+	cd evals && python run.py --render
 
 evals-smoke:
-	@echo "evals-smoke: not implemented until Phase 1 (see evals/run.py)" && exit 1
+	cd evals && python run.py --smoke --render
 
 fixtures-refresh:
 	@echo "fixtures-refresh: not implemented until Phase 1" && exit 1

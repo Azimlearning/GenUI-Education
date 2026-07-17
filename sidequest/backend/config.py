@@ -34,7 +34,11 @@ class Settings(BaseSettings):
     model_fast: str = "claude-haiku-4-5-20251001"
 
     max_run_cost_usd: float = 0.75
-    artifact_timeout_s: int = 30
+    # The founding brief said 30s, but a complete artifact is 3-9k output
+    # tokens and streams at ~60-130 tok/s on the strong model: measured runs
+    # land at 60-90s. Conflict resolved at 150s (PLANNING.md findings); the
+    # text branch is never blocked by this timeout either way.
+    artifact_timeout_s: int = 150
     gen_rate_limit_per_hour: int = 10
 
     # Incident switch (SECURITY.md section 7): forces text-only mode app-wide.
@@ -46,6 +50,14 @@ class Settings(BaseSettings):
 
     vendor_dir: str = str(REPO_ROOT / "vendor")
     cors_origins: list[str] = ["http://localhost:3000"]
+
+    # Public origin of the app as the browser sees it. Injected into every
+    # artifact's CSP so vendored /vendor/* scripts load inside the
+    # opaque-origin srcdoc iframe (SECURITY.md section 2.3).
+    public_origin: str = "http://localhost:3000"
+
+    # Post-processor rejects artifacts larger than this (TECHNICAL.md budgets).
+    max_artifact_bytes: int = 200_000
 
     max_query_chars: int = 2000  # H5 hostile case: oversized input rejected pre-LLM
 
