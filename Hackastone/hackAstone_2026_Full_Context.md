@@ -8,6 +8,38 @@
 
 ---
 
+## 🎉 GRAND FINAL — EduNova is shortlisted (confirmed 18 Aug 2026)
+
+**EduNova (Synapse) has been shortlisted for the hackAstone 2026 grand final.** Full notification
+email saved at [`grand-final-invitation-email.md`](grand-final-invitation-email.md).
+
+| Item | Detail |
+|---|---|
+| **Where** | Amsterdam, The Netherlands — as part of the **Dutch Conference on AI for Education**, Vrije Universiteit Amsterdam |
+| **When** | 29 Oct 2026 (presentation + demo); winners announced 30 Oct 2026 |
+| **Team is expected to do** | 10-min project presentation → 5-min Q&A → demo at a dedicated booth on 29 Oct |
+| **RSVP deadline** | ⚠️ **20 Aug 2026** — respond immediately, especially if any team member needs a visa |
+| **Addressed to** | Prof Ahmad Sobri B Hashim and team |
+
+**Attending-member benefits:** a conference student pass (worth ≥ €100), reception/coffee/tea access,
+and a travel fellowship up to S$200 (European student) or S$400 (non-European student) per attending
+member, subject to case-by-case approval.
+
+**Presentation ask:** wear uniforms or team T-shirts; bring a banner/flag with UTP's identity.
+
+**Confirmed prize structure** (supersedes the placeholder Gold/Silver/Bronze naming in §7 below —
+kept there for the general award *categories*, this is the actual payout schedule from the
+notification):
+
+| Placement | Cash | Winners (max) | Plus |
+|---|---|---|---|
+| First Prize | S$1000 | 5 | Certificate |
+| Second Prize | S$600 | 10 | Certificate |
+| Third Prize | S$350 | 15 | Certificate |
+| Merit Prize | S$200 | 20 | Certificate |
+
+---
+
 ## 1. Overview
 
 hackAstone is a global hackathon designed specifically around university capstone (CAPstone) projects. It bridges academic project work with real-world AI innovation for education. Any tertiary student enrolled in any higher learning institution worldwide is eligible to participate. Institutions with credit-bearing CAPstone projects are particularly encouraged to join.
@@ -39,11 +71,14 @@ Teams have full freedom to design any type of AI agent system within the educati
 | 1 | **Registration Closes** | 31 March 2026 (23:59 CET) | Free of charge. Up to 8 students per team. |
 | 2 | **University Nomination Deadline** | 15 June 2026 (23:59 CET) | Each university advisor nominates up to 3 teams for semi-finals. |
 | 3 | **Project Submission Deadline** | 1 July 2026 (23:59 CET) | Project info, video (≤8 mins), and description form must be submitted. |
-| 4 | **Finalist Announcement** | 1 August 2026 (23:59 CET) | Finalists notified and invited to Amsterdam. |
-| 5 | **Final Presentation & Demo** | 29–30 October 2026 | 2026 Conference on AI for Education, Amsterdam. |
-| 6 | **Winners Announced** | 30 October 2026 | Holland Conference on AI for Education, Amsterdam. |
+| 4 | **Finalist Announcement** | ✅ Received | EduNova shortlisted for the grand final — see notification above. |
+| 5 | **Final Presentation & Demo** | 29 October 2026 | Dutch Conference on AI for Education, Vrije Universiteit Amsterdam. RSVP by **20 Aug 2026**. |
+| 6 | **Winners Announced** | 30 October 2026 | Dutch Conference on AI for Education, Amsterdam. |
 
-> ⚠️ **Current Status (as of 4 June 2026):** Registration has closed. You are now in the **nomination window** — university advisor must nominate your team by **15 June 2026**. Project submission is due **1 July 2026**.
+> ✅ **Current Status (as of 18 August 2026):** EduNova is a confirmed **grand finalist**. Registration,
+> nomination, and prelim submission are all complete. The only open action is the **RSVP (due 20 Aug
+> 2026)** — respond to the invitation email now, flagging any visa needs immediately per the
+> organiser's request.
 
 ---
 
@@ -201,6 +236,14 @@ All past workshops have replay links available on the hackAstone Workshops page.
 | **Simon SEE** | NVIDIA | Singapore |
 | **Sui Lin GOEI** | Windesheim University | Netherlands |
 
+### Program Co-Chairs
+*(signed on the grand-final invitation; not previously listed here)*
+
+| Name | Notes |
+|------|-------|
+| **W van Joolingen** | Grand final, Dutch Conference on AI for Education, VU Amsterdam |
+| **Q Cao** | Grand final, Dutch Conference on AI for Education, VU Amsterdam |
+
 ### Committee Members
 | Name | Institution | Country |
 |------|-------------|---------|
@@ -230,10 +273,21 @@ All past workshops have replay links available on the hackAstone Workshops page.
 
 ## 11. Key Notes for UTP Team
 
+- **EduNova is a confirmed grand finalist (18 Aug 2026).** The immediate action is the RSVP, due
+  **20 Aug 2026** — see the banner at the top of this doc and the saved
+  [invitation email](grand-final-invitation-email.md).
 - UTP is a **listed participating university** with a Steering Committee representative (Assoc. Prof. Dr. Mohamad Naufal).
-- Your university advisor must **nominate your team by 15 June 2026** for the semi-finals.
+- The grand-final invitation was addressed to **Prof Ahmad Sobri B Hashim and team** — confirm whether
+  he is acting as the university advisor/sponsor for the Amsterdam trip and who owns the RSVP reply.
+- Decide **which team members will physically attend** Amsterdam soon — it determines who can claim
+  the conference pass, the travel fellowship (S$200 EU / S$400 non-EU, approval not guaranteed), and
+  who needs to start a visa application now.
+- Start the **10-min presentation + 5-min Q&A + booth demo** prep — this is a different format from the
+  8-min submission video used for the prelim round.
+- Sort **team T-shirts/uniforms and a UTP banner/flag** ahead of 29 Oct — the organiser explicitly asks
+  for these.
 - The theme "Agentic AI for Education" is a strong fit for teams with LangGraph, multi-agent, or RAG-based systems experience.
-- The judging panel values **pedagogical impact** alongside technical excellence — frame your submission around real educational problems.
+- The judging panel values **educational impact** alongside technical excellence — frame the presentation around the real B40/rural lab-access problem, not just the tech.
 - All registered teams receive a **certificate** even without semi-final advancement.
 
 ---
@@ -255,4 +309,5 @@ All past workshops have replay links available on the hackAstone Workshops page.
 
 ---
 
-*Document compiled: 4 June 2026. Source: hackastone.varteledu.com*
+*Document compiled: 4 June 2026. Updated: 18 August 2026 (grand-final shortlist notification added).
+Source: hackastone.varteledu.com and organiser email — see [`grand-final-invitation-email.md`](grand-final-invitation-email.md).*

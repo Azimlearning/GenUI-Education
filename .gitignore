@@ -1,0 +1,13 @@
+
+# Housekeeping 2026-10-05: this repo is PUBLIC.
+# MCAIT has its own private repo (nested here, ignored by this one).
+MCAIT/
+# Grand-final admin: contacts, costs, invitation letter (home address), fellowship application.
+Hackastone/grand-final-invitation-email.md
+Hackastone/Grand-final/README.md
+Hackastone/Grand-final/01-context/
+Hackastone/Grand-final/02-invitation-letter/
+Hackastone/Grand-final/03-templates/
+Hackastone/Grand-final/04-prep/travel-fellowship-application.md
+# Local tool output
+.playwright-mcp/
