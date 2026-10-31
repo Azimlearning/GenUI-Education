@@ -9,5 +9,7 @@ Hackastone/Grand-final/01-context/
 Hackastone/Grand-final/02-invitation-letter/
 Hackastone/Grand-final/03-templates/
 Hackastone/Grand-final/04-prep/travel-fellowship-application.md
+# Synapse v4 is its own standalone repository (nested here, ignored by this one).
+Synapse-V4/
 # Local tool output
 .playwright-mcp/

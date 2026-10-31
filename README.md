@@ -1,59 +1,41 @@
 # GenUI-Education
 
-This repository is the home of **Synapse**, a visible multi-agent pedagogical AI for Malaysian KSSM
-SPM science, built by **Team EduNova** (Universiti Teknologi PETRONAS). The same codebase is
-submitted to two hackathons under different framings:
+The public home of **Synapse**, an AI lab for Malaysian KSSM Form 4 and 5 science. A student asks a question and gets an interactive experiment built for it, checked in a real browser before they see it, with its source and limits shown beside it.
 
-- **Codex Community Hackathon KL 2026** — *"Raising the Floor: AI for Malaysia Boleh"* (Education
-  Access track)
-- **hackAstone 2026** — *"Agentic AI for Education"*
+Built at Universiti Teknologi PETRONAS. This repository holds the earlier builds and the research behind them. The current build, Synapse v4, lives in its own repository.
 
-> Setup instructions live in [`setup.md`](setup.md). Full project report (background, technical
-> implementation, educational significance, commercial viability) lives in
-> [`Synapse/REPORT.md`](Synapse/REPORT.md).
+## Results
 
----
+**hackAstone 2026, Grand Final, Vrije Universiteit Amsterdam, 29 October 2026 (Team EduNova):**
+
+- **5th place overall**
+- **Best/favourite presentation award**
+
+## Versions
+
+| Build | What it was | Where |
+|---|---|---|
+| Synapse v1 | Visible multi-agent tutor that composes pre-built components. hackAstone 2026 preliminary round | [`Synapse/`](Synapse/) |
+| Synapse v2 | Experiment in generated interfaces | [`synapse-v2/`](synapse-v2/), [`GenUITestV2/`](GenUITestV2/) |
+| Synapse v3 | Fuller study workflow and hands-on labs. Codex Community Hackathon KL, 18 July 2026 | [`Synapse-V3/`](Synapse-V3/) |
+| Synapse v4 | Verified labs built over a vetted component kit, with textbook evidence. hackAstone 2026 Grand Final and UTP CodeFest '26 | [DANG-WANGI-Education-and-Human-Development](https://github.com/Azimlearning/DANG-WANGI-Education-and-Human-Development) |
 
 ## What's in this repository
 
 ```
-Genui/
-├── Synapse/            The actual product — the codebase that gets built, run, and submitted.
-│                        See Synapse/README.md for the product overview and Synapse/REPORT.md
-│                        for the full written report.
-│
-├── Codex hackathon/     Reference context for the Codex Community Hackathon KL 2026 brief.
-├── Hackastone/          Reference context for the hackAstone 2026 brief.
-├── phase0-research/     Early research, ideation, and design assets that predate the current
-│                        Synapse build (adaptive-UI research notes, EDUNOVA branding assets,
-│                        early demo HTML mockups, the EduNova pitch deck).
-└── README.md / setup.md This overview and the setup guide.
+Synapse/            v1: runnable, see Synapse/README.md and Synapse/REPORT.md
+synapse-v2/         v2 experiment
+GenUITestV2/        v2 interface tests
+Synapse-V3/         v3: runnable
+Codex hackathon/    Brief and reference for the Codex Community Hackathon KL
+Hackastone/         Brief and preliminary-round submission for hackAstone 2026
+phase0-research/    Early research, branding and mockups
+research/           Research notes
+setup.md            Setup guide for the earlier builds
 ```
 
-`Synapse/` is the only folder with runnable code. The other top-level folders are supporting
-material — hackathon rules/context and pre-build research — kept for provenance, not for execution.
+## Teams
 
----
+**EduNova** (hackAstone 2026): Ahmad Alif Fadhil, Muhammad Khaidhir, Nur Farah, Por Jie Hao, Azrain Shawn, Fakhrul Azim, Adam Iman, Muhammad Danish Iskandar.
 
-## Synapse, in one paragraph
-
-Synapse diagnoses a student's specific science misconception (not just "wrong"), picks the
-pedagogically correct intervention, and composes a science-faithful interactive experiment from a
-pre-built component library — streaming its reasoning live so the process is never a black box. It
-targets the practical-lab-access gap that B40 and rural Malaysian schools face under the KBAT
-curriculum reform. Full detail: [`Synapse/REPORT.md`](Synapse/REPORT.md) and
-[`Synapse/refdocs/synapse-prd.md`](Synapse/refdocs/synapse-prd.md).
-
----
-
-## Team
-
-**EduNova** — Fakhrul Azim (CEO) · Khaidhir (CEO) · Por Jie Hao (CTO) · Azrain Shawn (CTO) ·
-Danish Iskandar (President) · Adam Iman (General Manager) · Nur Farah (General Manager) — final-year
-Computer Science students at Universiti Teknologi PETRONAS (UTP).
-
-## Links
-
-- Repository: [github.com/Azimlearning/GenUI-Education](https://github.com/Azimlearning/GenUI-Education)
-- Project report: [`Synapse/REPORT.md`](Synapse/REPORT.md)
-- Setup guide: [`setup.md`](setup.md)
+**Dang Wangi** (UTP CodeFest '26, Track 2, Education and Human Development): Fakhrul Azim, Abdul Hafiz, Nur Farah, Por Jie Hao.
