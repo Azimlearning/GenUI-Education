@@ -2,7 +2,7 @@
 
 The public home of **Synapse**, an AI lab for Malaysian KSSM Form 4 and 5 science. A student asks a question and gets an interactive experiment built for it, checked in a real browser before they see it, with its source and limits shown beside it.
 
-Built at Universiti Teknologi PETRONAS. This repository holds the earlier builds and the research behind them. The current build, Synapse v4, lives in its own repository.
+Built at Universiti Teknologi PETRONAS. This repository holds the earlier builds and the research behind them. The current build, Synapse v4, and the frozen builds from the two hackAstone rounds each have their own public repository, linked below.
 
 ## Results
 
@@ -23,10 +23,12 @@ Built at Universiti Teknologi PETRONAS. This repository holds the earlier builds
 
 | Build | What it was | Where |
 |---|---|---|
-| Synapse v1 | Visible multi-agent tutor that composes pre-built components. hackAstone 2026 preliminary round | [`Synapse/`](Synapse/) |
+| Synapse v1 | Visible multi-agent tutor that composes pre-built components. hackAstone 2026 preliminary round | [`Synapse/`](Synapse/), or the standalone archive [synapse-v1](https://github.com/Azimlearning/synapse-v1) |
 | Synapse v2 | Experiment in generated interfaces | [`synapse-v2/`](synapse-v2/), [`GenUITestV2/`](GenUITestV2/) |
 | Synapse v3 | Fuller study workflow and hands-on labs. Codex Community Hackathon KL, 18 July 2026 | [`Synapse-V3/`](Synapse-V3/) |
-| Synapse v4 | Verified labs built over a vetted component kit, with textbook evidence. hackAstone 2026 Grand Final and UTP CodeFest '26 | [DANG-WANGI-Education-and-Human-Development](https://github.com/Azimlearning/DANG-WANGI-Education-and-Human-Development) |
+| Synapse v4 | Verified labs built over a vetted component kit, with textbook evidence. hackAstone 2026 Grand Final and UTP CodeFest '26 | [Synapse-v4](https://github.com/Azimlearning/Synapse-v4), and the CodeFest team repository [DANG-WANGI-Education-and-Human-Development](https://github.com/Azimlearning/DANG-WANGI-Education-and-Human-Development) |
+
+The hackAstone 2026 Grand Final record, with Synapse v4 as it stood at the event, is frozen in [synapse-hackastone](https://github.com/Azimlearning/synapse-hackastone).
 
 ## What's in this repository
 
