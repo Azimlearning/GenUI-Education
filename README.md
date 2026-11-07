@@ -11,6 +11,14 @@ Built at Universiti Teknologi PETRONAS. This repository holds the earlier builds
 - **5th place overall**
 - **Best/favourite presentation award**
 
+**UTP CodeFest '26, Education and Human Development track (Team Dang Wangi):**
+
+- **Top 10 Grand Finalist** with Synapse v4; final pitch on 14 November 2026
+
+**Codex Community Hackathon KL, 18 July 2026, Sunway University (Team Dang Wangi):**
+
+- **Top 10 finalist** with Synapse v3
+
 ## Versions
 
 | Build | What it was | Where |
