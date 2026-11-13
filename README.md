@@ -19,6 +19,10 @@ Built at Universiti Teknologi PETRONAS. This repository holds the earlier builds
 
 - **Top 10 finalist** with Synapse v3
 
+**Agentic AI Challenge 2026, Festival Idea Putrajaya (MOHE), IPT category:**
+
+- **Participated** with Synapse; no award
+
 ## Versions
 
 | Build | What it was | Where |
