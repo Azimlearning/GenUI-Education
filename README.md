@@ -8,12 +8,12 @@ Built at Universiti Teknologi PETRONAS. This repository holds the earlier builds
 
 **hackAstone 2026, Grand Final, Vrije Universiteit Amsterdam, 29 October 2026 (Team EduNova):**
 
-- **5th place overall**
-- **Best/favourite presentation award**
+- **Grand Finalist**
+- **Best presentation award**
 
 **UTP CodeFest '26, Education and Human Development track (Team Dang Wangi):**
 
-- **Top 10 Grand Finalist** with Synapse v4; final pitch on 14 November 2026
+- **Top 10 Grand Finalist** with Synapse v4; pitched at the Grand Finale on 14 November 2026
 
 **Codex Community Hackathon KL, 18 July 2026, Sunway University (Team Dang Wangi):**
 
